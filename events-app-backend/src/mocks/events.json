@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Tech Conference 2025",
+    "description": "The biggest tech event of the year.",
+    "date": "2025-05-10",
+    "location": "Sofia, Bulgaria",
+    "availableTickets": 100
+  },
+  {
+    "id": 2,
+    "title": "Music Festival",
+    "description": "An amazing outdoor music festival.",
+    "date": "2025-06-20",
+    "location": "Plovdiv, Bulgaria",
+    "availableTickets": 250
+  }
+]
