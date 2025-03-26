@@ -15,6 +15,7 @@ export interface Event {
 }
 
 export interface CreateEventInput {
+  id: number;
   title: string;
   description: string;
   date: Date;

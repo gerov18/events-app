@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Router, Request, Response } from 'express';
+import { CreateUserInput } from '../models/User';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ router.get('/', async (req: Request, res: Response) => {
   res.json(result);
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request<CreateUserInput>, res: Response) => {
   const { username, firstName, lastName, email, password, role } = req.body;
   try {
     const result = await prisma.user.create({
@@ -40,13 +41,13 @@ router.get('/:id', async (req: Request, res: Response) => {
   res.json(result);
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: Request<CreateUserInput>, res: Response) => {
   const { id } = req.params;
   const { username, firstName, lastName, email, password, role } = req.body;
   try {
     const result = await prisma.user.update({
       where: {
-        id: parseInt(id),
+        id: id,
       },
       data: {
         username,
@@ -63,12 +64,12 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request<CreateUserInput>, res: Response) => {
   const { id } = req.params;
   try {
     const result = await prisma.user.delete({
       where: {
-        id: parseInt(id),
+        id: id,
       },
     });
     res.json(result);

@@ -21,7 +21,7 @@ router.get('/:id', async (req: Request, res: Response) => {
   res.json(result);
 });
 
-router.post('/', async (req: Request<CreateEventInput>, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   const { title, description, date, location, capacity, createdBy, price } =
     req.body;
   try {
