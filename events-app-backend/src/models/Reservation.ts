@@ -1,9 +1,18 @@
+import { User } from '@prisma/client';
+
 export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
 
 export interface Reservation {
-  id: string;
-  eventId: string;
-  userId: string;
+  id: number;
+  userId: number;
+  eventId: number;
+  createdAt: Date;
+  user: User;
+  event: Event;
   status: ReservationStatus;
-  createdAt: string;
+}
+
+export interface CreateReservationInput {
+  userId: number;
+  eventId: number;
 }
