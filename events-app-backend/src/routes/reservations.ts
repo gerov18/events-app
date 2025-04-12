@@ -11,14 +11,43 @@ router.get('/', async (req, res) => {
   res.json(result);
 });
 
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:id', authenticate, async (req, res): Promise<void> => {
   const { id } = req.params;
-  const result = await prisma.reservation.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  });
-  res.json(result);
+
+  try {
+    const result = await prisma.reservation.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(res.locals.user),
+      },
+    });
+
+    if (!result) {
+      res.status(404).json({ message: 'Reservation not found' });
+      return;
+    }
+    if (!user) {
+      res.status(404).json({ message: "You're not logged in" });
+      return;
+    }
+
+    if (result?.userId !== res.locals.user || res.locals.user !== 'ADMIN') {
+      res
+        .status(403)
+        .json({ message: "Forbidden: you can't access this page" });
+      return;
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching reservation' });
+  }
 });
 
 router.post('/', authenticate, async (req: Request, res: Response) => {
@@ -67,6 +96,27 @@ router.put('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
+    const reservation = await prisma.reservation.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(res.locals.user),
+      },
+    });
+
+    if (!reservation) {
+      res.status(404).json({ message: 'Reservation not found' });
+      return;
+    }
+    if (!user) {
+      res.status(404).json({ message: "You're not logged in" });
+      return;
+    }
+
     const result = await prisma.reservation.update({
       where: { id: parseInt(id) },
       data: { status },
@@ -80,6 +130,27 @@ router.put('/:id', authenticate, async (req, res) => {
 router.delete('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   try {
+    const reservation = await prisma.reservation.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(res.locals.user),
+      },
+    });
+
+    if (!reservation) {
+      res.status(404).json({ message: 'Reservation not found' });
+      return;
+    }
+    if (!user) {
+      res.status(404).json({ message: "You're not logged in" });
+      return;
+    }
+
     const result = await prisma.event.delete({
       where: { id: parseInt(id) },
     });
