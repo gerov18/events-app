@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Router, Request, Response } from 'express';
 import { Reservation, CreateReservationInput } from '../models/Reservation';
+import { authenticate } from '../middlewares/authenticate';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -10,7 +11,7 @@ router.get('/', async (req, res) => {
   res.json(result);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const result = await prisma.reservation.findUnique({
     where: {
@@ -20,7 +21,7 @@ router.get('/:id', async (req, res) => {
   res.json(result);
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', authenticate, async (req: Request, res: Response) => {
   const { userId, eventId }: CreateReservationInput = req.body;
 
   try {
@@ -62,7 +63,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
@@ -76,7 +77,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await prisma.event.delete({

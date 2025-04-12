@@ -1,7 +1,7 @@
 import { Reservation } from '@prisma/client';
 import { Event } from './Event';
 
-export type UserRole = 'admin' | 'user';
+export type UserRole = 'ADMIN' | 'USER';
 
 export interface User {
   id: number;
