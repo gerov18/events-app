@@ -1,12 +1,26 @@
-export type UserRole = 'admin' | 'user';
+import { Reservation } from '@prisma/client';
+import { Event } from './Event';
+
+export type UserRole = 'ADMIN' | 'USER';
 
 export interface User {
   id: number;
+  email: string;
   username: string;
   firstName: string;
   lastName: string;
-  email: string;
   password: string;
+  role: UserRole;
   createdAt: Date;
+  events: Event[];
+  reservations: Reservation[];
+}
+
+export interface CreateUserInput {
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
   role: UserRole;
 }
