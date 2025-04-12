@@ -45,6 +45,21 @@ router.put('/:id', async (req: Request<CreateUserInput>, res: Response) => {
   const { id } = req.params;
   const { username, firstName, lastName, email, password, role } = req.body;
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(res.locals.user),
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "You're not logged in" });
+      return;
+    }
+
+    if (user.id !== res.locals.user || res.locals.user !== 'ADMIN') {
+      res.status(403).json({ message: "Forbidden: you can't edit this user" });
+      return;
+    }
     const result = await prisma.user.update({
       where: {
         id: id,
@@ -65,6 +80,21 @@ router.put('/:id', async (req: Request<CreateUserInput>, res: Response) => {
 });
 
 router.delete('/:id', async (req: Request<CreateUserInput>, res: Response) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: parseInt(res.locals.user),
+    },
+  });
+
+  if (!user) {
+    res.status(404).json({ message: "You're not logged in" });
+    return;
+  }
+
+  if (user.id !== res.locals.user || res.locals.user !== 'ADMIN') {
+    res.status(403).json({ message: "Forbidden: you can't delete this user" });
+    return;
+  }
   const { id } = req.params;
   try {
     const result = await prisma.user.delete({

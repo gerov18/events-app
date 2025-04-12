@@ -116,7 +116,15 @@ router.put('/:id', authenticate, async (req, res) => {
       res.status(404).json({ message: "You're not logged in" });
       return;
     }
-
+    if (
+      reservation?.userId !== res.locals.user ||
+      res.locals.user !== 'ADMIN'
+    ) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: you can't access this page" });
+      return;
+    }
     const result = await prisma.reservation.update({
       where: { id: parseInt(id) },
       data: { status },
@@ -148,6 +156,16 @@ router.delete('/:id', authenticate, async (req, res) => {
     }
     if (!user) {
       res.status(404).json({ message: "You're not logged in" });
+      return;
+    }
+
+    if (
+      reservation?.userId !== res.locals.user ||
+      res.locals.user !== 'ADMIN'
+    ) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: you can't access this page" });
       return;
     }
 
