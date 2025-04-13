@@ -28,7 +28,6 @@ export const updateUserData = async (
     return 'not logged';
   }
 
-  console.log('peshi', loggedUserId);
   const loggedUser = await prisma.user.findUnique({
     where: {
       id: Number(loggedUserId),
@@ -47,12 +46,6 @@ export const updateUserData = async (
     return 'not logged';
   }
 
-  console.log(
-    'targetUserId !== loggedUserId',
-    targetUserId,
-    loggedUserId,
-    Number(targetUserId) !== Number(loggedUserId)
-  );
   if (
     Number(targetUserId) !== Number(loggedUserId)
     // ||// loggedUser.role !== 'ADMIN'
