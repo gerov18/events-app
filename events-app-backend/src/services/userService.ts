@@ -24,6 +24,11 @@ export const updateUserData = async (
       id: Number(targetUserId),
     },
   });
+  if (!loggedUserId) {
+    return 'not logged';
+  }
+
+  console.log('peshi', loggedUserId);
   const loggedUser = await prisma.user.findUnique({
     where: {
       id: Number(loggedUserId),
@@ -38,12 +43,20 @@ export const updateUserData = async (
   if (!targetUser) {
     return null;
   }
-
   if (!loggedUser) {
     return 'not logged';
   }
 
-  if (targetUser.id !== loggedUser.id || loggedUser.role !== 'ADMIN') {
+  console.log(
+    'targetUserId !== loggedUserId',
+    targetUserId,
+    loggedUserId,
+    Number(targetUserId) !== Number(loggedUserId)
+  );
+  if (
+    Number(targetUserId) !== Number(loggedUserId)
+    // ||// loggedUser.role !== 'ADMIN'
+  ) {
     return 'forbidden';
   }
   return await prisma.user.update({

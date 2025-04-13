@@ -38,6 +38,10 @@ export const editUser = async (req: Request, res: Response) => {
       res.status(403).json({ message: "Forbidden: you can't edit this user" });
     }
 
+    if (result === 'not logged') {
+      res.status(403).json({ message: "You're not logged in" });
+    }
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Error updating user', error });

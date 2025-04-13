@@ -7,6 +7,7 @@ import {
   editUser,
   loadUser,
 } from '../controllers/userController';
+import { authenticate } from '../middlewares/authenticate';
 
 const router = Router();
 
@@ -19,10 +20,10 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/', createUser);
 
-router.get('/:id', loadUser);
+router.get('/:id', authenticate, loadUser);
 
-router.put('/:id', editUser);
+router.put('/:id', authenticate, editUser);
 
-router.delete('/:id', deleteUser);
+router.delete('/:id', authenticate, deleteUser);
 
 export default router;
