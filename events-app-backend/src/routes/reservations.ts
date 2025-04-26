@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Router, Request, Response } from 'express';
-import { Reservation, CreateReservationInput } from '../models/Reservation';
+import { Router } from 'express';
 import { authenticate } from '../middlewares/authenticate';
 import {
   createReservationHandler,
