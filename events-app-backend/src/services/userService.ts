@@ -42,9 +42,6 @@ export const updateUserData = async (
   if (!targetUser) {
     return null;
   }
-  if (!loggedUser) {
-    return 'not logged';
-  }
 
   if (
     Number(targetUserId) !== Number(loggedUserId)
