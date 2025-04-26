@@ -18,6 +18,20 @@ enum Role {
   ADMIN
   ORGANISER
 }
+
+enum RoleRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 model User {
   id        Int   @id @default(autoincrement())
   email     String   @unique
@@ -25,10 +39,11 @@ model User {
   firstName String
   lastName  String
   password  String
-  role      Role
+  role      Role @default(ORGANISER)
   createdAt DateTime
   events    Event[]
   reservations Reservation[]
+  RoleRequest RoleRequest[]
 }
 
 model Event {
@@ -53,14 +68,17 @@ model Reservation {
   createdAt DateTime
   user      User     @relation(fields: [userId], references: [id])
   event     Event    @relation(fields: [eventId], references: [id])
-  status ReservationStatus
+  status ReservationStatus @default(CONFIRMED)
 }
 
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
+model RoleRequest {
+  id     Int               @id @default(autoincrement())
+  role   Role
+  userId Int
+  user   User              @relation(fields: [userId], references: [id])
+  status RoleRequestStatus @default(PENDING)
 }
+
 
 
 
