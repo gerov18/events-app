@@ -7,13 +7,22 @@ import {
   updateEventHandler,
   deleteEventHandler,
 } from '../controllers/eventsController';
+import { authorize } from '../middlewares/authorize';
 
 const router = Router();
 
 router.get('/', getAllEventsHandler);
 router.get('/:id', getEventByIdHandler);
-router.post('/', authenticate, createEventHandler);
-router.put('/:id', authenticate, updateEventHandler);
-router.delete('/:id', authenticate, deleteEventHandler);
+router.post('/', [authenticate, authorize(['ORGANISER'])], createEventHandler);
+router.put(
+  '/:id',
+  [authenticate, authorize(['ORGANISER'])],
+  updateEventHandler
+);
+router.delete(
+  '/:id',
+  [authenticate, authorize(['ORGANISER'])],
+  deleteEventHandler
+);
 
 export default router;

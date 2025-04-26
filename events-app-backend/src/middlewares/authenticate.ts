@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-const secret = process.env.JWT_SECRET;
-
 export const authenticate = async (
   req: Request,
   res: Response,
@@ -20,6 +18,7 @@ export const authenticate = async (
     res.status(401).json({ message: 'Authorization token is missing' });
     return;
   }
+  const secret = process.env.JWT_SECRET;
 
   try {
     if (!secret) {
