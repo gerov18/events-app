@@ -39,7 +39,7 @@ model User {
   firstName String
   lastName  String
   password  String
-  role      Role @default(ORGANISER)
+  role      Role @default(USER)
   createdAt DateTime
   events    Event[]
   reservations Reservation[]

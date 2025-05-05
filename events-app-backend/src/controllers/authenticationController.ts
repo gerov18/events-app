@@ -9,8 +9,7 @@ export const register = async (req: Request, res: Response) => {
       password,
       username,
       firstName,
-      lastName,
-      role
+      lastName
     );
     res.status(200).send({ token });
   } catch (error: any) {
