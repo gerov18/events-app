@@ -33,14 +33,15 @@ enum ReservationStatus {
 }
 
 model User {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   username  String   @unique
   firstName String
   lastName  String
-  password  String
-  role      Role @default(USER)
-  createdAt DateTime
+  password  String? //pass is nullable for oauth users
+  role      Role     @default(USER)
+  googleId  String?  @unique
+  createdAt DateTime 
   events    Event[]
   reservations Reservation[]
   RoleRequest RoleRequest[]
