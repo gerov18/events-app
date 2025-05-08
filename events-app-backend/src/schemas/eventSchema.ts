@@ -8,7 +8,7 @@ export const createEventSchema = z.object({
     location: z.string({ required_error: 'Location is required' }),
     capacity: z.number({ required_error: 'Capacity is required' }),
     createdBy: z.number({ required_error: 'Author is required' }),
-    Price: z.number({ required_error: 'Price is required' }),
+    price: z.number({ required_error: 'Price is required' }),
   }),
 });
 
@@ -29,10 +29,10 @@ export const updateEventSchema = z.object({
     location: z.string({ required_error: 'Location is required' }),
     capacity: z.number({ required_error: 'Capacity is required' }),
     createdBy: z.number({ required_error: 'Author is required' }),
-    Price: z.number({ required_error: 'Price is required' }),
+    price: z.number({ required_error: 'Price is required' }),
   }),
 });
 
-export type createEventInput = z.infer<typeof createEventSchema.shape.body>;
-export type eventParamsInput = z.infer<typeof eventParamsSchema.shape.params>;
-export type updateEventInput = z.infer<typeof updateEventSchema>;
+export type CreateEventInput = z.infer<typeof createEventSchema.shape.body>;
+export type EventParamsInput = z.infer<typeof eventParamsSchema.shape.params>;
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;

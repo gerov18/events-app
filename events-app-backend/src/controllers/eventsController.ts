@@ -6,6 +6,11 @@ import {
   updateEvent,
   deleteEvent,
 } from '../services/eventsService';
+import {
+  CreateEventInput,
+  EventParamsInput,
+  UpdateEventInput,
+} from '../schemas/eventSchema';
 
 export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
@@ -16,7 +21,10 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const getEventByIdHandler = async (req: Request, res: Response) => {
+export const getEventByIdHandler = async (
+  req: Request<EventParamsInput>,
+  res: Response
+) => {
   const { id } = req.params;
   try {
     const event = await getEventById(parseInt(id));
@@ -30,7 +38,10 @@ export const getEventByIdHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const createEventHandler = async (req: Request, res: Response) => {
+export const createEventHandler = async (
+  req: Request<{}, {}, CreateEventInput>,
+  res: Response
+) => {
   const { title, description, date, location, capacity, createdBy, price } =
     req.body;
 
@@ -59,7 +70,10 @@ export const createEventHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const updateEventHandler = async (req: Request, res: Response) => {
+export const updateEventHandler = async (
+  req: Request<UpdateEventInput['params'], {}, UpdateEventInput['body']>,
+  res: Response
+) => {
   const { id } = req.params;
   const { title, description, date, location, capacity, createdBy, price } =
     req.body;
@@ -100,7 +114,10 @@ export const updateEventHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteEventHandler = async (req: Request, res: Response) => {
+export const deleteEventHandler = async (
+  req: Request<EventParamsInput>,
+  res: Response
+) => {
   const { id } = req.params;
   const loggedUser = res.locals.user;
   try {

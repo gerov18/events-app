@@ -10,8 +10,8 @@ export const validate =
         body: req.body,
         query: req.query,
       });
-      return next();
+      next();
     } catch (e: any) {
-      return res.status(400).send(e.errors);
+      res.status(400).send(e.errors);
     }
   };
