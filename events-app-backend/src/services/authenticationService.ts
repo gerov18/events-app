@@ -46,7 +46,11 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error('User does not exist');
   } else if (
     !email ||
-    (user.password && !bcrypt.compare(password, user.password))
+    !(
+      user.password &&
+      (await bcrypt.compare(password, user.password)) &&
+      !user.googleId
+    )
   ) {
     throw new Error('Invalid credentials');
   }
