@@ -6,11 +6,14 @@ import userRoutes from './routes/users';
 import reservationRoutes from './routes/reservations';
 import authenticationRoutes from './routes/authentication';
 import authorizationRoutes from './routes/authorization';
+import { errorHandler } from './middlewares/errorHanlder';
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(errorHandler);
+
 app.use('/events', eventRoutes);
 app.use('/users', userRoutes);
 app.use('/users/:userId/reservations', reservationRoutes);

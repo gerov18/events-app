@@ -8,7 +8,7 @@ export const createEventSchema = z.object({
     location: z.string({ required_error: 'Location is required' }),
     capacity: z.number({ required_error: 'Capacity is required' }),
     createdBy: z.number({ required_error: 'Author is required' }),
-    Price: z.number({ required_error: 'Price is required' }),
+    price: z.number({ required_error: 'Price is required' }),
   }),
 });
 
