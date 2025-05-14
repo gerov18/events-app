@@ -48,7 +48,7 @@ model User {
 }
 
 model Event {
-  id          Int   @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   description String
   date        DateTime
@@ -56,10 +56,18 @@ model Event {
   capacity    Int
   createdAt   DateTime 
   createdBy   Int
-  creator     User     @relation(fields: [createdBy], references: [id])
+  creator     User       @relation(fields: [createdBy], references: [id])
   reservations Reservation[]
   availableTickets Int
   price Float
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  events Event[]
 }
 
 model Reservation {

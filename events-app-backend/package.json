@@ -6,7 +6,10 @@
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "nodemon dist/server.js",
-    "seed": "ts-node-dev prisma/seeds.ts"
+    "seed": "ts-node ./prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seeds.ts"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +34,7 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "nodemon": "^3.1.9",
     "prisma": "^6.5.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
   }
