@@ -42,8 +42,16 @@ export const createEventHandler = async (
   req: Request<{}, {}, CreateEventInput>,
   res: Response
 ) => {
-  const { title, description, date, location, capacity, createdBy, price } =
-    req.body;
+  const {
+    title,
+    description,
+    date,
+    location,
+    capacity,
+    createdBy,
+    price,
+    categoryId,
+  } = req.body;
 
   const loggedUser = res.locals.user;
   try {
@@ -55,6 +63,7 @@ export const createEventHandler = async (
       capacity,
       createdBy,
       price,
+      categoryId,
     });
 
     if (!event) {
@@ -75,8 +84,16 @@ export const updateEventHandler = async (
   res: Response
 ) => {
   const { id } = req.params;
-  const { title, description, date, location, capacity, createdBy, price } =
-    req.body;
+  const {
+    title,
+    description,
+    date,
+    location,
+    capacity,
+    createdBy,
+    price,
+    categoryId,
+  } = req.body;
 
   const loggedUser = res.locals.user;
   try {

@@ -9,6 +9,7 @@ export const createEventSchema = z.object({
     capacity: z.number({ required_error: 'Capacity is required' }),
     createdBy: z.number({ required_error: 'Author is required' }),
     price: z.number({ required_error: 'Price is required' }),
+    categoryId: z.number({ required_error: 'Category is required' }),
   }),
 });
 
@@ -30,6 +31,7 @@ export const updateEventSchema = z.object({
     capacity: z.number({ required_error: 'Capacity is required' }),
     createdBy: z.number({ required_error: 'Author is required' }),
     price: z.number({ required_error: 'Price is required' }),
+    categoryId: z.number({ required_error: 'Category is required' }),
   }),
 });
 
