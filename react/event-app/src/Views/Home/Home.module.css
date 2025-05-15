@@ -1,3 +1,9 @@
 .topBar {
   display: flex;
+  justify-content: center;
+}
+
+.topBar button {
+  background: white;
+  border: 1px solid black;
 }

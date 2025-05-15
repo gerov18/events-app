@@ -1,10 +1,17 @@
-const EventCard = () => {
+import { Link } from 'react-router-dom';
+import styles from './EventCard.module.css';
+import { Event } from '../../types/event';
+
+const EventCard = (event: Event) => {
+  const { title, date, id } = event;
   return (
-    <div className='event-card'>
-      <img />
-      <h3>Event title</h3>
-      <h4>event date</h4>
-    </div>
+    <Link to={`/events/${id}`}>
+      <div className={styles.eventCard}>
+        <img />
+        <h3>{title}</h3>
+        <p>{date}</p>
+      </div>
+    </Link>
   );
 };
 

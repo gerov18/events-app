@@ -12,8 +12,8 @@ const Home = () => {
         <div className='header'>
           <h1>Do what you love</h1>
           <h2>
-            Find events that speak to you, from music festivals to cake baking
-            workshop
+            Find events that speak to you, from music festivals to rock climbing
+            classes
           </h2>
           <h3>Find an event</h3>
         </div>
@@ -21,10 +21,13 @@ const Home = () => {
           <h2>What are you interest iN?</h2>
         </div>
         <div className='main-event-slide'>
-          <EventCard />
+          <EventCard event={{}} />
         </div>
         <div className='popular-events'>
-          <EventCard />
+          <EventCard
+            title={'gogogog'}
+            date={'01.101i0'}
+          />
         </div>
       </div>
     </>
