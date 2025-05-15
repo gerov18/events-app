@@ -7,9 +7,17 @@ import authenticationRoutes from './routes/authentication';
 import authorizationRoutes from './routes/authorization';
 import { errorHandler } from './middlewares/errorHanlder';
 import googleAuth from './routes/googleAuth';
+import cors from 'cors';
 import './passport';
 
 const app: Application = express();
+
+app.use(
+  cors({
+    origin: `http://localhost:5173`,
+    credentials: true,
+  })
+);
 
 app.use(passport.initialize());
 

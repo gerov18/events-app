@@ -5,6 +5,7 @@ import {
   ReservationStatus,
 } from '@prisma/client';
 const prisma = new PrismaClient();
+import bcrypt from 'bcrypt';
 
 const firstNames = [
   'Ivan',
@@ -184,13 +185,14 @@ async function main() {
     const firstName = randomItem(firstNames);
     const lastName = randomItem(lastNames);
     const username = `${firstName.toLowerCase()}${i}`;
+    const hashedPass = await bcrypt.hash('pass123', 10);
     await prisma.user.create({
       data: {
         email: `${username}@test.com`,
         username,
         firstName,
         lastName,
-        password: 'user123', // same password for all users
+        password: hashedPass, // same password for all users
         role: i <= 50 ? Role.ORGANISER : Role.USER,
         createdAt: new Date(),
       },

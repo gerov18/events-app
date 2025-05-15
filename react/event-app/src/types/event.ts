@@ -1,9 +1,26 @@
+import { Reservation } from './Reservation';
+
 export type Event = {
   id: number;
   title: string;
   description: string;
-  date: string;
+  date: Date;
   location: string;
+  capacity: number;
+  createdAt: Date;
+  createdBy: number;
+  availableTickets: number;
   price: number;
-  category: string;
+  reservations: Reservation[];
+};
+
+export type CreateEventInput = {
+  id: number;
+  title: string;
+  description: string;
+  date: Date;
+  location: string;
+  capacity: number;
+  createdBy: number;
+  price: number;
 };
