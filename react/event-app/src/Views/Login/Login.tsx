@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import { FormInput } from '../../Components/FormInput/FormInput';
+import { GoogleLoginButton } from '../../Components/GoogleLoginButton/GoogleLoginButton';
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ export default function Login() {
       <div>
         Don't have an account?
         <Link to={{ pathname: '/register' }}> Click here to sign up.</Link>
+        <GoogleLoginButton />
       </div>
     </form>
   );

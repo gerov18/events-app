@@ -8,7 +8,7 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   token: string;
-  user: User;
+  user?: User; //optional because of oauth login
 };
 export type RegisterResponse = {
   token: string;

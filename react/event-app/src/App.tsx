@@ -9,6 +9,8 @@ import { useGetMeQuery } from './api/auth/authApi';
 import { useEffect } from 'react';
 import { setUser } from './api/auth/authSlice';
 import Register from './Views/Register/Register';
+import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
+import Cookies from 'js-cookie';
 
 function App() {
   const dispatch = useDispatch();
@@ -39,6 +41,10 @@ function App() {
           <Route
             path='/register'
             element={<Register />}
+          />
+          <Route
+            path='/oauth-success'
+            element={<OauthSuccess />}
           />
         </Routes>
       </Layout>
