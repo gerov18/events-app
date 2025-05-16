@@ -1,18 +1,24 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
-import { UserRole } from '../models/User';
+import { PrismaClient, User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 const secret = process.env.JWT_SECRET;
 
-const generateToken = (userId: number) => {
+const generateToken = (user: User) => {
   if (!secret) {
     throw new Error('secret is not defined!');
   }
-  return jwt.sign({ id: userId }, secret, { expiresIn: '24h' });
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: '7d',
+    }
+  );
+  return token;
 };
 
 export const registerUser = async (
@@ -34,7 +40,7 @@ export const registerUser = async (
     },
   });
 
-  return generateToken(user.id);
+  return { token: generateToken(user), user };
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -55,5 +61,16 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error('Invalid credentials');
   }
 
-  return generateToken(user.id);
+  return { token: generateToken(user), user };
+};
+
+export const getUserByEmailOrUsername = async (
+  email: string,
+  username: string
+) => {
+  return await prisma.user.findFirst({
+    where: {
+      OR: [{ email }, { username }],
+    },
+  });
 };

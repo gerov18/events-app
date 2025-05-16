@@ -6,13 +6,7 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'Unauthorized' });
-    return;
-  }
-
-  const token = authHeader?.split(' ')[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     res.status(401).json({ message: 'Authorization token is missing' });
@@ -28,7 +22,7 @@ export const authenticate = async (
     const decoded = jwt.verify(token, secret) as JwtPayload;
 
     if (decoded && typeof decoded !== 'string' && 'id' in decoded) {
-      res.locals.user = decoded.id;
+      res.locals.user = decoded;
       next();
     } else {
       res.status(401).json({ message: 'Invalid token' });

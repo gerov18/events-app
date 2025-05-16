@@ -13,6 +13,7 @@ export async function requestOrganiserRole(req: Request, res: Response) {
     res
       .status(200)
       .send({ message: 'Request to become a organiser submitted' });
+    return;
   } catch (error: any) {
     res.status(400).send({ message: error.message });
   }
@@ -22,8 +23,10 @@ export async function viewRoleRequests(req: Request, res: Response) {
   try {
     const requests = await getRoleRequests();
     res.send(requests);
+    return;
   } catch (error: any) {
     res.status(400).send({ message: error.message });
+    return;
   }
 }
 
@@ -40,7 +43,9 @@ export async function updateRoleRequest(
   try {
     await handleRoleRequest(Number(id), status);
     res.status(200).send({ message: `Role request ${status}` });
+    return;
   } catch (error: any) {
     res.status(400).send({ message: error.message });
+    return;
   }
 }

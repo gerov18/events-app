@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User } from '../../types/User';
+import { CreateUserInput, User } from '../../types/User';
 
 export type LoginRequest = {
   email: string;
@@ -8,10 +8,11 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   token: string;
-  user: {
-    token: string;
-    user: User;
-  };
+  user: User;
+};
+export type RegisterResponse = {
+  token: string;
+  user: User;
 };
 
 export const authApi = createApi({
@@ -19,10 +20,6 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:5008',
     prepareHeaders: headers => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
       return headers;
     },
     credentials: 'include',
@@ -35,7 +32,29 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
+    register: builder.mutation<RegisterResponse, CreateUserInput>({
+      query: credentials => ({
+        url: '/register',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/logout',
+        method: 'POST',
+        credentials: 'include',
+      }),
+    }),
+    getMe: builder.query<User, void>({
+      query: () => '/me',
+    }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const {
+  useLoginMutation,
+  useGetMeQuery,
+  useLogoutMutation,
+  useRegisterMutation,
+} = authApi;

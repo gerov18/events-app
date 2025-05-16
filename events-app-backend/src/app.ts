@@ -8,6 +8,7 @@ import authorizationRoutes from './routes/authorization';
 import { errorHandler } from './middlewares/errorHanlder';
 import googleAuth from './routes/googleAuth';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import './passport';
 
 const app: Application = express();
@@ -18,6 +19,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 
 app.use(passport.initialize());
 

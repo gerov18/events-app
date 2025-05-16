@@ -21,5 +21,4 @@ export interface CreateUserInput {
   firstName: string;
   lastName: string;
   password: string;
-  role: UserRole;
 }
