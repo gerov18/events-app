@@ -7,7 +7,10 @@ export const GoogleLoginButton = () => {
 
   return (
     <button
-      onClick={handleLogin}
+      onClick={e => {
+        e.preventDefault();
+        handleLogin();
+      }}
       className='btn btn-google'>
       Login with Google
     </button>
