@@ -17,6 +17,11 @@ export const organiserParamsSchema = z.object({
   }),
 });
 
+export const organiserLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
 export const updateOrganiserSchema = z.object({
   params: organiserParamsSchema.shape.params,
   body: createOrganiserSchema.shape.body.partial(),

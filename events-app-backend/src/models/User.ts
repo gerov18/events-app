@@ -1,7 +1,7 @@
 import { Event } from './Event';
 import { Reservation } from './Reservation';
 
-export type UserRole = 'ADMIN' | 'USER' | 'ORGANISER';
+export type UserRole = 'ADMIN' | 'USER';
 
 export interface User {
   id: number;

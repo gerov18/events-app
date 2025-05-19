@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
 import {
-  requestOrganiserRole,
   viewRoleRequests,
   updateRoleRequest,
+  requestAdminRole,
 } from '../controllers/authorizationController';
 import { authenticate } from '../middlewares/authenticate';
 import { authorize } from '../middlewares/authorize';
@@ -12,7 +12,7 @@ import { validate } from '../middlewares/validate';
 
 const router = Router();
 
-router.post('/request-organiser', [authenticate], requestOrganiserRole);
+router.post('/request-organiser', [authenticate], requestAdminRole);
 router.get(
   '/role-requests',
   [authenticate, authorize(['ADMIN'])],

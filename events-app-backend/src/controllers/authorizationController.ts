@@ -6,10 +6,10 @@ import {
 } from '../services/authorizationService';
 import { UpdateRoleRequestInput } from '../schemas/authorizationSchema';
 
-export async function requestOrganiserRole(req: Request, res: Response) {
+export async function requestAdminRole(req: Request, res: Response) {
   const userId = res.locals.user;
   try {
-    await requestRoleChange(userId, 'ORGANISER');
+    await requestRoleChange(userId, 'ADMIN');
     res
       .status(200)
       .send({ message: 'Request to become a organiser submitted' });
