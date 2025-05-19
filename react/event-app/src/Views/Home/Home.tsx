@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import EventCard from '../../Components/EventCard/EventCard';
 import styles from './Home.module.css';
-import { RootState } from '../../app/store';
+import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
 import { logoutUser } from '../../api/auth/authSlice';
 

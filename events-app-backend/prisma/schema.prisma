@@ -42,7 +42,6 @@ model User {
   role      Role     @default(USER)
   googleId  String?  @unique
   createdAt DateTime 
-  events    Event[]
   reservations Reservation[]
   RoleRequest RoleRequest[]
 }
@@ -56,12 +55,22 @@ model Event {
   capacity    Int
   createdAt   DateTime 
   createdBy   Int
-  creator     User       @relation(fields: [createdBy], references: [id])
+  creator     Organiser       @relation(fields: [createdBy], references: [id])
   reservations Reservation[]
   availableTickets Int
   price Float
   categoryId  Int
   category    Category   @relation(fields: [categoryId], references: [id])
+}
+
+model Organiser {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  password    String
+  description String?
+  createdAt   DateTime @default(now())
+  events      Event[]
 }
 
 model Category {

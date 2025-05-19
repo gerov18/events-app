@@ -49,7 +49,7 @@ export default function Login() {
       console.error('Registration failed:', err);
     }
   };
-  console.log('errors', errors);
+
   return (
     <form onSubmit={handleSubmit(data => handleFormSubmit(data))}>
       <FormInput

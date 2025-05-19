@@ -18,19 +18,19 @@ import {
 const router = Router();
 
 router.get('/', getAllEventsHandler);
-router.get('/:id', validate(eventParamsSchema), getEventByIdHandler);
+router.get('/event/:id', validate(eventParamsSchema), getEventByIdHandler);
 router.post(
-  '/',
+  '/create',
   [authenticate, authorize(['ORGANISER']), validate(createEventSchema)],
   createEventHandler
 );
 router.put(
-  '/:id',
+  '/edit/:id',
   [authenticate, authorize(['ORGANISER']), validate(updateEventSchema)],
   updateEventHandler
 );
 router.delete(
-  '/:id',
+  '/delete/:id',
   [authenticate, authorize(['ORGANISER']), validate(eventParamsSchema)],
   deleteEventHandler
 );

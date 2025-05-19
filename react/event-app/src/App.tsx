@@ -4,7 +4,7 @@ import Layout from './Components/Layout/Layout';
 import EventDetails from './Views/EventDetails/EventDetails';
 import Login from './Views/Login/Login';
 import { Provider, useDispatch } from 'react-redux';
-import { store } from './app/store';
+import { store } from './api/store';
 import { useGetMeQuery } from './api/auth/authApi';
 import { useEffect } from 'react';
 import { setUser } from './api/auth/authSlice';
