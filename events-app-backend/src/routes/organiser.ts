@@ -5,7 +5,6 @@ import {
   updateOrganiserHandler,
   deleteOrganiserHandler,
   registerOrganiserHandler,
-  me,
   loginOrganiserHandler,
 } from '../controllers/organiserController';
 import {
@@ -45,6 +44,5 @@ router.delete(
   validate(organiserParamsSchema),
   deleteOrganiserHandler
 );
-router.get('/loadOrganiserData', authenticate, me);
 
 export default router;

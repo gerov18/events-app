@@ -4,4 +4,6 @@ import { meHandler } from '../controllers/meController';
 
 const router = Router();
 
-router.get('/', authenticate, meHandler);
+router.get('/me', authenticate, meHandler);
+
+export default router;

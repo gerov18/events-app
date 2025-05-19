@@ -1,13 +1,16 @@
+import { useForm } from 'react-hook-form';
+import { EventInput, eventSchema } from '../../api/events/eventSchema';
 import { FormInput } from '../../Components/FormInput/FormInput';
-import { CreateEventInput } from '../../types/event';
+import { CreateEventInput } from '../../types/Event';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const EventForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<EventInput>({
+    resolver: zodResolver(eventSchema),
   });
   const handleFormSubmit = async (data: CreateEventInput) => {};
 
@@ -18,7 +21,7 @@ const EventForm = () => {
           label='Title'
           type='text'
           register={register('title', { required: 'Title is required' })}
-          error={errors.email?.message as string}
+          error={errors.title?.message as string}
         />
       </form>
     </div>

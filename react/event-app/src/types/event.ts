@@ -15,12 +15,11 @@ export type Event = {
 };
 
 export type CreateEventInput = {
-  id: number;
   title: string;
   description: string;
   date: Date;
   location: string;
   capacity: number;
-  createdBy: number;
   price: number;
+  category: number;
 };

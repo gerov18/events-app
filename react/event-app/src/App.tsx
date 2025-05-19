@@ -1,26 +1,28 @@
-import Home from './Views/Home/Home';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { setUser } from './api/auth/authSlice';
+import { useGetMeQuery } from './api/me/meApi';
+import { setOrganiserData } from './api/organiser/organiserSlice';
 import Layout from './Components/Layout/Layout';
 import EventDetails from './Views/EventDetails/EventDetails';
+import Home from './Views/Home/Home';
 import Login from './Views/Login/Login';
-import { Provider, useDispatch } from 'react-redux';
-import { store } from './api/store';
-import { useGetMeQuery } from './api/auth/authApi';
-import { useEffect } from 'react';
-import { setUser } from './api/auth/authSlice';
-import Register from './Views/Register/Register';
 import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
-import Cookies from 'js-cookie';
+import Register from './Views/Register/Register';
 
 function App() {
   const dispatch = useDispatch();
-  const { data: user, isSuccess } = useGetMeQuery();
+  const { data: getMeData, isSuccess } = useGetMeQuery();
 
   useEffect(() => {
-    if (isSuccess && user) {
-      dispatch(setUser(user));
+    if (isSuccess && getMeData.type === 'user') {
+      dispatch(setUser(getMeData.data));
     }
-  }, [isSuccess, user]);
+    if (isSuccess && getMeData.type === 'organiser') {
+      dispatch(setOrganiserData(getMeData.data));
+    }
+  }, [isSuccess, getMeData]);
 
   return (
     <Router>

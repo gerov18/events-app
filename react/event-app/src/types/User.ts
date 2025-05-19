@@ -11,7 +11,6 @@ export interface User {
   password: string;
   role: UserRole;
   createdAt: Date;
-  events: Event[];
   reservations: Reservation[];
 }
 

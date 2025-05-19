@@ -40,22 +40,6 @@ export const logoutHandler = async (_req: Request, res: Response) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
-export const me = async (_req: Request, res: Response) => {
-  try {
-    const organiserId = res.locals.user.id;
-    const organiser = await getOrganiserById(organiserId);
-
-    if (!organiser) {
-      res.status(404).json({ message: 'Organiser not found' });
-      return;
-    }
-
-    res.status(200).json(organiser);
-  } catch (err: any) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
 export const getAllOrganisersHandler = async (_req: Request, res: Response) => {
   try {
     const organisers = await getAllOrganisers();

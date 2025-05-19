@@ -9,14 +9,14 @@ export const meHandler = async (req: Request, res: Response) => {
     if (role === 'USER' || role === 'ADMIN' || role === 'ORGANISER') {
       const user = await getUserById(id);
       if (user) {
-        res.status(200).json(user);
+        res.status(200).json({ type: 'user', user });
         return;
       }
     }
 
     const organiser = await getOrganiserById(id);
     if (organiser) {
-      res.status(200).json(organiser);
+      res.status(200).json({ type: 'organiser', organiser });
       return;
     }
 

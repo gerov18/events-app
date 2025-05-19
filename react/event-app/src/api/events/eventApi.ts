@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Event } from '../../types/event';
+import { Event } from '../../types/Event';
 import { EventInput } from './eventSchema';
 
 export const eventsApi = createApi({

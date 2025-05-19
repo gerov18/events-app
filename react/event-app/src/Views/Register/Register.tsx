@@ -41,7 +41,6 @@ export default function Login() {
   const handleFormSubmit = async (data: RegisterInput) => {
     try {
       const response = await registerUser(data).unwrap();
-      console.log('response', response);
       await loginUser({ email: data.email, password: data.password }).unwrap();
       dispatch(setCredentials({ user: response.user, token: response.token }));
       navigate('/');

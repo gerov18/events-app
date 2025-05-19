@@ -12,6 +12,6 @@ import { getUserById } from '../services/userService';
 const router = Router();
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
-router.post('/logout', logoutHandler);
+router.post('/logout', authenticate, logoutHandler);
 
 export default router;

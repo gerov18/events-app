@@ -7,6 +7,7 @@ import authenticationRoutes from './routes/authentication';
 import authorizationRoutes from './routes/authorization';
 import categoryRoutes from './routes/categories';
 import organiserRoutes from './routes/organiser';
+import meRoute from './routes/me';
 import { errorHandler } from './middlewares/errorHanlder';
 import googleAuth from './routes/googleAuth';
 import cors from 'cors';
@@ -38,4 +39,6 @@ app.use('/', authorizationRoutes);
 app.use('/authentication', googleAuth);
 app.use('/categories', categoryRoutes);
 app.use('/', organiserRoutes);
+app.use('/', meRoute);
+
 export default app;
