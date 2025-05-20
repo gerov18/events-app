@@ -14,8 +14,12 @@ export const registerSchema = z.object({
 });
 
 export const deleteSchema = z.object({
-  email: z.string().email({ message: 'Invalid email ' }),
-  password: z.string().min(6, { message: 'Password must be at least 6' }),
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Invalid email format'),
+  password: z
+    .string({ required_error: 'Password is required' })
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

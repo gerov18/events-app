@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { CreateUserInput, User } from '../../types/User';
+import { DeleteInput } from './authSchema';
 
 export type LoginRequest = {
   email: string;
@@ -50,11 +51,11 @@ export const authApi = createApi({
     getMe: builder.query<User, void>({
       query: () => '/me',
     }),
-    deleteUser: builder.mutation<void, { email: string; password: string }>({
-      query: credentials => ({
-        url: `/users/delete`,
+    deleteUser: builder.mutation<void, { id: number; data: DeleteInput }>({
+      query: ({ id, data }) => ({
+        url: `/users/${id}/delete`,
         method: 'DELETE',
-        body: credentials,
+        body: data,
       }),
       invalidatesTags: ['Users'],
     }),

@@ -16,9 +16,13 @@ export const organiserLoginSchema = z.object({
   password: z.string().min(6),
 });
 
-export const organiserDeleteSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+export const deleteOrganiserSchema = z.object({
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Invalid email format'),
+  password: z
+    .string({ required_error: 'Password is required' })
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 export const organiserCreateSchema = organiserSchema.omit({
@@ -27,5 +31,5 @@ export const organiserCreateSchema = organiserSchema.omit({
 });
 export type OrganiserCreateInput = z.infer<typeof organiserCreateSchema>;
 export type OrganiserLoginInput = z.infer<typeof organiserLoginSchema>;
-export type OrganiserDeleteInput = z.infer<typeof organiserDeleteSchema>;
+export type OrganiserDeleteInput = z.infer<typeof deleteOrganiserSchema>;
 export type Organiser = z.infer<typeof organiserSchema>;

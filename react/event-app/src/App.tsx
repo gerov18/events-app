@@ -12,6 +12,8 @@ import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
 import { Register } from './Views/Register/Register';
 import { OrganiserRegister } from './Views/OrganiserRegister/OrganiserRegister';
 import { OrganiserLogin } from './Views/OrganiserLogin/OrganiserLogin';
+import { UserDelete } from './Views/UserDelete/UserDelete';
+import { OrganiserDelete } from './Views/OrganiserDelete/OrganiserDelete';
 
 function App() {
   const dispatch = useDispatch();
@@ -58,6 +60,14 @@ function App() {
           <Route
             path='/organiser/login'
             element={<OrganiserLogin />}
+          />
+          <Route
+            path='/organiser/:id/delete'
+            element={<OrganiserDelete />}
+          />
+          <Route
+            path='/user/:id/delete'
+            element={<UserDelete />}
           />
         </Routes>
       </Layout>

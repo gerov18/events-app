@@ -41,9 +41,8 @@ export const deleteOrganiserSchema = z.object({
 });
 
 export type DeleteOrganiserInput = z.infer<
-  typeof deleteOrganiserSchema.shape.body
->;
-
+  typeof deleteOrganiserSchema
+>['body'];
 export type CreateOrganiserInput = z.infer<
   typeof createOrganiserSchema
 >['body'];

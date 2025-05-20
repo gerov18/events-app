@@ -3,11 +3,13 @@ import { Router, Request, Response } from 'express';
 import { CreateUserInput } from '../models/User';
 import {
   createUser,
-  deleteUser,
+  deleteUserWithCredentialsHandler,
   editUser,
   loadUser,
 } from '../controllers/userController';
 import { authenticate } from '../middlewares/authenticate';
+import { validate } from '../middlewares/validate';
+import { deleteUserSchema } from '../schemas/authenticationSchema';
 
 const router = Router();
 
@@ -24,6 +26,10 @@ router.get('/:id', authenticate, loadUser);
 
 router.put('/:id/editUser', authenticate, editUser);
 
-router.delete('/:id', authenticate, deleteUser);
+router.delete(
+  '/:id/delete',
+  [authenticate, validate(deleteUserSchema)],
+  deleteUserWithCredentialsHandler
+);
 
 export default router;

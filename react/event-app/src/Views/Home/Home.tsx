@@ -3,7 +3,7 @@ import EventCard from '../../Components/EventCard/EventCard';
 import styles from './Home.module.css';
 import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
-import { logoutUser } from '../../api/auth/authSlice';
+import { clearUserState } from '../../api/auth/authSlice';
 
 const Home = () => {
   const user = useSelector((state: RootState) => state.auth.user) ?? null;
@@ -13,7 +13,7 @@ const Home = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      dispatch(logoutUser());
+      dispatch(clearUserState());
     } catch (err) {
       console.log('err', err);
     }

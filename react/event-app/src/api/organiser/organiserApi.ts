@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Organiser, CreateOrganiserInput } from '../../types/Organiser';
+import { OrganiserDeleteInput } from './organiserSchema';
 
 export type LoginResponse = {
   token: string;
@@ -47,9 +48,6 @@ export const organisersApi = createApi({
         method: 'POST',
       }),
     }),
-    getMe: builder.query<{ type: 'organiser'; data: Organiser }, void>({
-      query: () => '/me',
-    }),
 
     getOrganisers: builder.query<Organiser[], void>({
       query: () => '/all',
@@ -82,12 +80,12 @@ export const organisersApi = createApi({
     }),
     deleteOrganiser: builder.mutation<
       void,
-      { email: string; password: string }
+      { id: number; data: OrganiserDeleteInput }
     >({
-      query: credentials => ({
-        url: `/delete`,
+      query: ({ id, data }) => ({
+        url: `/${id}/delete`,
         method: 'DELETE',
-        body: credentials,
+        body: data,
       }),
       invalidatesTags: ['Organisers'],
     }),
@@ -103,5 +101,4 @@ export const {
   useRegisterOrganiserMutation,
   useLoginOrganiserMutation,
   useLogoutOrganiserMutation,
-  useGetMeQuery,
 } = organisersApi;

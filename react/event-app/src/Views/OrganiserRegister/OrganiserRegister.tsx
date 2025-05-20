@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { FormInput } from '../../Components/FormInput/FormInput';
 import {
-  useGetMeQuery,
   useLoginOrganiserMutation,
   useRegisterOrganiserMutation,
 } from '../../api/organiser/organiserApi';
@@ -14,6 +13,7 @@ import {
   organiserCreateSchema,
 } from '../../api/organiser/organiserSchema';
 import { useEffect } from 'react';
+import { useGetMeQuery } from '../../api/me/meApi';
 
 export const OrganiserRegister = () => {
   const dispatch = useDispatch();
