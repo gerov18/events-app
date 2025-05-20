@@ -20,6 +20,7 @@ export const createEvent = async (data: {
   capacity: number;
   createdBy: number;
   price: number;
+  categoryId: number;
 }) => {
   return await prisma.event.create({
     data: {

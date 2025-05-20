@@ -7,7 +7,7 @@ import {
   updateEventHandler,
   deleteEventHandler,
 } from '../controllers/eventsController';
-import { authorize } from '../middlewares/authorize';
+import { authorize, authorizeOrganiserOnly } from '../middlewares/authorize';
 import { validate } from '../middlewares/validate';
 import {
   createEventSchema,
@@ -18,20 +18,20 @@ import {
 const router = Router();
 
 router.get('/', getAllEventsHandler);
-router.get('/:id', validate(eventParamsSchema), getEventByIdHandler);
+router.get('/event/:id', validate(eventParamsSchema), getEventByIdHandler);
 router.post(
-  '/',
-  [authenticate, authorize(['ORGANISER']), validate(createEventSchema)],
+  '/create',
+  [authenticate, authorizeOrganiserOnly, validate(createEventSchema)],
   createEventHandler
 );
 router.put(
-  '/:id',
-  [authenticate, authorize(['ORGANISER']), validate(updateEventSchema)],
+  '/edit/:id',
+  [authenticate, authorizeOrganiserOnly, validate(updateEventSchema)],
   updateEventHandler
 );
 router.delete(
-  '/:id',
-  [authenticate, authorize(['ORGANISER']), validate(eventParamsSchema)],
+  '/delete/:id',
+  [authenticate, authorizeOrganiserOnly, validate(eventParamsSchema)],
   deleteEventHandler
 );
 

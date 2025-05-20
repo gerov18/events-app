@@ -22,7 +22,7 @@ router.post('/', createUser);
 
 router.get('/:id', authenticate, loadUser);
 
-router.put('/:id', authenticate, editUser);
+router.put('/:id/editUser', authenticate, editUser);
 
 router.delete('/:id', authenticate, deleteUser);
 

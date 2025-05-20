@@ -1,5 +1,5 @@
-import { Reservation } from '@prisma/client';
 import { Event } from './Event';
+import { Reservation } from './Reservation';
 
 export type UserRole = 'ADMIN' | 'USER';
 

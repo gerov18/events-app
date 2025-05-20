@@ -16,7 +16,7 @@ router.get(
   }),
   (req, res) => {
     const { token } = req.user as any;
-    res.json({ token });
+    res.redirect(`http://localhost:5173/oauth-success?token=${token}`);
   }
 );
 

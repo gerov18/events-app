@@ -56,38 +56,23 @@ export const updateUserData = async (
     data: updatedData,
   });
 };
-
-export const deleteUserById = async (
-  targetUserId: number | string,
-  loggedUserId: number | string
+export const deleteUserWithCredentials = async (
+  id: number,
+  email: string,
+  password: string
 ) => {
-  const targetUser = await prisma.user.findUnique({
-    where: {
-      id: Number(targetUserId),
-    },
-  });
-  const loggedUser = await prisma.user.findUnique({
-    where: {
-      id: Number(loggedUserId),
-    },
-  });
+  const user = await prisma.user.findUnique({ where: { id } });
 
-  if (!targetUser) {
-    return null;
+  if (!user || user.email !== email || !user.password) {
+    throw new Error('Invalid credentials');
   }
 
-  if (!loggedUser) {
-    return 'not logged';
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) {
+    throw new Error('Invalid credentials');
   }
 
-  if (targetUser.id !== loggedUser.id || loggedUser.role !== 'ADMIN') {
-    return 'forbidden';
-  }
-  return await prisma.user.delete({
-    where: {
-      id: Number(targetUserId),
-    },
-  });
+  await prisma.user.delete({ where: { id } });
 };
 
 export const createNewUser = async (data: CreateUserInput) => {
