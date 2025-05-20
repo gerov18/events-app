@@ -98,5 +98,21 @@ export const getOrganiserById = (id: number) =>
 export const updateOrganiser = (id: number, data: UpdateOrganiserInput) =>
   prisma.organiser.update({ where: { id }, data });
 
-export const deleteOrganiser = (id: number) =>
-  prisma.organiser.delete({ where: { id } });
+export const deleteOrganiserWithCredentials = async (
+  id: number,
+  email: string,
+  password: string
+) => {
+  const organiser = await prisma.organiser.findUnique({ where: { id } });
+
+  if (!organiser || organiser.email !== email || !organiser.password) {
+    throw new Error('Invalid credentials');
+  }
+
+  const isValid = await bcrypt.compare(password, organiser.password);
+  if (!isValid) {
+    throw new Error('Invalid credentials');
+  }
+
+  await prisma.organiser.delete({ where: { id } });
+};

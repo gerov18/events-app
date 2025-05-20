@@ -3,13 +3,14 @@ import {
   getAllOrganisersHandler,
   getOrganiserByIdHandler,
   updateOrganiserHandler,
-  deleteOrganiserHandler,
   registerOrganiserHandler,
   loginOrganiserHandler,
   logoutHandler,
+  deleteOrganiserWithCredentialsHandler,
 } from '../controllers/organiserController';
 import {
   createOrganiserSchema,
+  deleteOrganiserSchema,
   organiserLoginSchema,
   organiserParamsSchema,
   updateOrganiserSchema,
@@ -39,8 +40,8 @@ router.put(
 );
 router.delete(
   '/:id/delete',
-  validate(organiserParamsSchema),
-  deleteOrganiserHandler
+  [validate(deleteOrganiserSchema), authenticate],
+  deleteOrganiserWithCredentialsHandler
 );
 
 export default router;

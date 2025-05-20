@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
   createNewUser,
-  deleteUserById,
+  deleteUserWithCredentials,
   getUserById,
   updateUserData,
 } from '../services/userService';
@@ -48,24 +48,24 @@ export const editUser = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
+export const deleteUserWithCredentialsHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { email, password } = req.body;
+  const userId = res.locals.user?.id;
+
+  if (!userId) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
   try {
-    const result = await deleteUserById(id, res.locals.user);
-
-    if (!result) {
-      res.status(404).json({ message: 'User not found' });
-    }
-
-    if (result === 'forbidden') {
-      res
-        .status(403)
-        .json({ message: "Forbidden: you can't delete this user" });
-    }
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error });
+    await deleteUserWithCredentials(userId, email, password);
+    res.clearCookie('token');
+    res.status(200).json({ message: 'User account deleted successfully' });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
   }
 };
 

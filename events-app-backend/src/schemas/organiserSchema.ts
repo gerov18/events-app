@@ -29,6 +29,21 @@ export const updateOrganiserSchema = z.object({
   body: createOrganiserSchema.shape.body.partial(),
 });
 
+export const deleteOrganiserSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: 'Email is required' })
+      .email('Invalid email format'),
+    password: z
+      .string({ required_error: 'Password is required' })
+      .min(6, 'Password must be at least 6 characters'),
+  }),
+});
+
+export type DeleteOrganiserInput = z.infer<
+  typeof deleteOrganiserSchema.shape.body
+>;
+
 export type CreateOrganiserInput = z.infer<
   typeof createOrganiserSchema
 >['body'];

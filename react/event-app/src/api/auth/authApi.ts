@@ -24,6 +24,7 @@ export const authApi = createApi({
     },
     credentials: 'include',
   }),
+  tagTypes: ['Users'],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -49,6 +50,14 @@ export const authApi = createApi({
     getMe: builder.query<User, void>({
       query: () => '/me',
     }),
+    deleteUser: builder.mutation<void, { email: string; password: string }>({
+      query: credentials => ({
+        url: `/users/delete`,
+        method: 'DELETE',
+        body: credentials,
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 });
 
@@ -57,4 +66,5 @@ export const {
   useGetMeQuery,
   useLogoutMutation,
   useRegisterMutation,
+  useDeleteUserMutation,
 } = authApi;

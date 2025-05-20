@@ -80,12 +80,16 @@ export const organisersApi = createApi({
         { type: 'Organisers', id },
       ],
     }),
-    deleteOrganiser: builder.mutation<void, number>({
-      query: id => ({
-        url: `/${id}/delete`,
+    deleteOrganiser: builder.mutation<
+      void,
+      { email: string; password: string }
+    >({
+      query: credentials => ({
+        url: `/delete`,
         method: 'DELETE',
+        body: credentials,
       }),
-      invalidatesTags: (_result, _error, id) => [{ type: 'Organisers', id }],
+      invalidatesTags: ['Organisers'],
     }),
   }),
 });

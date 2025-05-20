@@ -22,7 +22,7 @@ const organiserSlice = createSlice({
       state.organiser = action.payload.organiser;
       state.token = action.payload.token;
     },
-    logoutOrganiser: state => {
+    clearOrganiserState: state => {
       state.organiser = null;
       state.token = null;
     },
@@ -32,7 +32,10 @@ const organiserSlice = createSlice({
   },
 });
 
-export const { setOrganiserCredentials, logoutOrganiser, setOrganiserData } =
-  organiserSlice.actions;
+export const {
+  setOrganiserCredentials,
+  clearOrganiserState,
+  setOrganiserData,
+} = organiserSlice.actions;
 
 export default organiserSlice.reducer;

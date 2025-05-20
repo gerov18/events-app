@@ -16,10 +16,16 @@ export const organiserLoginSchema = z.object({
   password: z.string().min(6),
 });
 
+export const organiserDeleteSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
 export const organiserCreateSchema = organiserSchema.omit({
   id: true,
   createdAt: true,
 });
 export type OrganiserCreateInput = z.infer<typeof organiserCreateSchema>;
 export type OrganiserLoginInput = z.infer<typeof organiserLoginSchema>;
+export type OrganiserDeleteInput = z.infer<typeof organiserDeleteSchema>;
 export type Organiser = z.infer<typeof organiserSchema>;

@@ -3,10 +3,10 @@ import {
   getAllOrganisers,
   getOrganiserById,
   updateOrganiser,
-  deleteOrganiser,
   updateOrganiserData,
   registerOrganiser,
   loginOrganiser,
+  deleteOrganiserWithCredentials,
 } from '../services/organiserService';
 import { OrganiserParamsInput } from '../schemas/organiserSchema';
 
@@ -99,14 +99,23 @@ export const updateOrganiserHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteOrganiserHandler = async (
-  req: Request<OrganiserParamsInput>,
+export const deleteOrganiserWithCredentialsHandler = async (
+  req: Request,
   res: Response
 ) => {
+  const { email, password } = req.body;
+  const userId = res.locals.user?.id;
+
+  if (!userId) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
   try {
-    await deleteOrganiser(parseInt(req.params.id));
-    res.json({ message: 'Organiser deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting organiser', error });
+    await deleteOrganiserWithCredentials(userId, email, password);
+    res.clearCookie('token');
+    res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
   }
 };
