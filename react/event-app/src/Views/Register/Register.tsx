@@ -18,7 +18,7 @@ import { Link, useNavigate } from 'react-router';
 import { FormInput } from '../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
 
-export default function Login() {
+export const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
@@ -36,7 +36,7 @@ export default function Login() {
     if (!isGetMeLoading && user) {
       navigate('/');
     }
-  }, [user, isLoading]);
+  }, [user, isGetMeLoading]);
 
   const handleFormSubmit = async (data: RegisterInput) => {
     try {
@@ -90,4 +90,4 @@ export default function Login() {
       {error && <p className='text-red-500'>Login failed</p>}
     </form>
   );
-}
+};

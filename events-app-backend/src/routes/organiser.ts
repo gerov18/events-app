@@ -6,6 +6,7 @@ import {
   deleteOrganiserHandler,
   registerOrganiserHandler,
   loginOrganiserHandler,
+  logoutHandler,
 } from '../controllers/organiserController';
 import {
   createOrganiserSchema,
@@ -19,28 +20,25 @@ import { authenticate } from '../middlewares/authenticate';
 const router = Router();
 
 router.post(
-  '/organiserRegister',
+  '/register',
   validate(createOrganiserSchema),
   registerOrganiserHandler
 );
-router.post(
-  '/organiserLogin',
-  validate(organiserLoginSchema),
-  loginOrganiserHandler
-);
-router.get('/organisers', getAllOrganisersHandler);
+router.post('/login', validate(organiserLoginSchema), loginOrganiserHandler);
+router.get('/all', getAllOrganisersHandler);
+router.get('/logout', logoutHandler);
 router.get(
   '/organiser/:id',
   validate(organiserParamsSchema),
   getOrganiserByIdHandler
 );
 router.put(
-  'organiser/:id/editOrganiser',
+  '/:id/edit',
   [validate(updateOrganiserSchema), authenticate],
   updateOrganiserHandler
 );
 router.delete(
-  '/organiser/:id/delete',
+  '/:id/delete',
   validate(organiserParamsSchema),
   deleteOrganiserHandler
 );

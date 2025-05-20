@@ -6,18 +6,20 @@ export const meHandler = async (req: Request, res: Response) => {
   try {
     const { id, role } = res.locals.user;
 
-    if (role === 'USER' || role === 'ADMIN' || role === 'ORGANISER') {
-      const user = await getUserById(id);
-      if (user) {
-        res.status(200).json({ type: 'user', user });
+    if (role === 'ORGANISER') {
+      const organiser = await getOrganiserById(id);
+      if (organiser) {
+        res.status(200).json({ type: 'organiser', data: organiser });
         return;
       }
     }
 
-    const organiser = await getOrganiserById(id);
-    if (organiser) {
-      res.status(200).json({ type: 'organiser', organiser });
-      return;
+    if (role === 'USER' || role === 'ADMIN') {
+      const user = await getUserById(id);
+      if (user) {
+        res.status(200).json({ type: 'user', data: user });
+        return;
+      }
     }
 
     res.status(404).json({ message: 'Profile not found' });

@@ -7,6 +7,9 @@ export const eventsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
+    prepareHeaders: headers => {
+      return headers;
+    },
   }),
   tagTypes: ['Events'],
   endpoints: builder => ({

@@ -16,7 +16,7 @@ export type CreateOrganiserInput = {
   name: string;
   email: string;
   password: string;
-  description?: string;
-  phone?: string;
-  website?: string;
+  description?: string | null | undefined;
+  phone?: string | null | undefined;
+  website?: string | null | undefined;
 };

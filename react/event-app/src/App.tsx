@@ -9,13 +9,16 @@ import EventDetails from './Views/EventDetails/EventDetails';
 import Home from './Views/Home/Home';
 import Login from './Views/Login/Login';
 import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
-import Register from './Views/Register/Register';
+import { Register } from './Views/Register/Register';
+import { OrganiserRegister } from './Views/OrganiserRegister/OrganiserRegister';
+import { OrganiserLogin } from './Views/OrganiserLogin/OrganiserLogin';
 
 function App() {
   const dispatch = useDispatch();
   const { data: getMeData, isSuccess } = useGetMeQuery();
 
   useEffect(() => {
+    console.log('get', getMeData);
     if (isSuccess && getMeData.type === 'user') {
       dispatch(setUser(getMeData.data));
     }
@@ -47,6 +50,14 @@ function App() {
           <Route
             path='/oauth-success'
             element={<OauthSuccess />}
+          />
+          <Route
+            path='/organiser/register'
+            element={<OrganiserRegister />}
+          />
+          <Route
+            path='/organiser/login'
+            element={<OrganiserLogin />}
           />
         </Routes>
       </Layout>

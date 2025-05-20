@@ -8,19 +8,17 @@ import {
   registerOrganiser,
   loginOrganiser,
 } from '../services/organiserService';
-import {
-  CreateOrganiserInput,
-  OrganiserParamsInput,
-  UpdateOrganiserInput,
-} from '../schemas/organiserSchema';
+import { OrganiserParamsInput } from '../schemas/organiserSchema';
 
 export const registerOrganiserHandler = async (req: Request, res: Response) => {
   try {
     const { organiser, token } = await registerOrganiser(req.body);
     res.cookie('token', token, { httpOnly: true });
     res.status(201).json({ organiser });
+    return;
   } catch (err: any) {
     res.status(400).json({ message: err.message });
+    return;
   }
 };
 
@@ -29,23 +27,29 @@ export const loginOrganiserHandler = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const { organiser, token } = await loginOrganiser(email, password);
     res.cookie('token', token, { httpOnly: true });
-    res.status(200).json({ organiser });
+
+    res.status(200).json({ token, organiser });
+    return;
   } catch (err: any) {
     res.status(400).json({ message: err.message });
+    return;
   }
 };
 
 export const logoutHandler = async (_req: Request, res: Response) => {
   res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
+  return;
 };
 
 export const getAllOrganisersHandler = async (_req: Request, res: Response) => {
   try {
     const organisers = await getAllOrganisers();
     res.json(organisers);
+    return;
   } catch (error) {
     res.status(500).json({ message: 'Error fetching organisers', error });
+    return;
   }
 };
 
@@ -60,8 +64,10 @@ export const getOrganiserByIdHandler = async (
       return;
     }
     res.json(organiser);
+    return;
   } catch (error) {
     res.status(500).json({ message: 'Error fetching organiser', error });
+    return;
   }
 };
 

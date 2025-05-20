@@ -1,25 +1,67 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Organiser, CreateOrganiserInput } from '../../types/Organiser';
 
+export type LoginResponse = {
+  token: string;
+  organiser: Organiser;
+};
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+export type RegisterResponse = {
+  token: string;
+  organiser: Organiser;
+};
+
 export const organisersApi = createApi({
   reducerPath: 'organisersApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5008/api',
+    baseUrl: 'http://localhost:5008/organiser',
     credentials: 'include',
+    prepareHeaders: headers => {
+      return headers;
+    },
   }),
   tagTypes: ['Organisers'],
   endpoints: builder => ({
+    registerOrganiser: builder.mutation<RegisterResponse, CreateOrganiserInput>(
+      {
+        query: organiser => ({
+          url: '/register',
+          method: 'POST',
+          body: organiser,
+        }),
+      }
+    ),
+    loginOrganiser: builder.mutation<LoginResponse, LoginRequest>({
+      query: credentials => ({
+        url: '/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    logoutOrganiser: builder.mutation<void, void>({
+      query: () => ({
+        url: '/logout',
+        method: 'POST',
+      }),
+    }),
+    getMe: builder.query<{ type: 'organiser'; data: Organiser }, void>({
+      query: () => '/me',
+    }),
+
     getOrganisers: builder.query<Organiser[], void>({
-      query: () => '/organisers',
+      query: () => '/all',
       providesTags: ['Organisers'],
     }),
     getOrganiserById: builder.query<Organiser, number>({
-      query: id => `/organisers/${id}`,
+      query: id => `/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Organisers', id }],
     }),
     createOrganiser: builder.mutation<Organiser, CreateOrganiserInput>({
       query: organiser => ({
-        url: '/organisers',
+        url: '/',
         method: 'POST',
         body: organiser,
       }),
@@ -30,7 +72,7 @@ export const organisersApi = createApi({
       { id: number; data: CreateOrganiserInput }
     >({
       query: ({ id, data }) => ({
-        url: `/organisers/${id}`,
+        url: `/${id}/edit`,
         method: 'PUT',
         body: data,
       }),
@@ -40,7 +82,7 @@ export const organisersApi = createApi({
     }),
     deleteOrganiser: builder.mutation<void, number>({
       query: id => ({
-        url: `/organisers/${id}`,
+        url: `/${id}/delete`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, id) => [{ type: 'Organisers', id }],
@@ -54,4 +96,8 @@ export const {
   useCreateOrganiserMutation,
   useUpdateOrganiserMutation,
   useDeleteOrganiserMutation,
+  useRegisterOrganiserMutation,
+  useLoginOrganiserMutation,
+  useLogoutOrganiserMutation,
+  useGetMeQuery,
 } = organisersApi;

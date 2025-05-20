@@ -28,8 +28,10 @@ app.use(passport.initialize());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(errorHandler);
-
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.path}`);
+  next();
+});
 app.use('/events', eventRoutes);
 app.use('/users', userRoutes);
 app.use('/users/:userId/reservations', reservationRoutes);
@@ -38,7 +40,9 @@ app.use('/', authorizationRoutes);
 app.use('/', authorizationRoutes);
 app.use('/authentication', googleAuth);
 app.use('/categories', categoryRoutes);
-app.use('/', organiserRoutes);
+app.use('/organiser', organiserRoutes);
 app.use('/', meRoute);
+
+app.use(errorHandler);
 
 export default app;
