@@ -28,11 +28,7 @@ router.post(
 router.post('/login', validate(organiserLoginSchema), loginOrganiserHandler);
 router.get('/all', getAllOrganisersHandler);
 router.get('/logout', logoutHandler);
-router.get(
-  '/organiser/:id',
-  validate(organiserParamsSchema),
-  getOrganiserByIdHandler
-);
+router.get('/:id', validate(organiserParamsSchema), getOrganiserByIdHandler);
 router.put(
   '/me/edit',
   [validate(updateOrganiserSchema), authenticate],
