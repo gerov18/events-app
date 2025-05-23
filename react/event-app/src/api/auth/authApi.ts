@@ -51,11 +51,11 @@ export const authApi = createApi({
     getMe: builder.query<User, void>({
       query: () => '/me',
     }),
-    deleteUser: builder.mutation<void, { id: number; data: DeleteInput }>({
-      query: ({ id, data }) => ({
-        url: `/users/${id}/delete`,
+    deleteUser: builder.mutation<void, DeleteInput>({
+      query: credentials => ({
+        url: `/users/me/delete`,
         method: 'DELETE',
-        body: data,
+        body: credentials,
       }),
       invalidatesTags: ['Users'],
     }),

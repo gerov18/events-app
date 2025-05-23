@@ -30,7 +30,7 @@ export const UserDelete = () => {
   const onSubmit = async (data: DeleteInput) => {
     try {
       if (user) {
-        await deleteUser({ id: user.id, data }).unwrap();
+        await deleteUser(data).unwrap();
         clearUserState();
         navigate('/');
       }

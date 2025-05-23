@@ -34,12 +34,12 @@ router.get(
   getOrganiserByIdHandler
 );
 router.put(
-  '/:id/edit',
+  '/me/edit',
   [validate(updateOrganiserSchema), authenticate],
   updateOrganiserHandler
 );
 router.delete(
-  '/:id/delete',
+  '/me/delete',
   [validate(deleteOrganiserSchema), authenticate],
   deleteOrganiserWithCredentialsHandler
 );

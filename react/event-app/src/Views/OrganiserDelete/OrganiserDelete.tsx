@@ -25,6 +25,9 @@ export const OrganiserDelete = () => {
     if (!isGetMeLoading && !organiser) {
       navigate('/organiser/login');
     }
+    if (!isGetMeLoading && organiser && organiser.type === 'user') {
+      navigate('/organiser/');
+    }
   }, [organiser, isGetMeLoading, navigate]);
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export const OrganiserDelete = () => {
   const onSubmit = async (data: OrganiserDeleteInput) => {
     try {
       if (organiser) {
-        await deleteOrganiser({ id: organiser.data.id, data }).unwrap();
+        await deleteOrganiser(data).unwrap();
       }
     } catch (err) {
       console.error('Organiser delete failed:', err);

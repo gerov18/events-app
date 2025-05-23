@@ -27,7 +27,7 @@ router.get('/:id', authenticate, loadUser);
 router.put('/:id/editUser', authenticate, editUser);
 
 router.delete(
-  '/:id/delete',
+  '/me/delete',
   [authenticate, validate(deleteUserSchema)],
   deleteUserWithCredentialsHandler
 );

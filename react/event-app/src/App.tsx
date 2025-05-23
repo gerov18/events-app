@@ -62,11 +62,11 @@ function App() {
             element={<OrganiserLogin />}
           />
           <Route
-            path='/organiser/:id/delete'
+            path='/organiser/me/delete'
             element={<OrganiserDelete />}
           />
           <Route
-            path='/user/:id/delete'
+            path='/user/me/delete'
             element={<UserDelete />}
           />
         </Routes>
