@@ -32,7 +32,7 @@ export const eventsApi = createApi({
     updateEvent: builder.mutation<Event, { id: number; data: EventInput }>({
       query: ({ id, data }) => ({
         url: `/events/edit/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: data,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Events', id }],
@@ -40,7 +40,7 @@ export const eventsApi = createApi({
     deleteEvent: builder.mutation<void, number>({
       query: id => ({
         url: `/events/delete/${id}`,
-        method: 'DELETE',
+        method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [{ type: 'Events', id }],
     }),

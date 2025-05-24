@@ -28,18 +28,14 @@ router.post(
 router.post('/login', validate(organiserLoginSchema), loginOrganiserHandler);
 router.get('/all', getAllOrganisersHandler);
 router.get('/logout', logoutHandler);
-router.get(
-  '/organiser/:id',
-  validate(organiserParamsSchema),
-  getOrganiserByIdHandler
-);
-router.put(
-  '/:id/edit',
+router.get('/:id', validate(organiserParamsSchema), getOrganiserByIdHandler);
+router.patch(
+  '/me/edit',
   [validate(updateOrganiserSchema), authenticate],
   updateOrganiserHandler
 );
-router.delete(
-  '/:id/delete',
+router.post(
+  '/me/delete',
   [validate(deleteOrganiserSchema), authenticate],
   deleteOrganiserWithCredentialsHandler
 );

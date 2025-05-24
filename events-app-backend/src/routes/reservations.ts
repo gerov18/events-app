@@ -34,13 +34,13 @@ router.post(
   createReservationHandler
 );
 
-router.put(
+router.patch(
   '/:reservationId',
   [authenticate, validate(updateReservationSchema)],
   editReservationHandler
 );
 
-router.delete(
+router.post(
   '/:reservationId',
   [authenticate, validate(reservationParamsSchema)],
   deleteReservationHandler

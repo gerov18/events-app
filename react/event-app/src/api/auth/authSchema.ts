@@ -14,10 +14,26 @@ export const registerSchema = z.object({
 });
 
 export const deleteSchema = z.object({
-  email: z.string().email({ message: 'Invalid email ' }),
-  password: z.string().min(6, { message: 'Password must be at least 6' }),
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Invalid email format'),
+  password: z
+    .string({ required_error: 'Password is required' })
+    .min(6, 'Password must be at least 6 characters'),
 });
 
+export const updateUserSchema = z.object({
+  email: z.string().email('Невалиден email').optional(),
+  username: z.string().min(1, 'Username не може да е празно').optional(),
+  firstName: z.string().min(1, 'First name не може да е празно').optional(),
+  lastName: z.string().min(1, 'Last name не може да е празно').optional(),
+  password: z
+    .string()
+    .min(6, 'Password трябва да е минимум 6 символа')
+    .optional(),
+});
+
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type DeleteInput = z.infer<typeof deleteSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;

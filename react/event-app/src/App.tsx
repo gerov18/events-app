@@ -12,6 +12,10 @@ import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
 import { Register } from './Views/Register/Register';
 import { OrganiserRegister } from './Views/OrganiserRegister/OrganiserRegister';
 import { OrganiserLogin } from './Views/OrganiserLogin/OrganiserLogin';
+import { UserDelete } from './Views/UserDelete/UserDelete';
+import { OrganiserDelete } from './Views/OrganiserDelete/OrganiserDelete';
+import { OrganiserEdit } from './Views/OrganiserEdit/OrganiserEdit';
+import { UserEdit } from './Views/UserEdit/UserEdit';
 
 function App() {
   const dispatch = useDispatch();
@@ -58,6 +62,22 @@ function App() {
           <Route
             path='/organiser/login'
             element={<OrganiserLogin />}
+          />
+          <Route
+            path='/organiser/me/delete'
+            element={<OrganiserDelete />}
+          />
+          <Route
+            path='/user/me/delete'
+            element={<UserDelete />}
+          />
+          <Route
+            path='/organiser/me/edit'
+            element={<OrganiserEdit />}
+          />
+          <Route
+            path='/user/me/edit'
+            element={<UserEdit />}
           />
         </Routes>
       </Layout>

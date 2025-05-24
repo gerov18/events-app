@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Organiser, CreateOrganiserInput } from '../../types/Organiser';
+import { OrganiserDeleteInput, UpdateOrganiserInput } from './organiserSchema';
 
 export type LoginResponse = {
   token: string;
@@ -47,9 +48,6 @@ export const organisersApi = createApi({
         method: 'POST',
       }),
     }),
-    getMe: builder.query<{ type: 'organiser'; data: Organiser }, void>({
-      query: () => '/me',
-    }),
 
     getOrganisers: builder.query<Organiser[], void>({
       query: () => '/all',
@@ -67,26 +65,18 @@ export const organisersApi = createApi({
       }),
       invalidatesTags: ['Organisers'],
     }),
-    updateOrganiser: builder.mutation<
-      Organiser,
-      { id: number; data: CreateOrganiserInput }
-    >({
-      query: ({ id, data }) => ({
-        url: `/${id}/edit`,
-        method: 'PUT',
+    updateOrganiser: builder.mutation<Organiser, UpdateOrganiserInput>({
+      query: data => ({
+        url: '/me/edit',
+        method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'Organisers', id },
-      ],
+      invalidatesTags: ['Organisers'],
     }),
-    deleteOrganiser: builder.mutation<
-      void,
-      { email: string; password: string }
-    >({
+    deleteOrganiser: builder.mutation<void, OrganiserDeleteInput>({
       query: credentials => ({
-        url: `/delete`,
-        method: 'DELETE',
+        url: `/me/delete`,
+        method: 'POST',
         body: credentials,
       }),
       invalidatesTags: ['Organisers'],
@@ -103,5 +93,4 @@ export const {
   useRegisterOrganiserMutation,
   useLoginOrganiserMutation,
   useLogoutOrganiserMutation,
-  useGetMeQuery,
 } = organisersApi;

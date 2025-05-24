@@ -2,7 +2,6 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import {
   LoginRequest,
-  useGetMeQuery,
   useLoginMutation,
   useRegisterMutation,
 } from '../../api/auth/authApi';
@@ -17,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { FormInput } from '../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
+import { useGetMeQuery } from '../../api/me/meApi';
 
 export const Register = () => {
   const dispatch = useDispatch();

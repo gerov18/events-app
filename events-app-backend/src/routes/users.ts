@@ -3,11 +3,16 @@ import { Router, Request, Response } from 'express';
 import { CreateUserInput } from '../models/User';
 import {
   createUser,
-  deleteUser,
-  editUser,
+  deleteUserWithCredentialsHandler,
   loadUser,
+  updateUserHandler,
 } from '../controllers/userController';
 import { authenticate } from '../middlewares/authenticate';
+import { validate } from '../middlewares/validate';
+import {
+  deleteUserSchema,
+  updateUserSchema,
+} from '../schemas/authenticationSchema';
 
 const router = Router();
 
@@ -22,8 +27,17 @@ router.post('/', createUser);
 
 router.get('/:id', authenticate, loadUser);
 
-router.put('/:id/editUser', authenticate, editUser);
+router.patch(
+  '/me/edit',
+  authenticate,
+  validate(updateUserSchema),
+  updateUserHandler
+);
 
-router.delete('/:id', authenticate, deleteUser);
+router.post(
+  '/me/delete',
+  [authenticate, validate(deleteUserSchema)],
+  deleteUserWithCredentialsHandler
+);
 
 export default router;

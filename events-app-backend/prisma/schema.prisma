@@ -55,7 +55,7 @@ model Event {
   capacity    Int
   createdAt   DateTime 
   createdBy   Int
-  creator     Organiser       @relation(fields: [createdBy], references: [id])
+  creator     Organiser       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   reservations Reservation[]
   availableTickets Int
   price Float
@@ -86,8 +86,8 @@ model Reservation {
   userId    Int
   eventId   Int
   createdAt DateTime
-  user      User     @relation(fields: [userId], references: [id])
-  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   status ReservationStatus @default(CONFIRMED)
 }
 
@@ -95,7 +95,7 @@ model RoleRequest {
   id     Int               @id @default(autoincrement())
   role   Role
   userId Int
-  user   User              @relation(fields: [userId], references: [id])
+  user   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   status RoleRequestStatus @default(PENDING)
 }
 

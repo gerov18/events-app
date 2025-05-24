@@ -17,9 +17,13 @@ router.get('/:id', getCategoryByIdHandler);
 
 router.post('/', [authenticate, authorize(['ADMIN'])], createCategoryHandler);
 
-router.put('/:id', [authenticate, authorize(['ADMIN'])], updateCategoryHandler);
+router.patch(
+  '/:id',
+  [authenticate, authorize(['ADMIN'])],
+  updateCategoryHandler
+);
 
-router.delete(
+router.post(
   '/:id',
   [authenticate, authorize(['ADMIN'])],
   deleteCategoryHandler

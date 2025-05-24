@@ -24,12 +24,12 @@ router.post(
   [authenticate, authorizeOrganiserOnly, validate(createEventSchema)],
   createEventHandler
 );
-router.put(
+router.patch(
   '/edit/:id',
   [authenticate, authorizeOrganiserOnly, validate(updateEventSchema)],
   updateEventHandler
 );
-router.delete(
+router.post(
   '/delete/:id',
   [authenticate, authorizeOrganiserOnly, validate(eventParamsSchema)],
   deleteEventHandler

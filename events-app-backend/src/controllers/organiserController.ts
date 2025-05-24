@@ -8,7 +8,10 @@ import {
   loginOrganiser,
   deleteOrganiserWithCredentials,
 } from '../services/organiserService';
-import { OrganiserParamsInput } from '../schemas/organiserSchema';
+import {
+  OrganiserParamsInput,
+  UpdateOrganiserInput,
+} from '../schemas/organiserSchema';
 
 export const registerOrganiserHandler = async (req: Request, res: Response) => {
   try {
@@ -71,31 +74,25 @@ export const getOrganiserByIdHandler = async (
   }
 };
 
-export const updateOrganiserHandler = async (req: Request, res: Response) => {
-  const organiserId = Number(req.params.id);
-  const loggedInId = Number(res.locals.user?.id);
-
+export const updateOrganiserHandler = async (
+  req: Request<{}, {}, UpdateOrganiserInput>,
+  res: Response
+) => {
+  const organiserId = res.locals.user?.id;
+  if (!organiserId) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+  const data = req.body;
   try {
-    const result = await updateOrganiserData(organiserId, loggedInId, req.body);
-
-    if (result === 'not logged') {
-      res.status(401).json({ message: 'You must be logged in' });
-      return;
-    }
-
-    if (result === 'unauthorized') {
-      res.status(403).json({ message: 'Access denied' });
-      return;
-    }
-
-    if (!result) {
+    const updated = await updateOrganiserData(organiserId, organiserId, data);
+    if (!updated) {
       res.status(404).json({ message: 'Organiser not found' });
       return;
     }
-
-    res.json(result);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    res.json(updated);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
   }
 };
 
