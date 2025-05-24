@@ -29,6 +29,23 @@ export const organiserCreateSchema = organiserSchema.omit({
   id: true,
   createdAt: true,
 });
+
+export const updateOrganiserSchema = z.object({
+  name: z.string().min(1, 'Name е задължително').optional(),
+  email: z.string().email('Невалиден email').optional(),
+  description: z.string().optional(),
+  phone: z
+    .string()
+    .regex(/^\+?\d{7,15}$/, 'Невалиден телефонен номер')
+    .optional(),
+  website: z.string().url('Невалиден URL').optional(),
+  password: z
+    .string()
+    .min(6, 'Password трябва да е минимум 6 символа')
+    .optional(),
+});
+
+export type UpdateOrganiserInput = z.infer<typeof updateOrganiserSchema>;
 export type OrganiserCreateInput = z.infer<typeof organiserCreateSchema>;
 export type OrganiserLoginInput = z.infer<typeof organiserLoginSchema>;
 export type OrganiserDeleteInput = z.infer<typeof deleteOrganiserSchema>;

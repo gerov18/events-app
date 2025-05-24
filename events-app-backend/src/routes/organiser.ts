@@ -29,12 +29,12 @@ router.post('/login', validate(organiserLoginSchema), loginOrganiserHandler);
 router.get('/all', getAllOrganisersHandler);
 router.get('/logout', logoutHandler);
 router.get('/:id', validate(organiserParamsSchema), getOrganiserByIdHandler);
-router.put(
+router.patch(
   '/me/edit',
   [validate(updateOrganiserSchema), authenticate],
   updateOrganiserHandler
 );
-router.delete(
+router.post(
   '/me/delete',
   [validate(deleteOrganiserSchema), authenticate],
   deleteOrganiserWithCredentialsHandler

@@ -26,7 +26,7 @@ export const OrganiserDelete = () => {
       navigate('/organiser/login');
     }
     if (!isGetMeLoading && organiser && organiser.type === 'user') {
-      navigate('/organiser/');
+      navigate('/');
     }
   }, [organiser, isGetMeLoading, navigate]);
 

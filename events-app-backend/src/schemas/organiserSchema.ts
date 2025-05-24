@@ -25,7 +25,7 @@ export const organiserLoginSchema = z.object({
 });
 
 export const updateOrganiserSchema = z.object({
-  params: organiserParamsSchema.shape.params,
+  // params: organiserParamsSchema.shape.params,
   body: createOrganiserSchema.shape.body.partial(),
 });
 
@@ -49,4 +49,6 @@ export type CreateOrganiserInput = z.infer<
 export type OrganiserParamsInput = z.infer<
   typeof organiserParamsSchema
 >['params'];
-export type UpdateOrganiserInput = z.infer<typeof updateOrganiserSchema>;
+export type UpdateOrganiserInput = z.infer<
+  typeof updateOrganiserSchema
+>['body'];

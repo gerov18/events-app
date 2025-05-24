@@ -13,14 +13,14 @@ export const adminApi = createApi({
     deleteUserByAdmin: builder.mutation<void, number>({
       query: id => ({
         url: `/users/${id}`,
-        method: 'DELETE',
+        method: 'POST',
       }),
       invalidatesTags: ['AdminUsers'],
     }),
     deleteOrganiserByAdmin: builder.mutation<void, number>({
       query: id => ({
         url: `/organiser/${id}`,
-        method: 'DELETE',
+        method: 'POST',
       }),
       invalidatesTags: ['AdminOrganisers'],
     }),

@@ -4,12 +4,15 @@ import { CreateUserInput } from '../models/User';
 import {
   createUser,
   deleteUserWithCredentialsHandler,
-  editUser,
   loadUser,
+  updateUserHandler,
 } from '../controllers/userController';
 import { authenticate } from '../middlewares/authenticate';
 import { validate } from '../middlewares/validate';
-import { deleteUserSchema } from '../schemas/authenticationSchema';
+import {
+  deleteUserSchema,
+  updateUserSchema,
+} from '../schemas/authenticationSchema';
 
 const router = Router();
 
@@ -24,9 +27,14 @@ router.post('/', createUser);
 
 router.get('/:id', authenticate, loadUser);
 
-router.put('/:id/editUser', authenticate, editUser);
+router.patch(
+  '/me/edit',
+  authenticate,
+  validate(updateUserSchema),
+  updateUserHandler
+);
 
-router.delete(
+router.post(
   '/me/delete',
   [authenticate, validate(deleteUserSchema)],
   deleteUserWithCredentialsHandler

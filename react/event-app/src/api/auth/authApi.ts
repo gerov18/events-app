@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { CreateUserInput, User } from '../../types/User';
-import { DeleteInput } from './authSchema';
+import { DeleteInput, UpdateUserInput } from './authSchema';
 
 export type LoginRequest = {
   email: string;
@@ -48,14 +48,19 @@ export const authApi = createApi({
         credentials: 'include',
       }),
     }),
-    getMe: builder.query<User, void>({
-      query: () => '/me',
-    }),
     deleteUser: builder.mutation<void, DeleteInput>({
       query: credentials => ({
         url: `/users/me/delete`,
-        method: 'DELETE',
+        method: 'POST',
         body: credentials,
+      }),
+      invalidatesTags: ['Users'],
+    }),
+    updateUser: builder.mutation<User, UpdateUserInput>({
+      query: data => ({
+        url: '/users/me/edit',
+        method: 'PATCH',
+        body: data,
       }),
       invalidatesTags: ['Users'],
     }),
@@ -64,8 +69,8 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
-  useGetMeQuery,
   useLogoutMutation,
   useRegisterMutation,
   useDeleteUserMutation,
+  useUpdateUserMutation,
 } = authApi;

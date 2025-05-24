@@ -8,14 +8,14 @@ import {
 
 const router = Router();
 
-router.delete(
+router.post(
   '/users/:id',
   authenticate,
   authorize(['ADMIN']),
   adminDeleteUserHandler
 );
 
-router.delete(
+router.post(
   '/organisers/:id',
   authenticate,
   authorize(['ADMIN']),
