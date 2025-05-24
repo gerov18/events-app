@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDispatch } from 'react-redux';
-import { useUpdateOrganiserMutation } from '../../api/organiser/organiserApi';
+import { useUpdateOrganiserMutation } from '../../../api/organiser/organiserApi';
 import {
   UpdateOrganiserInput,
   updateOrganiserSchema,
-} from '../../api/organiser/organiserSchema';
-import { setOrganiserData } from '../../api/organiser/organiserSlice';
-import { FormInput } from '../../Components/FormInput/FormInput';
-import { useGetMeQuery } from '../../api/me/meApi';
+} from '../../../api/organiser/organiserSchema';
+import { setOrganiserData } from '../../../api/organiser/organiserSlice';
+import { FormInput } from '../../../Components/FormInput/FormInput';
+import { useGetMeQuery } from '../../../api/me/meApi';
 import { useNavigate } from 'react-router';
 
 export const OrganiserEdit = () => {
@@ -34,10 +34,7 @@ export const OrganiserEdit = () => {
             organiser.data.website === null
               ? undefined
               : organiser.data.website,
-          password:
-            organiser.data.password === null
-              ? undefined
-              : organiser.data.password,
+          password: '',
         }
       : {};
 

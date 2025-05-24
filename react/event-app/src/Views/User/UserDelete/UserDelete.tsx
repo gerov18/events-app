@@ -1,12 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDeleteUserMutation } from '../../api/auth/authApi';
-import { deleteSchema, DeleteInput } from '../../api/auth/authSchema';
+import { useDeleteUserMutation } from '../../../api/auth/authApi';
+import { deleteSchema, DeleteInput } from '../../../api/auth/authSchema';
 import { useNavigate } from 'react-router-dom';
-import { clearUserState } from '../../api/auth/authSlice';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { clearUserState } from '../../../api/auth/authSlice';
+import { FormInput } from '../../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
-import { useGetMeQuery } from '../../api/me/meApi';
+import { useGetMeQuery } from '../../../api/me/meApi';
 
 export const UserDelete = () => {
   const [deleteUser, { isLoading, error }] = useDeleteUserMutation();

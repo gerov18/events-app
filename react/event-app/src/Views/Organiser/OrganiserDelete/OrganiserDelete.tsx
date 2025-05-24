@@ -4,14 +4,14 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteOrganiserMutation } from '../../api/organiser/organiserApi';
-import { FormInput } from '../../Components/FormInput/FormInput';
-import { clearOrganiserState } from '../../api/organiser/organiserSlice';
+import { useDeleteOrganiserMutation } from '../../../api/organiser/organiserApi';
+import { FormInput } from '../../../Components/FormInput/FormInput';
+import { clearOrganiserState } from '../../../api/organiser/organiserSlice';
 import {
   OrganiserDeleteInput,
   deleteOrganiserSchema,
-} from '../../api/organiser/organiserSchema';
-import { useGetMeQuery } from '../../api/me/meApi';
+} from '../../../api/organiser/organiserSchema';
+import { useGetMeQuery } from '../../../api/me/meApi';
 
 export const OrganiserDelete = () => {
   const dispatch = useDispatch();

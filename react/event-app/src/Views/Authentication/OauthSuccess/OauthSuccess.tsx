@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setCredentials } from '../../api/auth/authSlice';
+import { setCredentials } from '../../../api/auth/authSlice';
 import Cookies from 'js-cookie';
 
 export const OauthSuccess = () => {

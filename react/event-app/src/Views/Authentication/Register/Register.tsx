@@ -4,19 +4,19 @@ import {
   LoginRequest,
   useLoginMutation,
   useRegisterMutation,
-} from '../../api/auth/authApi';
-import { setCredentials } from '../../api/auth/authSlice';
+} from '../../../api/auth/authApi';
+import { setCredentials } from '../../../api/auth/authSlice';
 import {
   LoginInput,
   loginSchema,
   RegisterInput,
   registerSchema,
-} from '../../api/auth/authSchema';
+} from '../../../api/auth/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { FormInput } from '../../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
-import { useGetMeQuery } from '../../api/me/meApi';
+import { useGetMeQuery } from '../../../api/me/meApi';
 
 export const Register = () => {
   const dispatch = useDispatch();

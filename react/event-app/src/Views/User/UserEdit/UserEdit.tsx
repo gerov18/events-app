@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { FormInput } from '../../../Components/FormInput/FormInput';
 import { useDispatch } from 'react-redux';
-import { useGetMeQuery } from '../../api/me/meApi';
-import { useUpdateUserMutation } from '../../api/auth/authApi';
-import { UpdateUserInput, updateUserSchema } from '../../api/auth/authSchema';
-import { setCredentials } from '../../api/auth/authSlice';
+import { useGetMeQuery } from '../../../api/me/meApi';
+import { useUpdateUserMutation } from '../../../api/auth/authApi';
+import {
+  UpdateUserInput,
+  updateUserSchema,
+} from '../../../api/auth/authSchema';
+import { setCredentials } from '../../../api/auth/authSlice';
 import { useNavigate } from 'react-router';
 
 export const UserEdit = () => {
@@ -23,11 +26,12 @@ export const UserEdit = () => {
     formState: { errors },
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
-    defaultValues: user && user.type === 'user' ? user.data : {},
+    defaultValues:
+      user && user.type === 'user' ? { ...user.data, password: '' } : {},
   });
 
   useEffect(() => {
-    if (user && user.type === 'user') reset(user.data);
+    if (user && user.type === 'user') reset({ ...user.data, password: '' });
   }, [user, reset]);
 
   useEffect(() => {

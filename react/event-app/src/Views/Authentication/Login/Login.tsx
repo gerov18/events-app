@@ -1,16 +1,16 @@
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { LoginRequest, useLoginMutation } from '../../api/auth/authApi';
-import { setCredentials } from '../../api/auth/authSlice';
-import { LoginInput, loginSchema } from '../../api/auth/authSchema';
+import { LoginRequest, useLoginMutation } from '../../../api/auth/authApi';
+import { setCredentials } from '../../../api/auth/authSlice';
+import { LoginInput, loginSchema } from '../../../api/auth/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { useEffect } from 'react';
-import { FormInput } from '../../Components/FormInput/FormInput';
-import { GoogleLoginButton } from '../../Components/GoogleLoginButton/GoogleLoginButton';
-import { useGetMeQuery } from '../../api/me/meApi';
+import { FormInput } from '../../../Components/FormInput/FormInput';
+import { GoogleLoginButton } from '../../../Components/GoogleLoginButton/GoogleLoginButton';
+import { useGetMeQuery } from '../../../api/me/meApi';
 
-export default function Login() {
+export const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login, { isLoading, error }] = useLoginMutation();
@@ -69,4 +69,4 @@ export default function Login() {
       </div>
     </form>
   );
-}
+};

@@ -1,4 +1,3 @@
-import { InputHTMLAttributes } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 type FormInputProps = {

@@ -2,18 +2,18 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { FormInput } from '../../../Components/FormInput/FormInput';
 import {
   useLoginOrganiserMutation,
   useRegisterOrganiserMutation,
-} from '../../api/organiser/organiserApi';
-import { setOrganiserCredentials } from '../../api/organiser/organiserSlice';
+} from '../../../api/organiser/organiserApi';
+import { setOrganiserCredentials } from '../../../api/organiser/organiserSlice';
 import {
   OrganiserCreateInput,
   organiserCreateSchema,
-} from '../../api/organiser/organiserSchema';
+} from '../../../api/organiser/organiserSchema';
 import { useEffect } from 'react';
-import { useGetMeQuery } from '../../api/me/meApi';
+import { useGetMeQuery } from '../../../api/me/meApi';
 
 export const OrganiserRegister = () => {
   const dispatch = useDispatch();

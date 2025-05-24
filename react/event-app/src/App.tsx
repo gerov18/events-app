@@ -5,17 +5,20 @@ import { setUser } from './api/auth/authSlice';
 import { useGetMeQuery } from './api/me/meApi';
 import { setOrganiserData } from './api/organiser/organiserSlice';
 import Layout from './Components/Layout/Layout';
-import EventDetails from './Views/EventDetails/EventDetails';
+import EventDetails from './Views/Events/EventDetails/EventDetails';
 import Home from './Views/Home/Home';
-import Login from './Views/Login/Login';
-import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
-import { Register } from './Views/Register/Register';
-import { OrganiserRegister } from './Views/OrganiserRegister/OrganiserRegister';
-import { OrganiserLogin } from './Views/OrganiserLogin/OrganiserLogin';
-import { UserDelete } from './Views/UserDelete/UserDelete';
-import { OrganiserDelete } from './Views/OrganiserDelete/OrganiserDelete';
-import { OrganiserEdit } from './Views/OrganiserEdit/OrganiserEdit';
-import { UserEdit } from './Views/UserEdit/UserEdit';
+import { Register } from './Views/Authentication/Register/Register';
+import { UserDelete } from './Views/User/UserDelete/UserDelete';
+import { OrganiserDelete } from './Views/Organiser/OrganiserDelete/OrganiserDelete';
+import { OrganiserEdit } from './Views/Organiser/OrganiserEdit/OrganiserEdit';
+import { UserEdit } from './Views/User/UserEdit/UserEdit';
+import { OauthSuccess } from './Views/Authentication/OauthSuccess/OauthSuccess';
+import { Login } from './Views/Authentication/Login/Login';
+import { OrganiserLogin } from './Views/Authentication/OrganiserLogin/OrganiserLogin';
+import { OrganiserRegister } from './Views/Authentication/OrganiserRegister/OrganiserRegister';
+import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute';
+import { CreateEvent } from './Views/Events/CreateEvent/CreateEvent';
+import { EditEvent } from './Views/Events/EditEvent/EditEvent';
 
 function App() {
   const dispatch = useDispatch();
@@ -78,6 +81,22 @@ function App() {
           <Route
             path='/user/me/edit'
             element={<UserEdit />}
+          />
+          <Route
+            path='/events/new'
+            element={
+              <ProtectedRoute allowedRoles={['ORGANISER', 'ADMIN']}>
+                <CreateEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/events/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['ORGANISER', 'ADMIN']}>
+                <EditEvent />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Layout>
