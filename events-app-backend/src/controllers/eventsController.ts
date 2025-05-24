@@ -89,8 +89,10 @@ export const updateEventHandler = async (
       return;
     }
 
-    if (event.createdBy !== loggedUser.id) {
-      res.status(403).json({ message: 'Forbidden: not your event' });
+    if (event.createdBy !== loggedUser.id && loggedUser.role !== 'ADMIN') {
+      res
+        .status(403)
+        .json({ message: "Forbidden: you can't access this page" });
       return;
     }
 
