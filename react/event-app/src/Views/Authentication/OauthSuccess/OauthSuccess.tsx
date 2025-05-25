@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setCredentials } from '../../../api/auth/authSlice';
+import { setToken } from '../../../api/auth/authSlice';
 import Cookies from 'js-cookie';
 
 export const OauthSuccess = () => {
@@ -13,7 +13,7 @@ export const OauthSuccess = () => {
     const token = searchParams.get('token');
     if (token) {
       Cookies.set('token', token);
-      dispatch(setCredentials({ token }));
+      dispatch(setToken(token));
 
       navigate('/');
     } else {

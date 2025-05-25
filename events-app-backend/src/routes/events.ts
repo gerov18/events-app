@@ -18,14 +18,14 @@ import {
 const router = Router();
 
 router.get('/', getAllEventsHandler);
-router.get('/event/:id', validate(eventParamsSchema), getEventByIdHandler);
+router.get('/:id', validate(eventParamsSchema), getEventByIdHandler);
 router.post(
   '/create',
   [authenticate, authorizeOrganiserOnly, validate(createEventSchema)],
   createEventHandler
 );
 router.patch(
-  '/edit/:id',
+  '/:id',
   [authenticate, authorizeOrganiserOnly, validate(updateEventSchema)],
   updateEventHandler
 );

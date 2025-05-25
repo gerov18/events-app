@@ -83,6 +83,8 @@ export const updateEventHandler = async (
 
   try {
     const { id } = req.params;
+    const { title, description, date, location, capacity, price, categoryId } =
+      req.body;
     const event = await getEventById(parseInt(id));
     if (!event) {
       res.status(404).json({ message: 'Event not found' });
@@ -96,7 +98,15 @@ export const updateEventHandler = async (
       return;
     }
 
-    const updatedEvent = await updateEvent(parseInt(id), req.body);
+    const updatedEvent = await updateEvent(parseInt(id), {
+      title,
+      description,
+      date,
+      location,
+      capacity,
+      price,
+      categoryId,
+    });
     res.json(updatedEvent);
   } catch (error) {
     res.status(500).json({ message: 'Error updating event', error });

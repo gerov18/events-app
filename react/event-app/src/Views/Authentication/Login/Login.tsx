@@ -27,7 +27,14 @@ export const Login = () => {
   const onSubmit = async (data: LoginRequest) => {
     try {
       const response = await login(data).unwrap();
-      dispatch(setCredentials({ user: response.user, token: response.token }));
+      dispatch(
+        setCredentials({
+          userType: 'user',
+          user: response.user,
+          token: response.token,
+          initialized: true,
+        })
+      );
       navigate('/');
     } catch (err) {
       console.error('Login failed:', err);

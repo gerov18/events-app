@@ -24,7 +24,8 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(meApi.middleware)
       .concat(organisersApi.middleware)
-      .concat(adminApi.middleware),
+      .concat(adminApi.middleware)
+      .concat(eventsApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

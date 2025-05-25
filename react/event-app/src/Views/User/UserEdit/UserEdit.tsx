@@ -36,7 +36,14 @@ export const UserEdit = () => {
 
   useEffect(() => {
     if (isSuccess && user && user.type === 'user') {
-      dispatch(setCredentials({ user: user.data, token: '' }));
+      dispatch(
+        setCredentials({
+          userType: 'user',
+          user: user.data,
+          token: '',
+          initialized: true,
+        })
+      );
       alert('Profile updated');
     }
   }, [isSuccess, user]);

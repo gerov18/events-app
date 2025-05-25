@@ -36,12 +36,6 @@ export const CreateEvent: React.FC = () => {
     createEvent(data);
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      navigate('/events');
-    }
-  }, [isSuccess, navigate]);
-
   if (isCatLoading) return <p>Loading categories…</p>;
 
   return (

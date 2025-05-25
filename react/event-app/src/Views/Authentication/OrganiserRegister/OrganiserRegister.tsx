@@ -14,6 +14,7 @@ import {
 } from '../../../api/organiser/organiserSchema';
 import { useEffect } from 'react';
 import { useGetMeQuery } from '../../../api/me/meApi';
+import { setCredentials } from '../../../api/auth/authSlice';
 
 export const OrganiserRegister = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,14 @@ export const OrganiserRegister = () => {
         email: data.email,
         password: data.password,
       }).unwrap();
+      dispatch(
+        setCredentials({
+          userType: 'organiser',
+          user: response.organiser,
+          token: response.token,
+          initialized: true,
+        })
+      );
       dispatch(setOrganiserCredentials(response));
       navigate('/');
     } catch (err) {

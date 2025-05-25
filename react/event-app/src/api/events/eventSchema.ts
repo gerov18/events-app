@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { z } from 'zod';
 
 export const eventSchema = z.object({
@@ -10,7 +11,8 @@ export const eventSchema = z.object({
     .positive(),
   date: z
     .string()
-    .refine(val => !isNaN(Date.parse(val)), 'Invalid date format'),
+    .refine(val => !isNaN(Date.parse(val)), 'Invalid date format')
+    .transform(str => moment(str, 'YYYY-MM-DD').toISOString()),
   capacity: z
     .number({ invalid_type_error: 'Capacity is required' })
     .int()

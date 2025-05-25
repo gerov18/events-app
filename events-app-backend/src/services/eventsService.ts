@@ -1,4 +1,5 @@
 import { Event, PrismaClient } from '@prisma/client';
+import { UpdateEventInput } from '../schemas/eventSchema';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,10 @@ export const createEvent = async (data: {
   });
 };
 
-export const updateEvent = async (id: number, data: Partial<Event>) => {
+export const updateEvent = async (
+  id: number,
+  data: Partial<UpdateEventInput['body']>
+) => {
   return await prisma.event.update({
     where: { id },
     data,

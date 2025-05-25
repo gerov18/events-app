@@ -26,7 +26,7 @@ export const eventsApi = createApi({
     }),
     createEvent: builder.mutation<Event, CreateEventInput>({
       query: data => ({
-        url: '/events',
+        url: '/events/create',
         method: 'POST',
         body: data,
       }),

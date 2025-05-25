@@ -42,7 +42,14 @@ export const Register = () => {
     try {
       const response = await registerUser(data).unwrap();
       await loginUser({ email: data.email, password: data.password }).unwrap();
-      dispatch(setCredentials({ user: response.user, token: response.token }));
+      dispatch(
+        setCredentials({
+          userType: 'user',
+          user: response.user,
+          token: response.token,
+          initialized: true,
+        })
+      );
       navigate('/');
     } catch (err) {
       console.error('Registration failed:', err);

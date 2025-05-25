@@ -1,4 +1,3 @@
-// src/pages/EditEventForm.tsx
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -10,6 +9,8 @@ import {
 } from '../../../api/events/eventApi';
 import { CreateEventInput, eventSchema } from '../../../api/events/eventSchema';
 import { FormInput } from '../../../Components/FormInput/FormInput';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../api/store';
 
 export const EditEvent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,23 @@ export const EditEvent: React.FC = () => {
     useGetEventByIdQuery(eventId);
   const [updateEvent, { isLoading: isUpdating, isSuccess, error }] =
     useUpdateEventMutation();
+  const { user, userType } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (isCatLoading || isEventLoading) return;
+    if (!event) {
+      navigate('/404', { replace: true });
+      return;
+    }
+    if (user && userType === 'organiser') {
+      if (user.id !== event.createdBy) {
+        navigate('/404', { replace: true });
+        console.log('gosho');
+      }
+    } else {
+      navigate('/404', { replace: true });
+    }
+  }, [isCatLoading, isEventLoading, event, user, userType]);
 
   const {
     register,
