@@ -61,6 +61,15 @@ model Event {
   price Float
   categoryId  Int
   category    Category   @relation(fields: [categoryId], references: [id])
+  images      Image[]
+}
+
+model Image {
+  id        Int    @id @default(autoincrement())
+  url       String
+  eventId   Int
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 model Organiser {
