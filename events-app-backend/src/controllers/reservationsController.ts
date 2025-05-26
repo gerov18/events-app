@@ -110,3 +110,26 @@ export const deleteReservationHandler = async (
     return;
   }
 };
+
+export const loadUserReservationHandler = async (
+  req: Request<{ userId: string; reservationId: string }>,
+  res: Response
+) => {
+  const loggedUserId = res.locals.user.id;
+  const paramUserId = Number(req.params.userId);
+  const reservationId = Number(req.params.reservationId);
+
+  if (loggedUserId !== paramUserId) {
+    res.status(403).json({ message: 'Forbidden' });
+    return;
+  }
+
+  const reservation = await getReservationById(reservationId);
+  if (!reservation) {
+    res.status(404).json({ message: 'Reservation not found' });
+    return;
+  }
+
+  res.json(reservation);
+  return;
+};

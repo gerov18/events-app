@@ -20,12 +20,26 @@ export const reservationsApi = createApi({
       }),
       invalidatesTags: ['Reservations', 'Events'],
     }),
+
     cancelReservation: builder.mutation<void, number>({
       query: id => ({
-        url: `/reservations/${id}`,
-        method: 'DELETE',
+        url: `/reservations/${id}/edit`,
+        method: 'PATCH',
+        body: { status: 'CANCELLED' },
       }),
       invalidatesTags: ['Reservations', 'Events'],
+    }),
+
+    deleteReservation: builder.mutation<void, number>({
+      query: id => ({
+        url: `/reservations/${id}/delete`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Reservations', 'Events'],
+    }),
+    getReservationById: builder.query<Reservation, number>({
+      query: id => `/reservations/${id}`,
+      providesTags: (_res, _err, id) => [{ type: 'Reservations', id }],
     }),
   }),
 });
@@ -34,4 +48,5 @@ export const {
   useGetUserReservationsQuery,
   useCreateReservationMutation,
   useCancelReservationMutation,
+  useGetReservationByIdQuery,
 } = reservationsApi;

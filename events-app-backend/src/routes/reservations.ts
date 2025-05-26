@@ -4,6 +4,7 @@ import {
   createReservationHandler,
   editReservationHandler,
   deleteReservationHandler,
+  loadUserReservationHandler,
 } from '../controllers/reservationsController';
 import { authenticate } from '../middlewares/authenticate';
 import { validate } from '../middlewares/validate';
@@ -12,6 +13,7 @@ import {
   createReservationSchema,
   updateReservationSchema,
   deleteReservationSchema,
+  userReservationParamsSchema,
 } from '../schemas/reservationSchema';
 import { PrismaClient } from '@prisma/client';
 
@@ -22,6 +24,13 @@ router.get('/reservations/all', async (req, res) => {
   const result = await prisma.reservation.findMany();
   res.json(result);
 });
+
+router.get(
+  '/users/:userId/reservations/:reservationId',
+  authenticate,
+  validate(userReservationParamsSchema),
+  loadUserReservationHandler
+);
 
 router.get(
   '/reservations/:id',
@@ -38,14 +47,14 @@ router.post(
 );
 
 router.patch(
-  '/reservations/:id',
+  '/reservations/:id/edit',
   authenticate,
   validate(updateReservationSchema),
   editReservationHandler
 );
 
-router.delete(
-  '/reservations/:id',
+router.post(
+  '/reservations/:id/delete',
   authenticate,
   validate(deleteReservationSchema),
   deleteReservationHandler

@@ -1,4 +1,4 @@
-import { Event } from './event';
+import { Event } from './Event';
 
 export type Category = {
   id: number;

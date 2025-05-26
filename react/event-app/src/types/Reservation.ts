@@ -1,6 +1,7 @@
 import { User } from './User';
+import { Event } from './event';
 
-export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
+export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
 
 export interface Reservation {
   id: number;

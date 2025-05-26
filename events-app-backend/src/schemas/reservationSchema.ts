@@ -31,6 +31,17 @@ export const deleteReservationSchema = z.object({
   }),
 });
 
+export const userReservationParamsSchema = z.object({
+  params: z.object({
+    userId: z.string().regex(/^\d+$/, 'Invalid user ID'),
+    reservationId: z.string().regex(/^\d+$/, 'Invalid reservation ID'),
+  }),
+});
+
+export type UserReservationParams = z.infer<
+  typeof userReservationParamsSchema
+>['params'];
+
 export type ReservationParamsInput = z.infer<
   typeof reservationParamsSchema
 >['params'];

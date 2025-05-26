@@ -20,6 +20,7 @@ import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute';
 import { CreateEvent } from './Views/Events/CreateEvent/CreateEvent';
 import { EditEvent } from './Views/Events/EditEvent/EditEvent';
 import { RootState } from './api/store';
+import { ReservationDetails } from './Components/ReservationDetails/ReservationDetails';
 
 function App() {
   const dispatch = useDispatch();
@@ -103,6 +104,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['organiser', 'admin']}>
                 <EditEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/user/:userId/reservations/:reservationId'
+            element={
+              <ProtectedRoute allowedRoles={['user', 'admin']}>
+                <ReservationDetails />
               </ProtectedRoute>
             }
           />
