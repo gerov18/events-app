@@ -5,108 +5,108 @@ import {
   editReservation,
   getReservationById,
 } from '../services/reservationsService';
+import { ReservationStatus } from '@prisma/client';
 
-export const loadReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
-  const loggedUser = res.locals.user;
+export const loadReservationHandler = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  const reservationId = Number(req.params.id);
+  const userId = res.locals.user.id;
+
   try {
     const reservation = await getReservationById(reservationId);
     if (!reservation) {
       res.status(404).json({ message: 'Reservation not found' });
+      return;
     }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-    }
-    if (
-      reservation?.userId !== null &&
-      reservation?.userId !== res.locals.user
-    ) {
+    if (reservation.userId !== userId) {
       res
         .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
+        .json({ message: "Forbidden: you can't access this reservation" });
+      return;
     }
     res.json(reservation);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error fetching reservation' });
+    return;
   }
 };
 
-export const createReservationHandler = async (req: Request, res: Response) => {
-  const loggedUser = res.locals.user;
-  const { eventId, userId } = req.body;
+export const createReservationHandler = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  const eventId = Number(req.params.id);
+  const userId = res.locals.user.id;
 
   try {
-    if (!loggedUser) {
-      res.status(401).json({ message: "You're not logged in" });
-    }
-
-    if (!eventId) {
-      res.status(404).json({ message: 'Event not found' });
-    }
-    const newReservation = await createNewReservation(eventId, userId);
-
-    if (newReservation === 'no_tickets') {
+    const newRes = await createNewReservation(eventId, userId);
+    if (newRes === 'no_tickets') {
       res.status(400).json({ message: 'No available tickets' });
+      return;
     }
-    res.status(201).json(newReservation);
-  } catch (error) {
-    console.error(error);
+    res.status(201).json(newRes);
+    return;
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error creating reservation' });
+    return;
   }
 };
 
-export const editReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
+export const editReservationHandler = async (
+  req: Request<{ id: string }, {}, { status: ReservationStatus }>,
+  res: Response
+) => {
+  const reservationId = Number(req.params.id);
+  const userId = res.locals.user.id;
   const { status } = req.body;
-  const loggedUser = res.locals.user;
-  try {
-    const reservation = await editReservation(reservationId, status);
 
-    if (!reservation) {
+  try {
+    const updated = await editReservation(reservationId, status);
+    if (!updated) {
       res.status(404).json({ message: 'Reservation not found' });
       return;
     }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-      return;
-    }
-    if (reservation?.userId !== loggedUser) {
+    if (updated.userId !== userId) {
       res
         .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
+        .json({ message: "Forbidden: you can't update this reservation" });
       return;
     }
-
-    res.json(reservation);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating reservation', error });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating reservation' });
+    return;
   }
 };
 
-export const deleteReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
-  const loggedUser = res.locals.user;
+export const deleteReservationHandler = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  const reservationId = Number(req.params.id);
+  const userId = res.locals.user.id;
 
   try {
-    const reservation = await deleteReservation(reservationId);
-    if (!reservation) {
+    const deleted = await deleteReservation(reservationId);
+    if (!deleted) {
       res.status(404).json({ message: 'Reservation not found' });
       return;
     }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-      return;
-    }
-    if (reservation?.userId !== loggedUser) {
+    if (deleted.userId !== userId) {
       res
         .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
+        .json({ message: "Forbidden: you can't delete this reservation" });
       return;
     }
-
-    res.json(reservation);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating reservation', error });
+    res.json({ message: 'Reservation deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error deleting reservation' });
+    return;
   }
 };

@@ -5,13 +5,9 @@ const prisma = new PrismaClient();
 export const getReservationById = async (
   id: string | number
 ): Promise<Reservation | null> => {
-  const result = await prisma.reservation.findUnique({
-    where: {
-      id: Number(id),
-    },
+  return prisma.reservation.findUnique({
+    where: { id: Number(id) },
   });
-
-  return result;
 };
 
 export const createNewReservation = async (
@@ -19,12 +15,12 @@ export const createNewReservation = async (
   userId: number | string
 ): Promise<Reservation | null | 'no_tickets'> => {
   const event = await prisma.event.findUnique({
-    where: {
-      id: Number(eventId),
-    },
+    where: { id: Number(eventId) },
   });
-
-  if (event && event?.availableTickets < 1) {
+  if (!event) {
+    return null;
+  }
+  if (event.availableTickets < 1) {
     return 'no_tickets';
   }
 
@@ -32,7 +28,7 @@ export const createNewReservation = async (
     data: {
       userId: Number(userId),
       eventId: Number(eventId),
-      status: 'CONFIRMED',
+      status: ReservationStatus.CONFIRMED,
       createdAt: new Date(),
     },
   });
@@ -46,36 +42,50 @@ export const createNewReservation = async (
 };
 
 export const editReservation = async (
-  eventId: number | string,
+  reservationId: number | string,
   status: ReservationStatus
 ): Promise<Reservation | null> => {
   const reservation = await prisma.reservation.findUnique({
-    where: {
-      id: Number(eventId),
-    },
+    where: { id: Number(reservationId) },
   });
+  if (!reservation) {
+    return null;
+  }
 
-  const result = await prisma.reservation.update({
-    where: { id: Number(eventId) },
+  if (
+    reservation.status === ReservationStatus.CONFIRMED &&
+    status === ReservationStatus.CANCELLED
+  ) {
+    await prisma.event.update({
+      where: { id: reservation.eventId },
+      data: { availableTickets: { increment: 1 } },
+    });
+  }
+
+  return prisma.reservation.update({
+    where: { id: Number(reservationId) },
     data: { status },
   });
-
-  await prisma.event.update({
-    where: { id: Number(eventId) },
-    data: { availableTickets: { increment: 1 } },
-  });
-
-  return result;
 };
 
 export const deleteReservation = async (
-  id: string | number
+  reservationId: number | string
 ): Promise<Reservation | null> => {
-  const result = await prisma.reservation.delete({
-    where: {
-      id: Number(id),
-    },
+  const reservation = await prisma.reservation.findUnique({
+    where: { id: Number(reservationId) },
   });
+  if (!reservation) {
+    return null;
+  }
 
-  return result;
+  if (reservation.status === ReservationStatus.CONFIRMED) {
+    await prisma.event.update({
+      where: { id: reservation.eventId },
+      data: { availableTickets: { increment: 1 } },
+    });
+  }
+
+  return prisma.reservation.delete({
+    where: { id: Number(reservationId) },
+  });
 };

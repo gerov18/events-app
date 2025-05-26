@@ -9,6 +9,7 @@ import {
   useGetEventByIdQuery,
 } from '../../../api/events/eventApi';
 import moment from 'moment';
+import { useCreateReservationMutation } from '../../../api/reservations/reservationsApi';
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const EventDetails: React.FC = () => {
   const navigate = useNavigate();
   const { data: event, isLoading, isError } = useGetEventByIdQuery(Number(id));
   const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
+  const [reserveTickets, { isLoading: isReserving }] =
+    useCreateReservationMutation();
 
   const {
     data: category,
@@ -53,6 +56,15 @@ const EventDetails: React.FC = () => {
     }
   };
 
+  const handleReserve = async () => {
+    try {
+      await reserveTickets(eventId).unwrap();
+      alert('Билетът е резервиран успешно!');
+    } catch (err: any) {
+      alert(err?.data?.message || 'Грешка при резервация');
+    }
+  };
+
   return (
     <div className='p-6 max-w-3xl mx-auto'>
       <h1 className='text-3xl font-bold mb-4'>{event.title}</h1>
@@ -78,6 +90,14 @@ const EventDetails: React.FC = () => {
           <strong>Available:</strong> {event.availableTickets}
         </div>
       </div>
+      {auth.userType !== 'organiser' && (
+        <button
+          onClick={handleReserve}
+          disabled={isReserving || event.availableTickets < 1}
+          className='px-4 py-2 bg-green-500 text-white rounded mr-4'>
+          {isReserving ? 'Резервиране…' : 'Reserve ticket'}
+        </button>
+      )}
 
       {isOwner && (
         // || isAdmin

@@ -1,48 +1,53 @@
-import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
-import { authenticate } from '../middlewares/authenticate';
 import {
-  createReservationHandler,
-  deleteReservationHandler,
-  editReservationHandler,
   loadReservationHandler,
+  createReservationHandler,
+  editReservationHandler,
+  deleteReservationHandler,
 } from '../controllers/reservationsController';
-import {
-  createReservationSchema,
-  reservationParamsSchema,
-  updateReservationSchema,
-} from '../schemas/reservationSchema';
+import { authenticate } from '../middlewares/authenticate';
 import { validate } from '../middlewares/validate';
+import {
+  reservationParamsSchema,
+  createReservationSchema,
+  updateReservationSchema,
+  deleteReservationSchema,
+} from '../schemas/reservationSchema';
+import { PrismaClient } from '@prisma/client';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get('/', async (req, res) => {
+router.get('/reservations/all', async (req, res) => {
   const result = await prisma.reservation.findMany();
   res.json(result);
 });
 
 router.get(
-  '/:reservationId',
-  [authenticate, validate(reservationParamsSchema)],
+  '/reservations/:id',
+  authenticate,
+  validate(reservationParamsSchema),
   loadReservationHandler
 );
 
 router.post(
-  '/',
-  [authenticate, validate(createReservationSchema)],
+  '/events/:id/reservations',
+  authenticate,
+  validate(createReservationSchema),
   createReservationHandler
 );
 
 router.patch(
-  '/:reservationId',
-  [authenticate, validate(updateReservationSchema)],
+  '/reservations/:id',
+  authenticate,
+  validate(updateReservationSchema),
   editReservationHandler
 );
 
-router.post(
-  '/:reservationId',
-  [authenticate, validate(reservationParamsSchema)],
+router.delete(
+  '/reservations/:id',
+  authenticate,
+  validate(deleteReservationSchema),
   deleteReservationHandler
 );
 

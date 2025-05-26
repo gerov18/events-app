@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 });
 app.use('/events', eventRoutes);
 app.use('/users', userRoutes);
-app.use('/users/:userId/reservations', reservationRoutes);
+app.use('/', reservationRoutes);
 app.use('/', authenticationRoutes);
 app.use('/', authorizationRoutes);
 app.use('/', authorizationRoutes);
