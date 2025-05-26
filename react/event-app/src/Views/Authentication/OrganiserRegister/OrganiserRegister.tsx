@@ -2,18 +2,19 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { FormInput } from '../../../Components/FormInput/FormInput';
 import {
-  useGetMeQuery,
   useLoginOrganiserMutation,
   useRegisterOrganiserMutation,
-} from '../../api/organiser/organiserApi';
-import { setOrganiserCredentials } from '../../api/organiser/organiserSlice';
+} from '../../../api/organiser/organiserApi';
+import { setOrganiserCredentials } from '../../../api/organiser/organiserSlice';
 import {
   OrganiserCreateInput,
   organiserCreateSchema,
-} from '../../api/organiser/organiserSchema';
+} from '../../../api/organiser/organiserSchema';
 import { useEffect } from 'react';
+import { useGetMeQuery } from '../../../api/me/meApi';
+import { setCredentials } from '../../../api/auth/authSlice';
 
 export const OrganiserRegister = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,14 @@ export const OrganiserRegister = () => {
         email: data.email,
         password: data.password,
       }).unwrap();
+      dispatch(
+        setCredentials({
+          userType: 'organiser',
+          user: response.organiser,
+          token: response.token,
+          initialized: true,
+        })
+      );
       dispatch(setOrganiserCredentials(response));
       navigate('/');
     } catch (err) {

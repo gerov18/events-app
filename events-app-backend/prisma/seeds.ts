@@ -55,7 +55,7 @@ async function main() {
       data: {
         name: `Organiser ${i}`,
         email: `organiser${i}@mail.com`,
-        password: await bcrypt.hash('organiser123', 10),
+        password: await bcrypt.hash('pass123', 10),
         description: `Organizer profile ${i}`,
         phone: `088800000${i}`,
         website: `https://organiser${i}.bg`,

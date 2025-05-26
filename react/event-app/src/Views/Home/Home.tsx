@@ -3,17 +3,18 @@ import EventCard from '../../Components/EventCard/EventCard';
 import styles from './Home.module.css';
 import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
-import { logoutUser } from '../../api/auth/authSlice';
+import { clearUserState } from '../../api/auth/authSlice';
 
 const Home = () => {
-  const user = useSelector((state: RootState) => state.auth.user) ?? null;
+  const { user, userType } =
+    useSelector((state: RootState) => state.auth) ?? null;
   const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
 
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      dispatch(logoutUser());
+      dispatch(clearUserState());
     } catch (err) {
       console.log('err', err);
     }
@@ -26,7 +27,15 @@ const Home = () => {
         <button>search</button>
         <button onClick={handleLogout}>logout</button>
       </div>
-      <h1>{`HELLO, ${user?.firstName}`}</h1>
+      {user && userType !== null && (
+        <h1>{`HELLO, ${
+          userType === 'user'
+            ? user?.firstName
+            : userType === 'organiser'
+            ? user.name
+            : ''
+        }`}</h1>
+      )}
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <div className='header'>
           <h1>Do what you love</h1>

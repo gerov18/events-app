@@ -4,7 +4,7 @@ export type Event = {
   id: number;
   title: string;
   description: string;
-  date: Date;
+  date: string;
   location: string;
   capacity: number;
   createdAt: Date;
@@ -12,14 +12,15 @@ export type Event = {
   availableTickets: number;
   price: number;
   reservations: Reservation[];
+  categoryId: number;
 };
 
 export type CreateEventInput = {
   title: string;
   description: string;
-  date: Date;
+  date: string;
   location: string;
   capacity: number;
   price: number;
-  category: number;
+  categoryId: number;
 };

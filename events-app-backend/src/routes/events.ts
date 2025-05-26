@@ -18,18 +18,18 @@ import {
 const router = Router();
 
 router.get('/', getAllEventsHandler);
-router.get('/event/:id', validate(eventParamsSchema), getEventByIdHandler);
+router.get('/:id', validate(eventParamsSchema), getEventByIdHandler);
 router.post(
   '/create',
   [authenticate, authorizeOrganiserOnly, validate(createEventSchema)],
   createEventHandler
 );
-router.put(
-  '/edit/:id',
+router.patch(
+  '/:id',
   [authenticate, authorizeOrganiserOnly, validate(updateEventSchema)],
   updateEventHandler
 );
-router.delete(
+router.post(
   '/delete/:id',
   [authenticate, authorizeOrganiserOnly, validate(eventParamsSchema)],
   deleteEventHandler

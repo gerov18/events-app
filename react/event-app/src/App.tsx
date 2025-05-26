@@ -1,31 +1,46 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { setUser } from './api/auth/authSlice';
+import { clearUserState, setМе } from './api/auth/authSlice';
 import { useGetMeQuery } from './api/me/meApi';
 import { setOrganiserData } from './api/organiser/organiserSlice';
 import Layout from './Components/Layout/Layout';
-import EventDetails from './Views/EventDetails/EventDetails';
+import EventDetails from './Views/Events/EventDetails/EventDetails';
 import Home from './Views/Home/Home';
-import Login from './Views/Login/Login';
-import { OauthSuccess } from './Views/OauthSuccess/OauthSuccess';
-import { Register } from './Views/Register/Register';
-import { OrganiserRegister } from './Views/OrganiserRegister/OrganiserRegister';
-import { OrganiserLogin } from './Views/OrganiserLogin/OrganiserLogin';
+import { Register } from './Views/Authentication/Register/Register';
+import { UserDelete } from './Views/User/UserDelete/UserDelete';
+import { OrganiserDelete } from './Views/Organiser/OrganiserDelete/OrganiserDelete';
+import { OrganiserEdit } from './Views/Organiser/OrganiserEdit/OrganiserEdit';
+import { UserEdit } from './Views/User/UserEdit/UserEdit';
+import { OauthSuccess } from './Views/Authentication/OauthSuccess/OauthSuccess';
+import { Login } from './Views/Authentication/Login/Login';
+import { OrganiserLogin } from './Views/Authentication/OrganiserLogin/OrganiserLogin';
+import { OrganiserRegister } from './Views/Authentication/OrganiserRegister/OrganiserRegister';
+import { ProtectedRoute } from './Components/ProtectedRoute/ProtectedRoute';
+import { CreateEvent } from './Views/Events/CreateEvent/CreateEvent';
+import { EditEvent } from './Views/Events/EditEvent/EditEvent';
+import { RootState } from './api/store';
 
 function App() {
   const dispatch = useDispatch();
-  const { data: getMeData, isSuccess } = useGetMeQuery();
+  const { data: meData, isLoading, isError } = useGetMeQuery();
 
   useEffect(() => {
-    console.log('get', getMeData);
-    if (isSuccess && getMeData.type === 'user') {
-      dispatch(setUser(getMeData.data));
+    if (meData) {
+      if (isLoading) return;
+
+      if (meData?.type === 'organiser') {
+        dispatch(setМе({ userType: 'organiser', user: meData.data }));
+      }
+      if (meData?.type === 'user') {
+        dispatch(setМе({ userType: 'user', user: meData.data }));
+      } else if (isError) {
+        dispatch(clearUserState());
+      }
     }
-    if (isSuccess && getMeData.type === 'organiser') {
-      dispatch(setOrganiserData(getMeData.data));
-    }
-  }, [isSuccess, getMeData]);
+  }, [meData, isLoading, isError, dispatch]);
+
+  const user = useSelector((state: RootState) => state.auth);
 
   return (
     <Router>
@@ -58,6 +73,38 @@ function App() {
           <Route
             path='/organiser/login'
             element={<OrganiserLogin />}
+          />
+          <Route
+            path='/organiser/me/delete'
+            element={<OrganiserDelete />}
+          />
+          <Route
+            path='/user/me/delete'
+            element={<UserDelete />}
+          />
+          <Route
+            path='/organiser/me/edit'
+            element={<OrganiserEdit />}
+          />
+          <Route
+            path='/user/me/edit'
+            element={<UserEdit />}
+          />
+          <Route
+            path='/events/new'
+            element={
+              <ProtectedRoute allowedRoles={['organiser', 'admin']}>
+                <CreateEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/events/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['organiser', 'admin']}>
+                <EditEvent />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Layout>

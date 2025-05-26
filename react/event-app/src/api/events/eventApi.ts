@@ -1,56 +1,54 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Category } from '../../types/Category';
+import { CreateEventInput } from '../../types/Event';
+import { UpdateEventInput } from './eventSchema';
 import { Event } from '../../types/Event';
-import { EventInput } from './eventSchema';
 
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
-    prepareHeaders: headers => {
-      return headers;
-    },
   }),
-  tagTypes: ['Events'],
+  tagTypes: ['Events', 'Categories'],
   endpoints: builder => ({
+    getCategories: builder.query<Category[], void>({
+      query: () => '/categories',
+      providesTags: ['Categories'],
+    }),
     getEvents: builder.query<Event[], void>({
       query: () => '/events',
       providesTags: ['Events'],
     }),
-    getEvent: builder.query<Event, number>({
+    getEventById: builder.query<Event, number>({
       query: id => `/events/${id}`,
       providesTags: (_result, _err, id) => [{ type: 'Events', id }],
     }),
-    createEvent: builder.mutation<Event, EventInput>({
-      query: newEvent => ({
+    createEvent: builder.mutation<Event, CreateEventInput>({
+      query: data => ({
         url: '/events/create',
         method: 'POST',
-        body: newEvent,
+        body: data,
       }),
       invalidatesTags: ['Events'],
     }),
-    updateEvent: builder.mutation<Event, { id: number; data: EventInput }>({
+    updateEvent: builder.mutation<
+      Event,
+      { id: number; data: UpdateEventInput }
+    >({
       query: ({ id, data }) => ({
-        url: `/events/edit/${id}`,
-        method: 'PUT',
+        url: `/events/${id}`,
+        method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Events', id }],
-    }),
-    deleteEvent: builder.mutation<void, number>({
-      query: id => ({
-        url: `/events/delete/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: (_result, _error, id) => [{ type: 'Events', id }],
+      invalidatesTags: ['Events'],
     }),
   }),
 });
 
 export const {
-  useGetEventsQuery,
-  useGetEventQuery,
+  useGetCategoriesQuery,
+  useGetEventByIdQuery,
   useCreateEventMutation,
   useUpdateEventMutation,
-  useDeleteEventMutation,
 } = eventsApi;

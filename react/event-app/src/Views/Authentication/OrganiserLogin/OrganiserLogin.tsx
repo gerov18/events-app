@@ -1,18 +1,17 @@
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import {
-  useGetMeQuery,
-  useLoginOrganiserMutation,
-} from '../../api/organiser/organiserApi';
-import { setOrganiserCredentials } from '../../api/organiser/organiserSlice';
+import { useLoginOrganiserMutation } from '../../../api/organiser/organiserApi';
+import { setOrganiserCredentials } from '../../../api/organiser/organiserSlice';
 import {
   organiserLoginSchema,
   OrganiserLoginInput,
-} from '../../api/organiser/organiserSchema';
+} from '../../../api/organiser/organiserSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { FormInput } from '../../Components/FormInput/FormInput';
+import { FormInput } from '../../../Components/FormInput/FormInput';
+import { useGetMeQuery } from '../../../api/me/meApi';
+import { setCredentials, setМе } from '../../../api/auth/authSlice';
 
 export const OrganiserLogin = () => {
   const dispatch = useDispatch();
@@ -32,6 +31,14 @@ export const OrganiserLogin = () => {
     try {
       const response = await loginOrganiser(data).unwrap();
       dispatch(setOrganiserCredentials(response));
+      dispatch(
+        setCredentials({
+          userType: 'organiser',
+          user: response.organiser,
+          token: response.token,
+          initialized: true,
+        })
+      );
       navigate('/');
     } catch (err) {
       console.error('Organiser login failed:', err);
