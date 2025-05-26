@@ -1,11 +1,102 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+// src/Views/Events/EventDetails/EventDetails.tsx
+import React, { useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../api/store';
+import {
+  useDeleteEventMutation,
+  useGetCategoryByIdQuery,
+  useGetEventByIdQuery,
+} from '../../../api/events/eventApi';
+import moment from 'moment';
 
-const EventDetails = () => {
-  const { id } = useParams();
+const EventDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const eventId = Number(id);
+  const navigate = useNavigate();
+  const { data: event, isLoading, isError } = useGetEventByIdQuery(Number(id));
+  const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
+
+  const {
+    data: category,
+    isLoading: isCatLoading,
+    isError: isCatError,
+  } = useGetCategoryByIdQuery(event?.categoryId ?? null!);
+
+  const auth = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (isError) {
+      navigate('/', { replace: true });
+    }
+  }, [isError, navigate]);
+
+  if (!event) {
+    return <div className='p-4'>Event not found.</div>;
+  }
+
+  if (isLoading || isCatLoading) {
+    return <div className='p-4'>Loading event details…</div>;
+  }
+
+  const isOwner =
+    (auth.userType === 'user' || auth.userType === 'organiser') &&
+    auth.user?.id === event.createdBy;
+  // const isAdmin = auth.userType === 'admin';
+
+  const handleDelete = async () => {
+    try {
+      await deleteEvent(eventId).unwrap();
+      navigate('/');
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
   return (
-    <div className='p-4'>
-      <h1 className='text-2xl font-bold'>Event Details for Event {id}</h1>
+    <div className='p-6 max-w-3xl mx-auto'>
+      <h1 className='text-3xl font-bold mb-4'>{event.title}</h1>
+      <p className='text-gray-700 mb-6'>{event.description}</p>
+
+      <div className='grid grid-cols-2 gap-4 mb-6'>
+        <div>
+          <strong>Date:</strong> {moment(event.date).format('DD.MM.YYYY')}
+        </div>
+        <div>
+          <strong>Location:</strong> {event.location}
+        </div>
+        <div>
+          <strong>Category:</strong> {category?.name}
+        </div>
+        <div>
+          <strong>Price:</strong> ${event.price.toFixed(2)}
+        </div>
+        <div>
+          <strong>Capacity:</strong> {event.capacity}
+        </div>
+        <div>
+          <strong>Available:</strong> {event.availableTickets}
+        </div>
+      </div>
+
+      {isOwner && (
+        // || isAdmin
+        <div className='flex space-x-4'>
+          <Link
+            to={`/events/${event.id}/edit`}
+            className='px-4 py-2 bg-blue-500 text-white rounded'>
+            Edit
+          </Link>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`px-4 py-2 rounded text-white ${
+              isDeleting ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
+            }`}>
+            {isDeleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

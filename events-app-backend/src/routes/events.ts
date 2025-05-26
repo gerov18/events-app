@@ -30,7 +30,7 @@ router.patch(
   updateEventHandler
 );
 router.post(
-  '/delete/:id',
+  '/:id/delete',
   [authenticate, authorizeOrganiserOnly, validate(eventParamsSchema)],
   deleteEventHandler
 );

@@ -16,6 +16,10 @@ export const eventsApi = createApi({
       query: () => '/categories',
       providesTags: ['Categories'],
     }),
+    getCategoryById: builder.query<Category, number>({
+      query: id => `/categories/${id}`,
+      providesTags: (_result, _err, id) => [{ type: 'Categories', id }],
+    }),
     getEvents: builder.query<Event[], void>({
       query: () => '/events',
       providesTags: ['Events'],
@@ -43,12 +47,21 @@ export const eventsApi = createApi({
       }),
       invalidatesTags: ['Events'],
     }),
+    deleteEvent: builder.mutation<void, number>({
+      query: id => ({
+        url: `/events/${id}/delete`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Events'],
+    }),
   }),
 });
 
 export const {
   useGetCategoriesQuery,
+  useGetCategoryByIdQuery,
   useGetEventByIdQuery,
   useCreateEventMutation,
   useUpdateEventMutation,
+  useDeleteEventMutation,
 } = eventsApi;
