@@ -50,12 +50,11 @@ export const ReservationDetails: React.FC = () => {
     }
   }, [isError, navigate, isEventError]);
 
-  if (isLoading || isEventLoading) return <div className='p-4'>Зареждане…</div>;
+  if (isLoading || isEventLoading) return <div className='p-4'>Loading...</div>;
   if (!reservation || !event)
-    return <div className='p-4 text-red-500'>Няма резервация</div>;
+    return <div className='p-4 text-red-500'>No reservation</div>;
 
   const handleCancel = async () => {
-    if (!window.confirm('Сигурни ли сте?')) return;
     await cancelReservation(reservation.id).unwrap();
     navigate(`/users/${uid}/reservations`);
   };
@@ -85,7 +84,7 @@ export const ReservationDetails: React.FC = () => {
         onClick={handleCancel}
         disabled={isCancelling || reservation.status !== 'CONFIRMED'}
         className='mt-6 px-4 py-2 bg-red-500 text-white rounded'>
-        {isCancelling ? 'Отмяна…' : 'Отмени резервацията'}
+        {isCancelling ? 'Cancelling…' : 'Cancel Reservation'}
       </button>
     </div>
   );
