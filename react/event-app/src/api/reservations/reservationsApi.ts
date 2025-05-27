@@ -1,4 +1,3 @@
-// src/api/reservations/reservationsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   CreateReservationInput,

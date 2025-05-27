@@ -4,6 +4,7 @@ import {
   Reservation,
   Ticket,
 } from '@prisma/client';
+import QRCode from 'qrcode';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,19 @@ export async function createNewReservation(
   const tickets = await prisma.ticket.findMany({
     where: { reservationId: reservation.id },
   });
+
+  for (const ticket of tickets) {
+    const payload = JSON.stringify({
+      ticketId: ticket.id,
+      reservationId: reservation.id,
+    });
+    const dataUrl = await QRCode.toDataURL(payload, { width: 300 });
+
+    await prisma.ticket.update({
+      where: { id: ticket.id },
+      data: { qrCode: dataUrl },
+    });
+  }
 
   await prisma.event.update({
     where: { id: eventId },

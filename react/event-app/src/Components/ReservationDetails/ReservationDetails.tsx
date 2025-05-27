@@ -8,6 +8,7 @@ import {
 import { RootState } from '../../api/store';
 import moment from 'moment';
 import { useGetEventByIdQuery } from '../../api/events/eventApi';
+import { QRCodeSVG } from 'qrcode.react';
 
 export const ReservationDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -98,10 +99,9 @@ export const ReservationDetails: React.FC = () => {
                 {ticket.status}
               </span>
               {ticket.qrCode && (
-                <img
-                  src={ticket.qrCode}
-                  alt={`QR code for ticket ${ticket.id}`}
-                  className='w-10 h-10'
+                <QRCodeSVG
+                  value={ticket.qrCode}
+                  width={128}
                 />
               )}
             </li>

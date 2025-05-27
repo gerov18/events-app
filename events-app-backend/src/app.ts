@@ -50,7 +50,7 @@ app.use('/', meRoute);
 
 const prisma = new PrismaClient();
 
-app.use('/', async (_req, res) => {
+app.use('/debug/reserv', async (_req, res) => {
   try {
     const reservations = await prisma.reservation.findMany({
       include: {
