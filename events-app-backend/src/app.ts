@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import passport from 'passport';
 import eventRoutes from './routes/events';
 import userRoutes from './routes/users';
-import reservationRoutes from './routes/reservations';
+import reservationRoutes from './routes/reservations.user';
 import authenticationRoutes from './routes/authentication';
 import authorizationRoutes from './routes/authorization';
 import categoryRoutes from './routes/categories';
@@ -13,6 +13,8 @@ import googleAuth from './routes/googleAuth';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import './passport';
+import eventReservationsRouter from './routes/reservation.event';
+import userReservationsRouter from './routes/reservations.user';
 
 const app: Application = express();
 
@@ -34,7 +36,8 @@ app.use((req, res, next) => {
 });
 app.use('/events', eventRoutes);
 app.use('/users', userRoutes);
-app.use('/', reservationRoutes);
+app.use('/events/:eventId/reservations', eventReservationsRouter);
+app.use('/users/:userId/reservations', userReservationsRouter);
 app.use('/', authenticationRoutes);
 app.use('/', authorizationRoutes);
 app.use('/', authorizationRoutes);

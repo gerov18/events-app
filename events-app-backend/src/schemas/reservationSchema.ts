@@ -1,57 +1,46 @@
 import { z } from 'zod';
-
-export const reservationParamsSchema = z.object({
-  params: z.object({
-    id: z
-      .string({ required_error: 'Reservation ID is required' })
-      .regex(/^\d+$/, 'Invalid reservation ID'),
-  }),
-});
+import { ReservationStatus } from '@prisma/client';
 
 export const createReservationSchema = z.object({
   params: z.object({
-    id: z
+    eventId: z
       .string({ required_error: 'Event ID is required' })
       .regex(/^\d+$/, 'Invalid event ID'),
   }),
+  body: z
+    .object({
+      quantity: z
+        .number({ invalid_type_error: 'Quantity must be a number' })
+        .int('Quantity must be an integer')
+        .positive('Quantity must be at least 1')
+        .optional(),
+    })
+    .default({}),
 });
 
-export const updateReservationSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^\d+$/, 'Invalid reservation ID'),
-  }),
-  body: z.object({
-    status: z.enum(['PENDING', 'CONFIRMED', 'CANCELLED']),
-  }),
-});
-
-export const deleteReservationSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^\d+$/, 'Invalid reservation ID'),
-  }),
-});
-
-export const userReservationParamsSchema = z.object({
+export const reservationParamsSchema = z.object({
   params: z.object({
     userId: z.string().regex(/^\d+$/, 'Invalid user ID'),
     reservationId: z.string().regex(/^\d+$/, 'Invalid reservation ID'),
   }),
 });
 
-export type UserReservationParams = z.infer<
-  typeof userReservationParamsSchema
->['params'];
+export const updateReservationSchema = z.object({
+  params: reservationParamsSchema.shape.params,
+  body: z.object({
+    status: z.nativeEnum(ReservationStatus, {
+      errorMap: () => ({ message: 'Invalid reservation status' }),
+    }),
+  }),
+});
 
+export const deleteReservationSchema = z.object({
+  params: reservationParamsSchema.shape.params,
+});
+
+export type CreateReservationInput = z.infer<typeof createReservationSchema>;
 export type ReservationParamsInput = z.infer<
   typeof reservationParamsSchema
 >['params'];
-export type CreateReservationInput = z.infer<
-  typeof createReservationSchema
->['params'];
-export type UpdateReservationInput = {
-  params: z.infer<typeof updateReservationSchema>['params'];
-  body: z.infer<typeof updateReservationSchema>['body'];
-};
-export type DeleteReservationInput = z.infer<
-  typeof deleteReservationSchema
->['params'];
+export type UpdateReservationInput = z.infer<typeof updateReservationSchema>;
+export type DeleteReservationInput = z.infer<typeof deleteReservationSchema>;
