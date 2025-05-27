@@ -1,17 +1,26 @@
 import { User } from './User';
+import { Event } from './Event';
 
-export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
+export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+
+export interface Ticket {
+  id: number;
+  reservationId: number;
+  qrCode: string | null;
+  status: ReservationStatus;
+}
 
 export interface Reservation {
   id: number;
   userId: number;
   eventId: number;
-  createdAt: Date;
+  createdAt: string;
+  status: ReservationStatus;
+  totalPrice: number;
   user: User;
   event: Event;
-  status: ReservationStatus;
+  tickets: Ticket[];
 }
-
 export interface CreateReservationInput {
   userId: number;
   eventId: number;

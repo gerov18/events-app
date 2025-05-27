@@ -1,8 +1,10 @@
+// prisma/seeds.ts
 import {
   PrismaClient,
   Role,
   ReservationStatus,
   Organiser,
+  TicketStatus,
 } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -10,7 +12,14 @@ const prisma = new PrismaClient();
 
 const firstNames = ['Ivan', 'Maria', 'Nikolay', 'Gergana', 'Kiril'];
 const lastNames = ['Ivanov', 'Petrova', 'Georgiev', 'Stoyanova', 'Dimitrov'];
-const locations = ['Sofia', 'Plovdiv', 'Varna', 'Burgas', 'Ruse'];
+const locations = [
+  'Sofia',
+  'Plovdiv',
+  'Varna',
+  'Burgas',
+  'Ruse',
+  'Veliko Tarnovo',
+];
 const categoryNames = ['Music', 'Tech', 'Art', 'Food', 'Other'];
 const eventTitles = [
   'Tech Conference',
@@ -35,9 +44,9 @@ function randomDate(): Date {
 }
 
 async function main() {
-  console.log('🌱 Starting seed...');
+  console.log('🌱 Starting seed…');
 
-  // Categories
+  // 1) Categories
   const categories = await Promise.all(
     categoryNames.map(name =>
       prisma.category.upsert({
@@ -48,74 +57,89 @@ async function main() {
     )
   );
 
-  // Organisers
+  // 2) Organisers
   const organisers: Organiser[] = [];
   for (let i = 1; i <= 5; i++) {
-    const organiser = await prisma.organiser.create({
+    const hashed = await bcrypt.hash('pass123', 10);
+    const org = await prisma.organiser.create({
       data: {
         name: `Organiser ${i}`,
-        email: `organiser${i}@mail.com`,
-        password: await bcrypt.hash('pass123', 10),
-        description: `Organizer profile ${i}`,
-        phone: `088800000${i}`,
+        email: `organiser${i}@example.com`,
+        password: hashed,
+        description: `This is organiser ${i}`,
+        phone: `08880000${i}`,
         website: `https://organiser${i}.bg`,
         createdAt: new Date(),
       },
     });
-    organisers.push(organiser);
+    organisers.push(org);
   }
 
-  // Users
+  // 3) Users
   for (let i = 1; i <= 30; i++) {
     const firstName = randomItem(firstNames);
     const lastName = randomItem(lastNames);
     const username = `${firstName.toLowerCase()}${i}`;
-    const hashedPass = await bcrypt.hash('pass123', 10);
+    const hashed = await bcrypt.hash('pass123', 10);
     await prisma.user.create({
       data: {
         email: `${username}@test.com`,
         username,
         firstName,
         lastName,
-        password: hashedPass,
+        password: hashed,
         role: Role.USER,
         createdAt: new Date(),
       },
     });
   }
 
-  // Events
+  // 4) Events
   for (let i = 1; i <= 30; i++) {
-    const organiser = randomItem(organisers);
+    const org = randomItem(organisers);
     const capacity = Math.floor(Math.random() * 150) + 50;
     await prisma.event.create({
       data: {
         title: `${randomItem(eventTitles)} #${i}`,
-        description: `Description for Event ${i}`,
+        description: `Description for event ${i}`,
         date: randomDate(),
         location: randomItem(locations),
         capacity,
         availableTickets: capacity,
         price: [5, 10, 15, 20][Math.floor(Math.random() * 4)],
         createdAt: new Date(),
-        createdBy: organiser.id,
+        createdBy: org.id,
         categoryId: randomItem(categories).id,
       },
     });
   }
 
-  // Reservations
-  for (let i = 0; i < 30; i++) {
-    await prisma.reservation.create({
+  // 5) Reservations & Tickets
+  const allEvents = await prisma.event.findMany();
+  for (let i = 1; i <= 30; i++) {
+    const event = randomItem(allEvents);
+    const userId = Math.floor(Math.random() * 30) + 1;
+    const status = randomItem([
+      ReservationStatus.CONFIRMED,
+      ReservationStatus.PENDING,
+      ReservationStatus.CANCELLED,
+    ]);
+    // Create reservation
+    const reservation = await prisma.reservation.create({
       data: {
-        userId: Math.floor(Math.random() * 30) + 1,
-        eventId: Math.floor(Math.random() * 30) + 1,
+        userId,
+        eventId: event.id,
+        status,
+        totalPrice: event.price,
         createdAt: new Date(),
-        status: randomItem([
-          ReservationStatus.CONFIRMED,
-          ReservationStatus.PENDING,
-          ReservationStatus.CANCELLED,
-        ]),
+      },
+    });
+    // Create at least one ticket for this reservation
+    await prisma.ticket.create({
+      data: {
+        reservationId: reservation.id,
+        status: status as TicketStatus,
+        qrCode: null,
       },
     });
   }

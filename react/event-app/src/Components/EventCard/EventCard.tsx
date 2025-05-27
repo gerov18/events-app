@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './EventCard.module.css';
-import { Event } from '../../types/event';
+import { Event } from '../../types/Event';
 
 const EventCard = (event: Event) => {
   const { title, date, id } = event;

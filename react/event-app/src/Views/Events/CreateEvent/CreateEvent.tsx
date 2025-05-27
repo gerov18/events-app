@@ -1,19 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import {
   useCreateEventMutation,
   useGetCategoriesQuery,
+  useUploadEventImagesMutation,
 } from '../../../api/events/eventApi';
 import { CreateEventInput, eventSchema } from '../../../api/events/eventSchema';
 import { FormInput } from '../../../Components/FormInput/FormInput';
+import { ImagesUpload } from '../../../Components/ImagesUpload/ImagesUpload';
 
 export const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
   const { data: categories, isLoading: isCatLoading } = useGetCategoriesQuery();
   const [createEvent, { isLoading: isCreating, isSuccess, error }] =
     useCreateEventMutation();
+  const [uploadImages] = useUploadEventImagesMutation();
+
+  const [files, setFiles] = useState<File[]>([]);
 
   const {
     register,
@@ -31,9 +36,12 @@ export const CreateEvent: React.FC = () => {
       price: 0,
     },
   });
-
-  const onSubmit = (data: CreateEventInput) => {
-    createEvent(data);
+  const onSubmit = async (data: CreateEventInput) => {
+    const event = await createEvent(data).unwrap();
+    if (files.length) {
+      await uploadImages({ eventId: event.id, files }).unwrap();
+    }
+    navigate(`/events/${event.id}`);
   };
 
   if (isCatLoading) return <p>Loading categories…</p>;
@@ -108,6 +116,19 @@ export const CreateEvent: React.FC = () => {
         error={errors.price?.message}
       />
 
+      {/* <input
+        type='file'
+        accept='image/*'
+        onChange={e => setFile(e.target.files?.[0] ?? null)}
+      />
+      <button onClick={handleUpload}>Upload photos</button> /*}
+      
+      {/* <ImagesUpload eventId={eve} /> */}
+      <input
+        type='file'
+        multiple
+        onChange={e => setFiles(Array.from(e.target.files || []))}
+      />
       <button
         type='submit'
         disabled={isCreating}

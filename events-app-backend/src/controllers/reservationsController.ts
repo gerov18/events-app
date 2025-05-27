@@ -1,112 +1,91 @@
-import { Request, Response } from 'express';
+import { RequestHandler, Response } from 'express';
 import {
+  getUserReservations,
+  getReservationDetails,
   createNewReservation,
-  deleteReservation,
   editReservation,
-  getReservationById,
+  cancelReservation,
 } from '../services/reservationsService';
 
-export const loadReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
-  const loggedUser = res.locals.user;
-  try {
-    const reservation = await getReservationById(reservationId);
-    if (!reservation) {
-      res.status(404).json({ message: 'Reservation not found' });
-    }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-    }
-    if (
-      reservation?.userId !== null &&
-      reservation?.userId !== res.locals.user
-    ) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
-    }
-    res.json(reservation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching reservation' });
-  }
+import { ReservationParamsInput } from '../schemas/reservationSchema';
+
+export const getUserReservationsHandler: RequestHandler = async (req, res) => {
+  const userId = Number(res.locals.user.id);
+  const reservations = await getUserReservations(userId);
+  res.json(reservations);
 };
 
-export const createReservationHandler = async (req: Request, res: Response) => {
-  const loggedUser = res.locals.user;
-  const { eventId, userId } = req.body;
+export const getReservationDetailsHandler: RequestHandler<
+  ReservationParamsInput
+> = async (req, res) => {
+  const userId = Number(res.locals.user.id);
+  const reservationId = Number(req.params.reservationId);
 
-  try {
-    if (!loggedUser) {
-      res.status(401).json({ message: "You're not logged in" });
-    }
-
-    if (!eventId) {
-      res.status(404).json({ message: 'Event not found' });
-    }
-    const newReservation = await createNewReservation(eventId, userId);
-
-    if (newReservation === 'no_tickets') {
-      res.status(400).json({ message: 'No available tickets' });
-    }
-    res.status(201).json(newReservation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating reservation' });
+  const reservation = await getReservationDetails(reservationId);
+  if (!reservation) {
+    res.status(404).json({ message: 'Reservation not found' });
+    return;
   }
+  if (reservation.userId !== userId) {
+    res.status(403).json({ message: 'Forbidden' });
+    return;
+  }
+  res.json(reservation);
 };
 
-export const editReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
+export const createReservationHandler: RequestHandler = async (req, res) => {
+  const userId = Number(res.locals.user.id);
+  const eventId = Number(req.params.eventId);
+  const quantity = Number(req.body.quantity) || 1;
+
+  const result = await createNewReservation(userId, eventId, quantity);
+  if (result === 'no_tickets') {
+    res.status(400).json({ message: 'No available tickets' });
+    return;
+  }
+  if (result === null) {
+    res.status(404).json({ message: 'Event not found' });
+    return;
+  }
+  res.status(201).json(result);
+};
+
+// PATCH /user/:userId/reservations/:reservationId
+export const updateReservationHandler: RequestHandler<
+  ReservationParamsInput
+> = async (req, res) => {
+  const userId = Number(res.locals.user.id);
+  const reservationId = Number(req.params.reservationId);
   const { status } = req.body;
-  const loggedUser = res.locals.user;
-  try {
-    const reservation = await editReservation(reservationId, status);
 
-    if (!reservation) {
-      res.status(404).json({ message: 'Reservation not found' });
-      return;
-    }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-      return;
-    }
-    if (reservation?.userId !== loggedUser) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
-      return;
-    }
-
-    res.json(reservation);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating reservation', error });
+  const reservation = await getReservationDetails(reservationId);
+  if (!reservation) {
+    res.status(404).json({ message: 'Reservation not found' });
+    return;
   }
+  if (reservation.userId !== userId) {
+    res.status(403).json({ message: 'Forbidden' });
+    return;
+  }
+  const updated = await editReservation(reservationId, status);
+  res.json(updated);
 };
 
-export const deleteReservationHandler = async (req: Request, res: Response) => {
-  const { reservationId } = req.params;
-  const loggedUser = res.locals.user;
+export const cancelReservationHandler: RequestHandler<
+  ReservationParamsInput
+> = async (req, res) => {
+  const userId = Number(res.locals.user.id);
+  const reservationId = Number(req.params.reservationId);
 
-  try {
-    const reservation = await deleteReservation(reservationId);
-    if (!reservation) {
-      res.status(404).json({ message: 'Reservation not found' });
-      return;
-    }
-    if (!loggedUser) {
-      res.status(404).json({ message: "You're not logged in" });
-      return;
-    }
-    if (reservation?.userId !== loggedUser) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: you can't access this page" });
-      return;
-    }
-
-    res.json(reservation);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating reservation', error });
+  const reservation = await getReservationDetails(reservationId);
+  if (!reservation) {
+    res.status(404).json({ message: 'Reservation not found' });
+    return;
   }
+  if (reservation.userId !== userId) {
+    res.status(403).json({ message: 'Forbidden' });
+    return;
+  }
+  await cancelReservation(reservationId);
+  res.json({ message: 'Reservation cancelled' });
 };

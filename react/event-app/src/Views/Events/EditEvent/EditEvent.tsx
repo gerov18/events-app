@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useGetCategoriesQuery,
   useGetEventByIdQuery,
+  useGetEventImagesQuery,
   useUpdateEventMutation,
+  useUploadEventImagesMutation,
 } from '../../../api/events/eventApi';
 import { CreateEventInput, eventSchema } from '../../../api/events/eventSchema';
 import { FormInput } from '../../../Components/FormInput/FormInput';
@@ -20,25 +22,17 @@ export const EditEvent: React.FC = () => {
   const { data: categories, isLoading: isCatLoading } = useGetCategoriesQuery();
   const { data: event, isLoading: isEventLoading } =
     useGetEventByIdQuery(eventId);
+  const { data: images, isLoading: loadingImages } =
+    useGetEventImagesQuery(eventId);
+
   const [updateEvent, { isLoading: isUpdating, isSuccess, error }] =
     useUpdateEventMutation();
+  const [uploadImages, { isLoading: isUploading }] =
+    useUploadEventImagesMutation();
+
   const { user, userType } = useSelector((state: RootState) => state.auth);
 
-  useEffect(() => {
-    if (isCatLoading || isEventLoading) return;
-    if (!event) {
-      navigate('/404', { replace: true });
-      return;
-    }
-    if (user && userType === 'organiser') {
-      if (user.id !== event.createdBy) {
-        navigate('/404', { replace: true });
-        console.log('gosho');
-      }
-    } else {
-      navigate('/404', { replace: true });
-    }
-  }, [isCatLoading, isEventLoading, event, user, userType]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const {
     register,
@@ -59,6 +53,22 @@ export const EditEvent: React.FC = () => {
   });
 
   useEffect(() => {
+    if (isCatLoading || isEventLoading) return;
+    if (!event) {
+      navigate('/404', { replace: true });
+      return;
+    }
+    if (user && userType === 'organiser') {
+      if (user.id !== event.createdBy) {
+        navigate('/404', { replace: true });
+        console.log('gosho');
+      }
+    } else {
+      navigate('/404', { replace: true });
+    }
+  }, [isCatLoading, isEventLoading, event, user, userType]);
+
+  useEffect(() => {
     if (event) {
       reset(event);
     }
@@ -70,8 +80,17 @@ export const EditEvent: React.FC = () => {
     }
   }, [isSuccess, navigate]);
 
-  const onSubmit = (data: CreateEventInput) => {
-    updateEvent({ id: eventId, data });
+  const onSubmit = async (data: CreateEventInput) => {
+    try {
+      await updateEvent({ id: eventId, data }).unwrap();
+
+      if (files.length > 0) {
+        await uploadImages({ eventId, files }).unwrap();
+      }
+      navigate(`/events/${eventId}`);
+    } catch (err) {
+      console.error('Edit failed:', err);
+    }
   };
 
   if (isCatLoading || isEventLoading) return <p>Loading…</p>;
@@ -146,6 +165,32 @@ export const EditEvent: React.FC = () => {
         error={errors.price?.message}
       />
 
+      <div>
+        <label>Add new photos</label>
+        <input
+          type='file'
+          multiple
+          accept='image/*'
+          onChange={e =>
+            setFiles([...files, ...Array.from(e.target.files ?? [])])
+          }
+        />
+      </div>
+
+      <button disabled={isUploading}>
+        {isUploading ? 'Uploading...' : 'Upload photos'}
+      </button>
+
+      <h3>Existing photos:</h3>
+      <div className='grid grid-cols-3 gap-4'>
+        {images?.map(img => (
+          <img
+            key={img.id}
+            src={img.url}
+            className='w-full h-32 object-cover rounded'
+          />
+        ))}
+      </div>
       <button
         type='submit'
         disabled={isUpdating}

@@ -61,6 +61,15 @@ model Event {
   price Float
   categoryId  Int
   category    Category   @relation(fields: [categoryId], references: [id])
+  images      Image[]
+}
+
+model Image {
+  id        Int    @id @default(autoincrement())
+  url       String
+  eventId   Int
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 model Organiser {
@@ -89,6 +98,22 @@ model Reservation {
   user      User     @relation(fields: [userId], references: [id],  onDelete: Cascade)
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   status ReservationStatus @default(CONFIRMED)
+  tickets   Ticket[]
+  totalPrice  Float
+}
+
+model Ticket {
+  id             Int      @id @default(autoincrement())
+  reservationId  Int
+  reservation    Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  qrCode         String?     
+  status         TicketStatus @default(CONFIRMED)
+}
+
+enum TicketStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }
 
 model RoleRequest {
