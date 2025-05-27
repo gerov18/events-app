@@ -7,9 +7,11 @@ import {
   useDeleteEventMutation,
   useGetCategoryByIdQuery,
   useGetEventByIdQuery,
+  useGetEventImagesQuery,
 } from '../../../api/events/eventApi';
 import moment from 'moment';
 import { useCreateReservationMutation } from '../../../api/reservations/reservationsApi';
+import { Image } from '../../../types/Image';
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +21,8 @@ const EventDetails: React.FC = () => {
   const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
   const [reserveTickets, { isLoading: isReserving }] =
     useCreateReservationMutation();
+  const { data: images, isLoading: imagesLoading } =
+    useGetEventImagesQuery(eventId);
 
   const {
     data: category,
@@ -97,6 +101,24 @@ const EventDetails: React.FC = () => {
           className='px-4 py-2 bg-green-500 text-white rounded mr-4'>
           {isReserving ? 'Резервиране…' : 'Reserve ticket'}
         </button>
+      )}
+
+      <h2 className='mt-6 text-lg font-semibold'>Gallery</h2>
+      {imagesLoading ? (
+        <p>Loading images…</p>
+      ) : images && images.length > 0 ? (
+        <div className='grid grid-cols-3 gap-4 mt-4'>
+          {images.map((img: Image) => (
+            <img
+              key={img.id}
+              src={img.url}
+              alt={`Event ${event.id} photo ${img.id}`}
+              className='w-full h-48 object-cover rounded'
+            />
+          ))}
+        </div>
+      ) : (
+        <p className='mt-2 text-gray-500'>No images uploaded yet.</p>
       )}
 
       {isOwner && (

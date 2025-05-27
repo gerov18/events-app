@@ -3,6 +3,7 @@ import { Category } from '../../types/Category';
 import { CreateEventInput } from '../../types/event';
 import { UpdateEventInput } from './eventSchema';
 import { Event } from '../../types/event';
+import { Image } from '../../types/Image';
 
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
@@ -10,7 +11,7 @@ export const eventsApi = createApi({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
   }),
-  tagTypes: ['Events', 'Categories'],
+  tagTypes: ['Events', 'Categories', 'Images'],
   endpoints: builder => ({
     getCategories: builder.query<Category[], void>({
       query: () => '/categories',
@@ -54,6 +55,26 @@ export const eventsApi = createApi({
       }),
       invalidatesTags: ['Events'],
     }),
+    uploadEventImages: builder.mutation<
+      Image[],
+      { eventId: number; files: File[] }
+    >({
+      query: ({ eventId, files }) => {
+        const fd = new FormData();
+        files.forEach(f => fd.append('images', f));
+        return {
+          url: `/events/${eventId}/images`,
+          method: 'POST',
+          body: fd,
+        };
+      },
+      invalidatesTags: ['Images', 'Events'],
+    }),
+
+    getEventImages: builder.query<Image[], number>({
+      query: eventId => `/events/${eventId}/images`,
+      providesTags: (_res, _err, id) => [{ type: 'Images', id }],
+    }),
   }),
 });
 
@@ -64,4 +85,6 @@ export const {
   useCreateEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,
+  useGetEventImagesQuery,
+  useUploadEventImagesMutation,
 } = eventsApi;

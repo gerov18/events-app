@@ -11,6 +11,9 @@ import {
   EventParamsInput,
   UpdateEventInput,
 } from '../schemas/eventSchema';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const getAllEventsHandler = async (_req: Request, res: Response) => {
   try {
@@ -141,4 +144,36 @@ export const deleteEventHandler = async (
   } catch (error) {
     res.status(500).json({ message: 'Error deleting event', error });
   }
+};
+
+export const uploadEventImageHandler = async (req: Request, res: Response) => {
+  const eventId = Number(req.params.id);
+  const files = req.files as Express.Multer.File | undefined;
+
+  if (!files || !Array.isArray(req.files)) {
+    res.status(400).json({ message: 'No image' });
+    return;
+  }
+
+  const creates = (req.files as Express.Multer.File[]).map(f =>
+    prisma.image.create({ data: { url: (f as any).path, eventId } })
+  );
+  const images = await Promise.all(creates);
+  res.status(201).json(images);
+};
+
+export const getEventImagesHandler = async (req: Request, res: Response) => {
+  const eventId = Number(req.params.id);
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) {
+    res.status(404).json({ message: 'Event not found' });
+    return;
+  }
+
+  const images = await prisma.image.findMany({
+    where: { eventId },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  res.json(images);
 };
