@@ -4,6 +4,7 @@ import {
   Role,
   ReservationStatus,
   Organiser,
+  TicketStatus,
 } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -45,7 +46,7 @@ function randomDate(): Date {
 async function main() {
   console.log('🌱 Starting seed…');
 
-  // 1. Categories
+  // 1) Categories
   const categories = await Promise.all(
     categoryNames.map(name =>
       prisma.category.upsert({
@@ -56,25 +57,25 @@ async function main() {
     )
   );
 
-  // 2. Organisers
+  // 2) Organisers
   const organisers: Organiser[] = [];
   for (let i = 1; i <= 5; i++) {
     const hashed = await bcrypt.hash('pass123', 10);
-    const organiser = await prisma.organiser.create({
+    const org = await prisma.organiser.create({
       data: {
         name: `Organiser ${i}`,
         email: `organiser${i}@example.com`,
         password: hashed,
         description: `This is organiser ${i}`,
-        phone: `088800000${i}`,
+        phone: `08880000${i}`,
         website: `https://organiser${i}.bg`,
         createdAt: new Date(),
       },
     });
-    organisers.push(organiser);
+    organisers.push(org);
   }
 
-  // 3. Users
+  // 3) Users
   for (let i = 1; i <= 30; i++) {
     const firstName = randomItem(firstNames);
     const lastName = randomItem(lastNames);
@@ -93,9 +94,9 @@ async function main() {
     });
   }
 
-  // 4. Events
+  // 4) Events
   for (let i = 1; i <= 30; i++) {
-    const organiser = randomItem(organisers);
+    const org = randomItem(organisers);
     const capacity = Math.floor(Math.random() * 150) + 50;
     await prisma.event.create({
       data: {
@@ -107,30 +108,38 @@ async function main() {
         availableTickets: capacity,
         price: [5, 10, 15, 20][Math.floor(Math.random() * 4)],
         createdAt: new Date(),
-        createdBy: organiser.id,
+        createdBy: org.id,
         categoryId: randomItem(categories).id,
       },
     });
   }
 
-  // Grab all events now (so we know their prices)
+  // 5) Reservations & Tickets
   const allEvents = await prisma.event.findMany();
-
-  // 5. Reservations
   for (let i = 1; i <= 30; i++) {
     const event = randomItem(allEvents);
     const userId = Math.floor(Math.random() * 30) + 1;
-    await prisma.reservation.create({
+    const status = randomItem([
+      ReservationStatus.CONFIRMED,
+      ReservationStatus.PENDING,
+      ReservationStatus.CANCELLED,
+    ]);
+    // Create reservation
+    const reservation = await prisma.reservation.create({
       data: {
         userId,
         eventId: event.id,
-        status: randomItem([
-          ReservationStatus.CONFIRMED,
-          ReservationStatus.PENDING,
-          ReservationStatus.CANCELLED,
-        ]),
+        status,
         totalPrice: event.price,
         createdAt: new Date(),
+      },
+    });
+    // Create at least one ticket for this reservation
+    await prisma.ticket.create({
+      data: {
+        reservationId: reservation.id,
+        status: status as TicketStatus,
+        qrCode: null,
       },
     });
   }

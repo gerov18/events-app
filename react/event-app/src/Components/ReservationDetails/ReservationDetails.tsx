@@ -13,7 +13,6 @@ export const ReservationDetails: React.FC = () => {
   const navigate = useNavigate();
   const { userType, user } = useSelector((s: RootState) => s.auth);
 
-  // Сега хващаме и двата параметъра
   const { userId, reservationId } = useParams<{
     userId: string;
     reservationId: string;
@@ -22,7 +21,6 @@ export const ReservationDetails: React.FC = () => {
   const uid = Number(userId);
   const rid = Number(reservationId);
 
-  // Ако няма логнат потребител или ids не съвпадат → редирект
   useEffect(() => {
     if (!user || uid !== user.id) {
       //   navigate('/', { replace: true });
@@ -33,7 +31,7 @@ export const ReservationDetails: React.FC = () => {
     data: reservation,
     isLoading,
     isError,
-  } = useGetReservationByIdQuery(rid);
+  } = useGetReservationByIdQuery({ userId: uid, reservationId: rid });
 
   const {
     data: event,

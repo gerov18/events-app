@@ -1,4 +1,9 @@
+// src/api/reservations/reservationsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  CreateReservationInput,
+  UpdateReservationInput,
+} from './reservationsSchema';
 import { Reservation } from '../../types/Reservation';
 
 export const reservationsApi = createApi({
@@ -7,46 +12,62 @@ export const reservationsApi = createApi({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
   }),
-  tagTypes: ['Reservations', 'Events'],
+  tagTypes: ['Reservations'],
   endpoints: builder => ({
-    getUserReservations: builder.query<Reservation[], void>({
+    getMyReservations: builder.query<Reservation[], void>({
       query: () => '/users/me/reservations',
       providesTags: ['Reservations'],
     }),
-    createReservation: builder.mutation<void, number>({
-      query: eventId => ({
+
+    getReservationById: builder.query<
+      Reservation,
+      { userId: number; reservationId: number }
+    >({
+      query: ({ userId, reservationId }) =>
+        `/users/${userId}/reservations/${reservationId}`,
+      providesTags: ['Reservations'],
+    }),
+
+    createReservation: builder.mutation<
+      Reservation,
+      { eventId: number; quantity?: number }
+    >({
+      query: ({ eventId, quantity }) => ({
         url: `/events/${eventId}/reservations`,
         method: 'POST',
+        body: { quantity },
       }),
-      invalidatesTags: ['Reservations', 'Events'],
+      invalidatesTags: ['Reservations'],
+    }),
+
+    updateReservation: builder.mutation<
+      Reservation,
+      { reservationId: number; status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' }
+    >({
+      query: ({ reservationId, status }) => ({
+        url: `/users/me/reservations/${reservationId}`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: (_r, _e, { reservationId }) => [
+        { type: 'Reservations', id: reservationId },
+      ],
     }),
 
     cancelReservation: builder.mutation<void, number>({
       query: id => ({
-        url: `/reservations/${id}/edit`,
-        method: 'PATCH',
-        body: { status: 'CANCELLED' },
-      }),
-      invalidatesTags: ['Reservations', 'Events'],
-    }),
-
-    deleteReservation: builder.mutation<void, number>({
-      query: id => ({
-        url: `/reservations/${id}/delete`,
+        url: `/users/me/reservations/${id}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Reservations', 'Events'],
-    }),
-    getReservationById: builder.query<Reservation, number>({
-      query: id => `/reservations/${id}`,
-      providesTags: (_res, _err, id) => [{ type: 'Reservations', id }],
+      invalidatesTags: (_r, _e, id) => [{ type: 'Reservations', id }],
     }),
   }),
 });
 
 export const {
-  useGetUserReservationsQuery,
-  useCreateReservationMutation,
-  useCancelReservationMutation,
+  useGetMyReservationsQuery,
   useGetReservationByIdQuery,
+  useCreateReservationMutation,
+  useUpdateReservationMutation,
+  useCancelReservationMutation,
 } = reservationsApi;
