@@ -55,6 +55,12 @@ export const eventsApi = createApi({
       }),
       invalidatesTags: ['Events'],
     }),
+    getEventImages: builder.query<Image[], number>({
+      query: eventId => `/events/${eventId}/images`,
+      providesTags: (_res, _err, eventId) => [
+        { type: 'Images' as const, id: eventId },
+      ],
+    }),
     uploadEventImages: builder.mutation<
       Image[],
       { eventId: number; files: File[] }
@@ -68,12 +74,10 @@ export const eventsApi = createApi({
           body: fd,
         };
       },
-      invalidatesTags: ['Images', 'Events'],
-    }),
-
-    getEventImages: builder.query<Image[], number>({
-      query: eventId => `/events/${eventId}/images`,
-      providesTags: (_res, _err, id) => [{ type: 'Images', id }],
+      invalidatesTags: (_res, _err, { eventId }) => [
+        { type: 'Images' as const, id: eventId },
+        { type: 'Events' as const, id: eventId },
+      ],
     }),
   }),
 });

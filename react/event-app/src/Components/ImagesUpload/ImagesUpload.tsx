@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   useGetEventImagesQuery,
-  useUploadImageMutation,
+  useUploadEventImagesMutation,
+  ,
 } from '../../api/events/eventApi';
 
 type Props = { eventId: number };
@@ -9,7 +10,7 @@ type Props = { eventId: number };
 export const ImagesUpload: React.FC<Props> = ({ eventId }) => {
   const [file, setFile] = useState<File | null>(null);
   const { data: images } = useGetEventImagesQuery(eventId);
-  const [uploadImage, { isLoading }] = useUploadImageMutation();
+  const [uploadImage, { isLoading }] = useUploadEventImagesMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) setFile(e.target.files[0]);
