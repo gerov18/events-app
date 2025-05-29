@@ -21,6 +21,7 @@ import { CreateEvent } from './Views/Events/CreateEvent/CreateEvent';
 import { EditEvent } from './Views/Events/EditEvent/EditEvent';
 import { RootState } from './api/store';
 import { ReservationDetails } from './Components/ReservationDetails/ReservationDetails';
+import { StripeContainer } from './Components/StripeContainer/StripeContainer';
 
 function App() {
   const dispatch = useDispatch();
@@ -114,6 +115,10 @@ function App() {
                 <ReservationDetails />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path='/payment'
+            element={<StripeContainer />}
           />
         </Routes>
       </Layout>
