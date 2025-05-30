@@ -61,13 +61,8 @@ const EventDetails: React.FC = () => {
     }
   };
 
-  const handleReserve = async () => {
-    try {
-      await reserveTickets({ eventId, quantity }).unwrap();
-      alert('Билетът е резервиран успешно!');
-    } catch (err: any) {
-      alert(err?.data?.message || 'Грешка при резервация');
-    }
+  const handleReserve = () => {
+    navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
   };
 
   return (

@@ -99,9 +99,12 @@ export const ReservationDetails: React.FC = () => {
                 {ticket.status}
               </span>
               {ticket.qrCode && (
-                <QRCodeSVG
-                  value={ticket.qrCode}
+                <img
+                  src={ticket.qrCode}
+                  alt={`Ticket ${ticket.id} QR`}
                   width={128}
+                  height={128}
+                  style={{ objectFit: 'contain' }}
                 />
               )}
             </li>

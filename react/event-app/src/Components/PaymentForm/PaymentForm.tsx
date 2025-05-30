@@ -1,72 +1,60 @@
+// src/Views/Payment/PaymentForm.tsx
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 import { useCreatePaymentMutation } from '../../api/paymentApi/paymentApi';
 
-const CARD_OPTIONS = {
-  iconStyle: 'solid',
-  style: {
-    base: {
-      //   backgroundColor: `${resolvedTheme === 'dark' ? 'black' : 'white'}`,
-      backgroundColor: 'black',
-      color: 'white',
-      iconColor: '#6D28D9',
-      //   color: `${resolvedTheme === 'dark' ? 'white' : '#9CA3AF'}`,
-      fontWeight: '500',
-      fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
-      fontSize: '16px',
-      fontSmoothing: 'antialiased',
-      ':-webkit-autofill': {
-        color: '#fce883',
-      },
-      '::placeholder': {
-        color: '#D1D5DB',
-      },
-    },
-    invalid: {
-      iconColor: '#ef2961',
-      color: '#ef2961',
-    },
-  },
-};
+interface PaymentFormProps {
+  amount: number; // in cents
+  onSuccess: () => Promise<void>;
+}
 
-const PaymentForm = () => {
+const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
-
-  useForm();
-
-  const [
-    createPayment,
-    { isSuccess: paymentSuccess, data: paymentData, error: createPaymentError },
-  ] = useCreatePaymentMutation();
+  const [createPayment] = useCreatePaymentMutation();
+  const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) {
-      return;
-    }
-    const cardElement = elements.getElement(CardElement);
+    if (!stripe || !elements) return;
+    setProcessing(true);
 
-    if (!cardElement) {
-      return;
-    }
+    const card = elements.getElement(CardElement);
+    if (!card) return;
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
+    const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
-      card: cardElement,
+      card,
     });
+    if (pmError || !paymentMethod) {
+      setError(pmError?.message || 'PaymentMethod error');
+      setProcessing(false);
+      return;
+    }
 
-    if (!paymentMethod) return;
+    try {
+      await createPayment({ id: paymentMethod.id, amount }).unwrap();
+      await onSuccess();
+    } catch (err: any) {
+      setError(err.data?.error || err.message || 'Payment failed');
+    }
 
-    const { id } = paymentMethod;
-    await createPayment({ id, amount: 1000 });
+    setProcessing(false);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <CardElement options={CARD_OPTIONS} />
-
-      <button>Pay</button>
+    <form
+      onSubmit={handleSubmit}
+      className='space-y-4'>
+      <CardElement />
+      {error && <p className='text-red-500'>{error}</p>}
+      <button
+        type='submit'
+        disabled={!stripe || processing}
+        className='px-4 py-2 bg-blue-600 text-white rounded'>
+        {processing ? 'Processing…' : `Pay $${(amount / 100).toFixed(2)}`}
+      </button>
     </form>
   );
 };

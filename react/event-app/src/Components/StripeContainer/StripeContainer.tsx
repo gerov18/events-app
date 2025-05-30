@@ -11,8 +11,6 @@ const stripeTestPromise = loadStripe(
 
 export const StripeContainer = () => {
   return (
-    <Elements stripe={stripeTestPromise}>
-      <PaymentForm />
-    </Elements>
+    <Elements stripe={stripeTestPromise}>{/* <PaymentForm /> */}</Elements>
   );
 };
