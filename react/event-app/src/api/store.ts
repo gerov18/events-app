@@ -8,6 +8,7 @@ import { organisersApi } from './organiser/organiserApi';
 import { meApi } from './me/meApi';
 import { adminApi } from './admin/adminApi';
 import { reservationsApi } from './reservations/reservationsApi';
+import { paymentApi } from './paymentApi/paymentApi';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     [meApi.reducerPath]: meApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
     [reservationsApi.reducerPath]: reservationsApi.reducer,
+    [paymentApi.reducerPath]: paymentApi.reducer,
     organiser: organiserReducer,
     auth: authReducer,
     event: eventReducer,
@@ -28,7 +30,8 @@ export const store = configureStore({
       .concat(organisersApi.middleware)
       .concat(adminApi.middleware)
       .concat(eventsApi.middleware)
-      .concat(reservationsApi.middleware),
+      .concat(reservationsApi.middleware)
+      .concat(paymentApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

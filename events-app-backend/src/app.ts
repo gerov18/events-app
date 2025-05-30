@@ -15,6 +15,7 @@ import cookieParser from 'cookie-parser';
 import './passport';
 import eventReservationsRouter from './routes/reservation.event';
 import userReservationsRouter from './routes/reservations.user';
+import paymentRoutes from './routes/payments';
 import { PrismaClient } from '@prisma/client';
 
 const app: Application = express();
@@ -46,11 +47,12 @@ app.use('/', authorizationRoutes);
 app.use('/authentication', googleAuth);
 app.use('/categories', categoryRoutes);
 app.use('/organiser', organiserRoutes);
+app.use('/payment', paymentRoutes);
 app.use('/', meRoute);
 
 const prisma = new PrismaClient();
 
-app.use('/', async (_req, res) => {
+app.use('/debug/reserv', async (_req, res) => {
   try {
     const reservations = await prisma.reservation.findMany({
       include: {

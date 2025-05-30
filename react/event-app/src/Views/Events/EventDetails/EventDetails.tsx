@@ -1,5 +1,5 @@
 // src/Views/Events/EventDetails/EventDetails.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../api/store';
@@ -31,6 +31,7 @@ const EventDetails: React.FC = () => {
   } = useGetCategoryByIdQuery(event?.categoryId ?? null!);
 
   const auth = useSelector((state: RootState) => state.auth);
+  const [quantity, setQuantity] = useState<number>(1);
 
   useEffect(() => {
     if (isError) {
@@ -60,13 +61,8 @@ const EventDetails: React.FC = () => {
     }
   };
 
-  const handleReserve = async () => {
-    try {
-      await reserveTickets(eventId).unwrap();
-      alert('Билетът е резервиран успешно!');
-    } catch (err: any) {
-      alert(err?.data?.message || 'Грешка при резервация');
-    }
+  const handleReserve = () => {
+    navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
   };
 
   return (
@@ -95,12 +91,40 @@ const EventDetails: React.FC = () => {
         </div>
       </div>
       {auth.userType !== 'organiser' && (
-        <button
-          onClick={handleReserve}
-          disabled={isReserving || event.availableTickets < 1}
-          className='px-4 py-2 bg-green-500 text-white rounded mr-4'>
-          {isReserving ? 'Резервиране…' : 'Reserve ticket'}
-        </button>
+        <div>
+          <div className='flex items-center space-x-6 mb-4'>
+            <button
+              disabled={quantity === event.availableTickets}
+              onClick={() => {
+                setQuantity(quantity + 1);
+              }}
+              className='w-12 h-12 flex items-center justify-center bg-gray-200 rounded-full text-3xl font-bold hover:bg-gray-300 transition'>
+              +
+            </button>
+            <button
+              disabled={quantity === 1}
+              onClick={() => {
+                setQuantity(quantity - 1);
+              }}
+              className='w-12 h-12 flex items-center justify-center bg-gray-200 rounded-full text-3xl font-bold hover:bg-gray-300 transition'>
+              –
+            </button>
+            <h1>quantity:{quantity}</h1>
+          </div>
+          <div>
+            {' '}
+            <button
+              onClick={handleReserve}
+              disabled={isReserving || event.availableTickets < 1}
+              className='px-4 py-2 bg-green-500 text-white rounded mr-4'>
+              {isReserving
+                ? 'Reserving...'
+                : quantity === 1
+                ? 'Reserve ticket'
+                : `Reserve ${quantity} tickets`}
+            </button>
+          </div>
+        </div>
       )}
 
       <h2 className='mt-6 text-lg font-semibold'>Gallery</h2>

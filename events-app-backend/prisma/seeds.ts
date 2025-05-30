@@ -7,6 +7,7 @@ import {
   TicketStatus,
 } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import QRCode from 'qrcode';
 
 const prisma = new PrismaClient();
 
@@ -114,7 +115,7 @@ async function main() {
     });
   }
 
-  // 5) Reservations & Tickets
+  // 5) Reservations & Tickets (with QR codes)
   const allEvents = await prisma.event.findMany();
   for (let i = 1; i <= 30; i++) {
     const event = randomItem(allEvents);
@@ -124,7 +125,8 @@ async function main() {
       ReservationStatus.PENDING,
       ReservationStatus.CANCELLED,
     ]);
-    // Create reservation
+
+    // 5.a) Create reservation
     const reservation = await prisma.reservation.create({
       data: {
         userId,
@@ -134,13 +136,31 @@ async function main() {
         createdAt: new Date(),
       },
     });
-    // Create at least one ticket for this reservation
-    await prisma.ticket.create({
+
+    // 5.b) Create one ticket
+    const ticket = await prisma.ticket.create({
       data: {
         reservationId: reservation.id,
         status: status as TicketStatus,
-        qrCode: null,
+        // qrCode will be set next
       },
+    });
+
+    // 5.c) Generate QR-code Data-URL
+    const payload = JSON.stringify({
+      ticketId: ticket.id,
+      reservationId: reservation.id,
+    });
+    const qrDataUrl = await QRCode.toDataURL(payload, {
+      width: 1,
+      margin: 1,
+      errorCorrectionLevel: 'H',
+    });
+
+    // 5.d) Persist QR code on the ticket
+    await prisma.ticket.update({
+      where: { id: ticket.id },
+      data: { qrCode: qrDataUrl },
     });
   }
 
