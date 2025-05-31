@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { User } from '../../types/User';
 import { Organiser } from '../../types/Organiser';
+import { RoleRequest } from '../../types/RoleRequest';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5008/admin',
+    baseUrl: 'http://localhost:5008/',
     credentials: 'include',
   }),
   tagTypes: ['AdminUsers', 'AdminOrganisers'],
@@ -33,6 +34,29 @@ export const adminApi = createApi({
       query: () => '/organiser/all',
       providesTags: ['AdminOrganisers'],
     }),
+    updateUserRole: builder.mutation<
+      User,
+      { id: number; role: 'ADMIN' | 'ORGANISER' | 'USER' }
+    >({
+      query: ({ id, role }) => ({
+        url: `/users/${id}/role`,
+        method: 'PATCH',
+        body: { role },
+      }),
+    }),
+    getRoleRequests: builder.query<RoleRequest[], void>({
+      query: () => '/role-requests',
+    }),
+    handleRoleRequest: builder.mutation<
+      RoleRequest,
+      { id: number; status: 'ACCEPTED' | 'REJECTED' }
+    >({
+      query: ({ id, status }) => ({
+        url: `/role-requests/${id}`,
+        method: 'PATCH',
+        body: { status },
+      }),
+    }),
   }),
 });
 
@@ -41,4 +65,7 @@ export const {
   useDeleteOrganiserByAdminMutation,
   useGetAllUsersQuery,
   useGetAllOrganisersQuery,
+  useGetRoleRequestsQuery,
+  useHandleRoleRequestMutation,
+  useUpdateUserRoleMutation,
 } = adminApi;

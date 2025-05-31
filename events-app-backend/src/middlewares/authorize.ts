@@ -10,7 +10,7 @@ export const authorize = (roles: string[]) => {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = res.locals.user;
+      const userId = res.locals.user.id;
       const user = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!user || !roles.includes(user.role)) {

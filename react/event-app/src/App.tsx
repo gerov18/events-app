@@ -25,6 +25,11 @@ import { StripeContainer } from './Components/StripeContainer/StripeContainer';
 import { Checkout } from './Views/Events/Checkout/Checkout';
 import { UserDetails } from './Views/User/UserDetails/UserDetails';
 import { OrganiserDetails } from './Views/Organiser/OrganiserDetails/OrganiserDetails';
+import { AdminLayout } from './Components/AdminLayout/AdminLayout';
+import { AdminDashboard } from './Views/Admin/AdminDashboard/AdminDashboard';
+import { ManageOrganisers } from './Views/Admin/ManageOrganisers/ManageOrganisers';
+import { ManageUsers } from './Views/Admin/ManageUsers/ManageUsers';
+import { HandleRoleRequests } from './Views/Admin/RoleRequests/HandleRoleRequests';
 
 function App() {
   const dispatch = useDispatch();
@@ -38,6 +43,9 @@ function App() {
         dispatch(setМе({ userType: 'organiser', user: meData.data }));
       }
       if (meData?.type === 'user') {
+        dispatch(setМе({ userType: 'user', user: meData.data }));
+      }
+      if (meData?.type === 'admin') {
         dispatch(setМе({ userType: 'user', user: meData.data }));
       } else if (isError) {
         dispatch(clearUserState());
@@ -152,6 +160,31 @@ function App() {
             path='/organiser/:id'
             element={<OrganiserDetails />}
           />
+
+          <Route
+            path='/admin'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+            <Route
+              index
+              element={<AdminDashboard />}
+            />
+            <Route
+              path='users'
+              element={<ManageUsers />}
+            />
+            <Route
+              path='organisers'
+              element={<ManageOrganisers />}
+            />
+            <Route
+              path='role-requests'
+              element={<HandleRoleRequests />}
+            />
+          </Route>
         </Routes>
       </Layout>
     </Router>
