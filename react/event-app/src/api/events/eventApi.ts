@@ -91,4 +91,5 @@ export const {
   useDeleteEventMutation,
   useGetEventImagesQuery,
   useUploadEventImagesMutation,
+  useGetEventsQuery,
 } = eventsApi;

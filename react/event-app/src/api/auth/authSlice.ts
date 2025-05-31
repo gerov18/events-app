@@ -7,7 +7,7 @@ import { MeResponse } from '../me/meApi';
 type AuthState =
   | {
       initialized: boolean;
-      userType: 'user' | null;
+      userType: 'user' | 'admin' | null;
       user: LoginResponse['user'] | null;
       token: string | null;
     }

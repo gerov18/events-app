@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { RootState } from '../../api/store';
-import { useGetMeQuery } from '../../api/me/meApi';
+import { RootState } from '../../../api/store';
+import { useGetMeQuery } from '../../../api/me/meApi';
 import {
   useCancelReservationMutation,
   useGetUserReservationsQuery,
-} from '../../api/reservations/reservationsApi';
+} from '../../../api/reservations/reservationsApi';
 
 export const UserDetails: React.FC = () => {
   const navigate = useNavigate();

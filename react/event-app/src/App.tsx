@@ -23,7 +23,8 @@ import { RootState } from './api/store';
 import { ReservationDetails } from './Components/ReservationDetails/ReservationDetails';
 import { StripeContainer } from './Components/StripeContainer/StripeContainer';
 import { Checkout } from './Views/Events/Checkout/Checkout';
-import { UserDetails } from './Views/Users/UserDetails';
+import { UserDetails } from './Views/User/UserDetails/UserDetails';
+import { OrganiserDetails } from './Views/Organiser/OrganiserDetails/OrganiserDetails';
 
 function App() {
   const dispatch = useDispatch();
@@ -146,6 +147,10 @@ function App() {
                 <ReservationDetails />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path='/organiser/:id'
+            element={<OrganiserDetails />}
           />
         </Routes>
       </Layout>
