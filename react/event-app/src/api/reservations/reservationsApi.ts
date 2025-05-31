@@ -17,7 +17,16 @@ export const reservationsApi = createApi({
       query: () => '/users/me/reservations',
       providesTags: ['Reservations'],
     }),
-
+    getUserReservations: builder.query<Reservation[], number>({
+      query: userId => `/users/${userId}/reservations`,
+      providesTags: (result, error, userId) =>
+        result
+          ? [
+              ...result.map(r => ({ type: 'Reservations' as const, id: r.id })),
+              { type: 'Reservations', id: 'LIST' },
+            ]
+          : [{ type: 'Reservations', id: 'LIST' }],
+    }),
     getReservationById: builder.query<
       Reservation,
       { userId: number; reservationId: number }
@@ -69,4 +78,5 @@ export const {
   useCreateReservationMutation,
   useUpdateReservationMutation,
   useCancelReservationMutation,
+  useGetUserReservationsQuery,
 } = reservationsApi;

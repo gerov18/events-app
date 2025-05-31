@@ -22,7 +22,8 @@ import { EditEvent } from './Views/Events/EditEvent/EditEvent';
 import { RootState } from './api/store';
 import { ReservationDetails } from './Components/ReservationDetails/ReservationDetails';
 import { StripeContainer } from './Components/StripeContainer/StripeContainer';
-import { Checkout } from './Views/Checkout/Checkout';
+import { Checkout } from './Views/Events/Checkout/Checkout';
+import { UserDetails } from './Views/Users/UserDetails';
 
 function App() {
   const dispatch = useDispatch();
@@ -126,6 +127,23 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['user', 'organiser', 'admin']}>
                 <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/user/me'
+            element={
+              <ProtectedRoute allowedRoles={['user', 'admin']}>
+                <UserDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='/user/:userId/reservations/:reservationId'
+            element={
+              <ProtectedRoute allowedRoles={['user', 'admin']}>
+                <ReservationDetails />
               </ProtectedRoute>
             }
           />
