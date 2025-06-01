@@ -12,6 +12,7 @@ import {
 import moment from 'moment';
 import { useCreateReservationMutation } from '../../../api/reservations/reservationsApi';
 import { Image } from '../../../types/Image';
+import EventCard from '../../../Components/EventCard/EventCard';
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -145,6 +146,10 @@ const EventDetails: React.FC = () => {
         <p className='mt-2 text-gray-500'>No images uploaded yet.</p>
       )}
 
+      <>
+        <h1>eho</h1>
+        <EventCard event={event} />
+      </>
       {isOwner && (
         // || isAdmin
         <div className='flex space-x-4'>

@@ -16,7 +16,7 @@ const Header = () => {
             Events
           </Link>
           <Link
-            to='/profile'
+            to='/user/me'
             className='text-white'>
             Profile
           </Link>

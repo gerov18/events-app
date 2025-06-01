@@ -27,6 +27,12 @@ router.get(
   getReservationDetailsHandler
 );
 
+router.get(
+  '/users/:userId/reservations',
+  authenticate,
+  getUserReservationsHandler
+);
+
 router.patch(
   '/:reservationId',
   authenticate,

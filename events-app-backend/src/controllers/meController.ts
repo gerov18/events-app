@@ -14,10 +14,18 @@ export const meHandler = async (req: Request, res: Response) => {
       }
     }
 
-    if (role === 'USER' || role === 'ADMIN') {
+    if (role === 'USER') {
       const user = await getUserById(id);
       if (user) {
         res.status(200).json({ type: 'user', data: user });
+        return;
+      }
+    }
+
+    if (role === 'ADMIN') {
+      const user = await getUserById(id);
+      if (user) {
+        res.status(200).json({ type: 'admin', data: user });
         return;
       }
     }

@@ -1,15 +1,27 @@
-import { Event, PrismaClient } from '@prisma/client';
+import { Event, Prisma, PrismaClient } from '@prisma/client';
 import { UpdateEventInput } from '../schemas/eventSchema';
 
 const prisma = new PrismaClient();
 
-export const getAllEvents = async () => {
-  return await prisma.event.findMany();
+export const getAllEvents = async (
+  where?: Prisma.EventWhereInput,
+  take?: number
+): Promise<Event[]> => {
+  return await prisma.event.findMany({
+    where: where || {},
+    orderBy: { date: 'asc' },
+    take: take,
+    include: {
+      category: true,
+      images: true,
+    },
+  });
 };
 
 export const getEventById = async (id: number) => {
   return await prisma.event.findUnique({
     where: { id },
+    include: { images: true },
   });
 };
 

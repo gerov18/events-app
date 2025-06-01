@@ -3,7 +3,7 @@ import { Organiser } from '../../types/Organiser';
 import { User } from '../../types/User';
 
 export type MeResponse =
-  | { type: 'user'; data: User }
+  | { type: 'user' | 'admin'; data: User }
   | { type: 'organiser'; data: Organiser };
 
 export const meApi = createApi({

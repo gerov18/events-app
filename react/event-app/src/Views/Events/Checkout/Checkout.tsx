@@ -2,9 +2,9 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useGetEventByIdQuery } from '../../api/events/eventApi';
-import { useCreateReservationMutation } from '../../api/reservations/reservationsApi';
-import PaymentForm from '../../Components/PaymentForm/PaymentForm';
+import { useGetEventByIdQuery } from '../../../api/events/eventApi';
+import { useCreateReservationMutation } from '../../../api/reservations/reservationsApi';
+import PaymentForm from '../../../Components/PaymentForm/PaymentForm';
 
 const stripePromise = loadStripe(
   'pk_test_51RTzg8PLvptwVh3jjWWfUib7asqjolZ3TSF0hpcb1V5NAgqGJ4mEWQJsAYpoVGFOjOwVQ3yCVcPqDKVvtFhsONzl00qRVPtyos'
