@@ -10,6 +10,7 @@ export const getAllEvents = async () => {
 export const getEventById = async (id: number) => {
   return await prisma.event.findUnique({
     where: { id },
+    include: { images: true },
   });
 };
 
