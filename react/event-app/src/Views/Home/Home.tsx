@@ -4,9 +4,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
 import { clearUserState } from '../../api/auth/authSlice';
-import { useGetEventsQuery } from '../../api/events/eventApi';
+import {
+  useGetCategoriesQuery,
+  useGetEventsQuery,
+} from '../../api/events/eventApi';
 import EventCard from '../../Components/EventCard/EventCard';
 import styles from './Home.module.css';
+import CategoryCard from '../../Components/CategoryCard/CategoryCard';
+import CategoriesSection from '../../Components/CategoriesSection/CategoriesSection';
+import EventsSlider from '../../Components/EventsSlider/EventsSlider';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -24,6 +30,12 @@ export const Home = () => {
     isLoading: isLoadingSofia,
     isError: isErrorSofia,
   } = useGetEventsQuery({ city: 'Sofia', take: 4 });
+
+  const {
+    data: categories,
+    isLoading: isCatLoading,
+    isError: isCatError,
+  } = useGetCategoriesQuery();
 
   const {
     data: plovdivEvents,
@@ -79,18 +91,11 @@ export const Home = () => {
         </div>
 
         <section className='my-8 px-6'>
-          <h2 className='text-2xl font-semibold mb-4'>Events in Sofia</h2>
+          <h2 className='text-2xl font-semibold mb-4'>Popular in Sofia</h2>
           {isLoadingSofia ? (
             <p>Loading…</p>
           ) : sofiaEvents && sofiaEvents.length > 0 ? (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-              {sofiaEvents.map(evt => (
-                <EventCard
-                  key={evt.id}
-                  event={evt}
-                />
-              ))}
-            </div>
+            <EventsSlider events={sofiaEvents} />
           ) : (
             <p className='text-gray-500'>No upcoming events in Sofia.</p>
           )}
@@ -104,18 +109,11 @@ export const Home = () => {
         </section>
 
         <section className='my-8 px-6'>
-          <h2 className='text-2xl font-semibold mb-4'>Events in Plovdiv</h2>
+          <h2 className='text-2xl font-semibold mb-4'>Popular in Plovdiv</h2>
           {isLoadingPlo ? (
             <p>Loading…</p>
           ) : plovdivEvents && plovdivEvents.length > 0 ? (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-              {plovdivEvents.map(evt => (
-                <EventCard
-                  key={evt.id}
-                  event={evt}
-                />
-              ))}
-            </div>
+            <EventsSlider events={plovdivEvents} />
           ) : (
             <p className='text-gray-500'>No upcoming events in Plovdiv.</p>
           )}
@@ -126,6 +124,14 @@ export const Home = () => {
               See more happening in Plovdiv
             </Link>
           </div>
+        </section>
+        <section className='my-8 px-6 lg:flex sm:flex-col sm:items-center'>
+          <h2 className='text-2xl font-semibold mb-4'>Browse by Category</h2>
+          {isCatLoading ? (
+            <p>Loading…</p>
+          ) : (
+            <CategoriesSection categories={categories} />
+          )}
         </section>
       </div>
     </>
