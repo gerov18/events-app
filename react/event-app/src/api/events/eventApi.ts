@@ -5,6 +5,14 @@ import { UpdateEventInput } from './eventSchema';
 import { Event } from '../../types/Event';
 import { Image } from '../../types/Image';
 
+export interface Filters {
+  city?: string;
+  categoryId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  take?: number;
+}
+
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
   baseQuery: fetchBaseQuery({
@@ -21,8 +29,22 @@ export const eventsApi = createApi({
       query: id => `/categories/${id}`,
       providesTags: (_result, _err, id) => [{ type: 'Categories', id }],
     }),
-    getEvents: builder.query<Event[], void>({
-      query: () => '/events',
+    getEvents: builder.query<Event[], Filters>({
+      query: filters => {
+        const params = new URLSearchParams();
+        if (filters.city) params.append('city', filters.city);
+        if (filters.categoryId !== undefined)
+          params.append('categoryId', String(filters.categoryId));
+        if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
+        if (filters.dateTo) params.append('dateTo', filters.dateTo);
+        if (filters.take !== undefined)
+          params.append('limit', String(filters.take));
+
+        return {
+          url: `/events${params.toString() ? `?${params.toString()}` : ''}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['Events'],
     }),
     getEventById: builder.query<Event, number>({

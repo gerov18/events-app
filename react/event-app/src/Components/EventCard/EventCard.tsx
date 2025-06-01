@@ -9,12 +9,11 @@ interface EventCardProps {
   event: Event;
 }
 
-const placeholder =
-  'https://via.placeholder.com/400x250.png?text=No+Image+Available';
-
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const imgUrl =
-    event.images && event.images.length > 0 ? event.images[0].url : placeholder;
+    event.images && event.images.length > 0
+      ? event.images[0].url
+      : '../../../public/noPic.jpg';
 
   // Optionally truncate description to ~100 chars
   const truncatedDescription =

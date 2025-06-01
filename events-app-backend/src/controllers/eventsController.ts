@@ -11,15 +11,49 @@ import {
   EventParamsInput,
   UpdateEventInput,
 } from '../schemas/eventSchema';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllEventsHandler = async (_req: Request, res: Response) => {
+export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
-    const events = await getAllEvents();
+    const { city, categoryId, dateFrom, dateTo, limit } = req.query;
+
+    const whereClause: Prisma.EventWhereInput = {};
+
+    if (city && typeof city === 'string') {
+      whereClause.location = city;
+    }
+    if (categoryId && !Array.isArray(categoryId)) {
+      const catNum = Number(categoryId);
+      if (!Number.isNaN(catNum)) {
+        whereClause.categoryId = catNum;
+      }
+    }
+    if (dateFrom && typeof dateFrom === 'string') {
+      const fromDate = new Date(dateFrom);
+      if (!isNaN(fromDate.getTime())) {
+        whereClause.date = { gte: fromDate };
+      }
+    }
+    if (dateTo && typeof dateTo === 'string') {
+      const toDate = new Date(dateTo);
+      if (!isNaN(toDate.getTime())) {
+        whereClause.date =
+          typeof whereClause.date === 'object' && whereClause.date !== null
+            ? { ...whereClause.date, lte: toDate }
+            : { lte: toDate };
+      }
+    }
+    let take: number | undefined;
+    if (limit && !Array.isArray(limit)) {
+      const lim = Number(limit);
+      if (!Number.isNaN(lim) && lim > 0) {
+        take = lim;
+      }
+    }
+    const events = await getAllEvents(whereClause, take);
     res.json(events);
-    return;
   } catch (error) {
     res.status(500).json({ message: 'Error fetching events', error });
   }
