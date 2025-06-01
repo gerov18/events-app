@@ -43,12 +43,9 @@ export const UserDetails: React.FC = () => {
     return <div className='p-4'>Loading your profile...</div>;
   }
 
-  if (!meData || meData.type !== 'user') {
-    return (
-      <div className='p-4 text-red-500'>
-        Only regular users have a “User Details” page.
-      </div>
-    );
+  if (!meData || meData.type === 'organiser') {
+    navigate('/');
+    return <div className='p-4 text-red-500'>No user details found</div>;
   }
 
   const handleCancel = async (reservationId: number) => {

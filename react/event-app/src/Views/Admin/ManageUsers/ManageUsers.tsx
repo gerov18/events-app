@@ -1,5 +1,4 @@
-// src/Views/Admin/ManageUsers.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { User } from '../../../types/User';
 import {
   useDeleteUserByAdminMutation,
@@ -15,6 +14,7 @@ export const ManageUsers: React.FC = () => {
 
   if (isLoading) return <div>Loading users…</div>;
   if (isError) return <div className='text-red-500'>Error loading users</div>;
+  const sortedUsers = users ? [...users].sort((a, b) => a.id - b.id) : [];
 
   return (
     <div className='max-w-4xl mx-auto'>
@@ -30,7 +30,7 @@ export const ManageUsers: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {users!.map((user: User) => (
+          {sortedUsers!.map((user: User) => (
             <tr
               key={user.id}
               className='border-t'>

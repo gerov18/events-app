@@ -57,6 +57,15 @@ export const adminApi = createApi({
         body: { status },
       }),
     }),
+    promoteToAdmin: builder.mutation<
+      void,
+      { id: number; role: 'ADMIN' | 'USER' }
+    >({
+      query: id => ({
+        url: `/users/${id}/role`,
+        method: 'PATCH',
+      }),
+    }),
   }),
 });
 
@@ -67,5 +76,6 @@ export const {
   useGetAllOrganisersQuery,
   useGetRoleRequestsQuery,
   useHandleRoleRequestMutation,
+  usePromoteToAdminMutation,
   useUpdateUserRoleMutation,
 } = adminApi;

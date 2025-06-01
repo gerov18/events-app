@@ -1,3 +1,4 @@
+import { Image } from './Image';
 import { Reservation } from './Reservation';
 
 export type Event = {
@@ -13,6 +14,7 @@ export type Event = {
   price: number;
   reservations: Reservation[];
   categoryId: number;
+  images: Image[];
 };
 
 export type CreateEventInput = {

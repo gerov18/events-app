@@ -4,6 +4,7 @@ import { authorize } from '../middlewares/authorize';
 import {
   adminDeleteUserHandler,
   adminDeleteOrganiserHandler,
+  adminPromoteToAdmin,
 } from '../controllers/adminController';
 
 const router = Router();
@@ -20,6 +21,12 @@ router.post(
   authenticate,
   authorize(['ADMIN']),
   adminDeleteOrganiserHandler
+);
+router.patch(
+  '/users/:id/role',
+  authenticate,
+  authorize(['ADMIN']),
+  adminPromoteToAdmin
 );
 
 export default router;
