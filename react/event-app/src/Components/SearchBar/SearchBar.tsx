@@ -29,7 +29,7 @@ interface MapboxFeature {
 
 type FormValues = {
   keyword: string;
-  city: string; // raw user input
+  city: string; // raw user input / chosen suggestion
   categoryId: number | ''; // empty string means “all”
   dateFrom: string; // ISO "YYYY-MM-DD"
   dateTo: string; // ISO "YYYY-MM-DD"
@@ -51,7 +51,6 @@ const SearchBar: React.FC = () => {
       categoryId: '',
       dateFrom: '',
       dateTo: '',
-      limit: 20,
     },
   });
 
@@ -61,7 +60,6 @@ const SearchBar: React.FC = () => {
   const categoryId = watch('categoryId');
   const dateFrom = watch('dateFrom');
   const dateTo = watch('dateTo');
-  const limit = watch('limit');
 
   // ─── 2) Fetch categories for dropdown (optional) ────────────────────────────────────────
   const { data: categories } = useGetCategoriesQuery(undefined);
@@ -73,32 +71,35 @@ const SearchBar: React.FC = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-  // Debounced fetch function
+  // Debounced fetch function for Mapbox
   const fetchCitySuggestions = useMemo(() => {
     return debounce((query: string) => {
       if (!MAPBOX_TOKEN) {
         console.error('Missing Mapbox token in VITE_MAPBOX_TOKEN');
         return;
       }
+      // Abort any in-flight request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
+      // Encode user input
       const encoded = encodeURIComponent(query);
+      // Add `language=en` so results are in English
       const url =
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?` +
         `access_token=${MAPBOX_TOKEN}` +
-        `&types=place&limit=5`;
+        `&types=place&limit=5&language=en`;
 
       fetch(url, { signal: controller.signal })
         .then(async res => {
           if (!res.ok) throw new Error(`Mapbox ${res.statusText}`);
           const data = (await res.json()) as { features: MapboxFeature[] };
-          const cityNames = data.features.map(
-            feat => feat.text || feat.place_name.split(',')[0]
-          );
+
+          // Use `place_name` (e.g. "Sofia, Bulgaria") instead of `text`
+          const cityNames = data.features.map(feat => feat.place_name);
           const unique = Array.from(new Set(cityNames)).filter(Boolean);
           setSuggestions(unique);
         })
@@ -108,7 +109,7 @@ const SearchBar: React.FC = () => {
     }, 400);
   }, [MAPBOX_TOKEN]);
 
-  // Fire fetch when cityInput changes
+  // Trigger fetch whenever cityInput changes
   useEffect(() => {
     const q = cityInput.trim();
     if (q.length >= 2) {
@@ -122,28 +123,24 @@ const SearchBar: React.FC = () => {
   }, [cityInput, fetchCitySuggestions]);
 
   // ─── 4) Call RTK Query with all filters ―───────────────────────────────────────────────
-  // Only pass values when appropriate; RHF gives empty string '' for unfilled fields
+  // Pass city only if it exactly matches one of the suggestions
   const {
     data: events,
     isLoading,
     isError,
   } = useGetEventsQuery({
     keyword: keyword.trim() || undefined,
-    city:
-      // Pass city only if the user has clicked an actual suggestion
-      cityInput.trim() && suggestions.includes(cityInput.trim())
-        ? cityInput.trim()
-        : undefined,
+    city: cityInput.trim() || undefined,
     categoryId: categoryId === '' ? undefined : Number(categoryId),
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
-    take: limit === '' ? undefined : Number(limit),
+    take: 5,
   });
 
   // ─── 5) Render │──────────────────────────────────────────────────────────────────────────
   return (
     <div className='space-y-6'>
-      {/* ── FILTER FORM ───────────────────────────────────────────────────────────────────────── */}
+      {/* ── FILTER FORM ── */}
       <form
         onSubmit={e => e.preventDefault()}
         className='grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-white shadow rounded'>
@@ -168,18 +165,17 @@ const SearchBar: React.FC = () => {
                   setIsSuggestionsOpen(false);
                 },
               }),
-              onFocus: () => {
-                setIsSuggestionsOpen(true);
-              },
+              onFocus: () => setIsSuggestionsOpen(true),
             }}
             error={errors.city?.message}
           />
           {suggestions.length > 0 && isSuggestionsOpen && (
-            <ul className='absolute z-10 w-full bg-white border rounded mt-1 max-h-40 overflow-auto'>
+            <ul className='absolute z-10 w-full bg-white border rounded mt-1 max-h-40 overflow-y-auto'>
               {suggestions.map(name => (
                 <li
                   key={name}
                   onClick={() => {
+                    // When the user picks a suggestion, set "city" to full place_name
                     setValue('city', name, {
                       shouldValidate: true,
                       shouldDirty: true,
@@ -236,21 +232,9 @@ const SearchBar: React.FC = () => {
             error={errors.dateTo?.message}
           />
         </div>
-
-        {/* Limit */}
-        <div className='sm:col-span-2 lg:col-span-1'>
-          <FormInput
-            label='Limit'
-            type='number'
-            register={register('limit', {
-              setValueAs: v => (v === '' ? '' : Number(v)),
-            })}
-            error={errors.limit?.message}
-          />
-        </div>
       </form>
 
-      {/* ── SEARCH RESULTS ────────────────────────────────────────────────────────────────────── */}
+      {/* ── SEARCH RESULTS ── */}
       {isLoading ? (
         <h5 className='text-center'>Loading events…</h5>
       ) : isError ? (
