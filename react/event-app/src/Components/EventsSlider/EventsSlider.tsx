@@ -7,12 +7,13 @@ type EventsSliderProps = {
 
 const EventsSlider = ({ events }: EventsSliderProps) => {
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-      {events.map(evt => (
-        <EventCard
-          key={evt.id}
-          event={evt}
-        />
+    <div className='flex overflow-x-auto space-x-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4  max-w-7xl mx-auto'>
+      {events.map((ev: Event) => (
+        <div
+          key={ev.id}
+          className='flex-shrink-0 w-4/5 sm:w-auto'>
+          <EventCard event={ev} />
+        </div>
       ))}
     </div>
   );

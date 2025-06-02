@@ -1,5 +1,3 @@
-// src/Views/Home/Home.tsx
-
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,7 +8,6 @@ import {
   useGetCategoriesQuery,
   useGetEventsQuery,
 } from '../../api/events/eventApi';
-import CategoryCard from '../../Components/CategoryCard/CategoryCard';
 import CategoriesSection from '../../Components/CategoriesSection/CategoriesSection';
 import EventsSlider from '../../Components/EventsSlider/EventsSlider';
 import Header from '../../Components/Header/Header';
@@ -64,6 +61,7 @@ export const Home = () => {
     <>
       <div className='bg-gray-100 min-h-screen'>
         <Header onBrowseClick={handleBrowseClick} />
+
         <div
           className={`overflow-hidden transform transition-[max-height] duration-800 ease-in-out ${
             showSearch ? 'max-h-[1000px]' : 'max-h-0'
