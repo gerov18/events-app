@@ -8,9 +8,15 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   email: z.string().email({ message: 'Invalid email ' }),
   password: z.string().min(6, { message: 'Password must be at least 6' }),
-  firstName: z.string(),
-  lastName: z.string(),
-  username: z.string(),
+  firstName: z
+    .string({ required_error: 'First name is required' })
+    .min(1, { message: 'First name is required' }),
+  lastName: z
+    .string({ required_error: 'Last name is required' })
+    .min(1, { message: 'Last name is required' }),
+  username: z
+    .string({ required_error: 'Username is required' })
+    .min(1, { message: 'Username is required' }),
 });
 
 export const deleteSchema = z.object({
