@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+// src/Views/Home/Home.tsx
+
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../../api/store';
@@ -8,18 +10,16 @@ import {
   useGetCategoriesQuery,
   useGetEventsQuery,
 } from '../../api/events/eventApi';
-import EventCard from '../../Components/EventCard/EventCard';
-import styles from './Home.module.css';
 import CategoryCard from '../../Components/CategoryCard/CategoryCard';
 import CategoriesSection from '../../Components/CategoriesSection/CategoriesSection';
 import EventsSlider from '../../Components/EventsSlider/EventsSlider';
-import SearchBar from '../../Components/SearchBar/SearchBar';
-import { MapDisplay } from '../../Components/MapDisplay/MapDisplay';
 import Header from '../../Components/Header/Header';
+import SearchBar from '../../Components/SearchBar/SearchBar';
 
 export const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showSearch, setShowSearch] = useState(false);
 
   const { user, userType } = useSelector((state: RootState) => state.auth) || {
     user: null,
@@ -45,6 +45,7 @@ export const Home = () => {
     isLoading: isLoadingPlo,
     isError: isErrorPlo,
   } = useGetEventsQuery({ city: 'Plovdiv', take: 4 });
+
   const handleLogout = async () => {
     try {
       await logout().unwrap();
@@ -55,80 +56,89 @@ export const Home = () => {
     }
   };
 
-  if (isErrorPlo || isErrorSofia) {
-    return <p className='p-4 text-red-500'>Failed to load events.</p>;
-  }
+  const handleBrowseClick = () => {
+    setShowSearch(prev => !prev);
+  };
 
   return (
     <>
-      <div className={styles.topBar}>
-        <h2 className={styles.title}>Haidi</h2>
-        <button onClick={() => navigate('/search')}>search</button>
-        <button onClick={handleLogout}>logout</button>
-      </div>
-
-      {user && userType !== null && (
-        <h1 className='mx-6 mt-4 text-xl font-semibold'>
-          {`HELLO, ${
-            userType === 'user'
-              ? user.firstName
-              : userType === 'organiser'
-              ? (user as any).name
-              : ''
-          }`}
-        </h1>
-      )}
-
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <Header />
-        <div className='main-search my-8'>
-          <h2 className='text-2xl'>What are you interested in?</h2>
+      <div className='bg-gray-100 min-h-screen'>
+        <Header onBrowseClick={handleBrowseClick} />
+        <div
+          className={`overflow-hidden transform transition-[max-height] duration-800 ease-in-out ${
+            showSearch ? 'max-h-[1000px]' : 'max-h-0'
+          }`}>
+          <SearchBar onClose={() => setShowSearch(false)} />
         </div>
-        <SearchBar />
 
-        <section className='my-8 px-6'>
-          <h2 className='text-2xl font-semibold mb-4'>Popular in Sofia</h2>
-          {isLoadingSofia ? (
-            <p>Loading…</p>
-          ) : sofiaEvents && sofiaEvents.length > 0 ? (
-            <EventsSlider events={sofiaEvents} />
-          ) : (
-            <p className='text-gray-500'>No upcoming events in Sofia.</p>
+        <div className='px-6'>
+          {user && userType !== null && (
+            <h1 className='mt-4 text-xl font-semibold text-center'>
+              {`HELLO, ${
+                userType === 'user'
+                  ? user.firstName
+                  : userType === 'organiser'
+                  ? (user as any).name
+                  : ''
+              }`}
+            </h1>
           )}
-          <div className='mt-4'>
-            <Link
-              to='/search?city=Sofia'
-              className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
-              See more happening in Sofia
-            </Link>
-          </div>
-        </section>
 
-        <section className='my-8 px-6'>
-          <h2 className='text-2xl font-semibold mb-4'>Popular in Plovdiv</h2>
-          {isLoadingPlo ? (
-            <p>Loading…</p>
-          ) : plovdivEvents && plovdivEvents.length > 0 ? (
-            <EventsSlider events={plovdivEvents} />
-          ) : (
-            <p className='text-gray-500'>No upcoming events in Plovdiv.</p>
-          )}
-          <div className='mt-4'>
-            <Link
-              to='/search?city=Plovdiv'
-              className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
-              See more happening in Plovdiv
-            </Link>
-          </div>
-        </section>
-        <section className='my-8 px-6 lg:flex sm:flex-col sm:items-center'>
-          <h2 className='text-2xl font-semibold mb-4'>Browse by Category</h2>
-          {isCatLoading ? (
-            <p>Loading…</p>
-          ) : (
-            <CategoriesSection categories={categories} />
-          )}
-        </section>
+          <section className='my-8'>
+            <h2 className='text-2xl font-semibold mb-4 text-center'>
+              Popular in Sofia
+            </h2>
+            {isLoadingSofia ? (
+              <p className='text-center'>Loading…</p>
+            ) : sofiaEvents && sofiaEvents.length > 0 ? (
+              <EventsSlider events={sofiaEvents} />
+            ) : (
+              <p className='text-gray-500 text-center'>
+                No upcoming events in Sofia.
+              </p>
+            )}
+            <div className='mt-4 text-center'>
+              <Link
+                to='/search?city=Sofia'
+                className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
+                See more happening in Sofia
+              </Link>
+            </div>
+          </section>
+
+          <section className='my-8'>
+            <h2 className='text-2xl font-semibold mb-4 text-center'>
+              Popular in Plovdiv
+            </h2>
+            {isLoadingPlo ? (
+              <p className='text-center'>Loading…</p>
+            ) : plovdivEvents && plovdivEvents.length > 0 ? (
+              <EventsSlider events={plovdivEvents} />
+            ) : (
+              <p className='text-gray-500 text-center'>
+                No upcoming events in Plovdiv.
+              </p>
+            )}
+            <div className='mt-4 text-center'>
+              <Link
+                to='/search?city=Plovdiv'
+                className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
+                See more happening in Plovdiv
+              </Link>
+            </div>
+          </section>
+
+          <section className='my-8'>
+            <h2 className='text-2xl font-semibold mb-4 text-center'>
+              Browse by Category
+            </h2>
+            {isCatLoading ? (
+              <p className='text-center'>Loading…</p>
+            ) : (
+              <CategoriesSection categories={categories} />
+            )}
+          </section>
+        </div>
       </div>
     </>
   );

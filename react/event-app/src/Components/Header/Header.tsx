@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import headerPic from '../../assets/landing.webp';
 
-const Header = () => {
+interface HeaderProps {
+  onBrowseClick: () => void;
+}
+
+const Header = ({ onBrowseClick }: HeaderProps) => {
   return (
     <header className='relative h-[calc(100dvh/3)] bg-[url(/src/assets/landing.webp)] bg-center bg-cover'>
-      {/* Dark overlay for better text readability */}
       <div className='absolute inset-0 bg-black/40'></div>
 
       <div className='relative z-10 flex flex-col justify-center h-full px-6 lg:px-16 text-center items-center'>
@@ -18,7 +21,9 @@ const Header = () => {
           </p>
         </div>
 
-        <button className='text-xl cursor-pointer transition-all mt-6 inline-block bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg  duration-300 mx-auto'>
+        <button
+          onClick={onBrowseClick}
+          className='text-xl cursor-pointer transition-all mt-6 inline-block bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg duration-300 mx-auto'>
           Browse Events
         </button>
       </div>

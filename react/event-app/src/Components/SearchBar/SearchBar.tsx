@@ -1,5 +1,3 @@
-// src/Components/SearchBar/SearchBar.tsx
-
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +33,11 @@ type FormValues = {
   dateTo: string;
 };
 
-const SearchBar: React.FC = () => {
+interface SearchBarProps {
+  onClose: () => void;
+}
+
+export const SearchBar: React.FC<SearchBarProps> = ({ onClose }) => {
   const navigate = useNavigate();
   const {
     register,
@@ -146,17 +148,19 @@ const SearchBar: React.FC = () => {
 
   return (
     <div className='space-y-8 px-4 md:px-8 lg:px-16'>
-      <div className='text-center mt-8'>
-        <h2 className='text-4xl font-extrabold text-gray-900 mb-2 animate-fadeIn'>
-          Discover Events Near You
-        </h2>
-        <p className='text-gray-500 animate-fadeIn'>
-          Filter by keywords, location, category, or date to find your next
-          adventure.
-        </p>
+      <div className='flex justify-between items-center'>
+        <h2 className='text-2xl font-semibold'>Search Filters</h2>
+        <button
+          onClick={() => {
+            onClose();
+            onReset();
+          }}
+          className='text-gray-500 hover:text-gray-800'>
+          ✕
+        </button>
       </div>
 
-      <div className='bg-white shadow-lg rounded-xl p-6 transition-all hover:shadow-2xl'>
+      <div className='bg-white shadow-lg rounded-xl p-6 transition-all'>
         <form
           onSubmit={e => e.preventDefault()}
           className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
@@ -175,29 +179,28 @@ const SearchBar: React.FC = () => {
               })}
               type='text'
               onFocus={() => setIsSuggestionsOpen(true)}
-              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none transition duration-200 ${
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
                 errors.city ? 'border-red-500' : 'border-gray-300'
               }`}
             />
-            <ul
-              className={`absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 overflow-auto shadow-md transition-[max-height] duration-300 ease-in-out ${
-                isSuggestionsOpen ? 'max-h-44' : 'max-h-0'
-              }`}>
-              {suggestions.map(name => (
-                <li
-                  key={name}
-                  onClick={() => {
-                    setValue('city', name, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    });
-                    setSuggestions([]);
-                  }}
-                  className='px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-200'>
-                  {name}
-                </li>
-              ))}
-            </ul>
+            {suggestions.length > 0 && isSuggestionsOpen && (
+              <ul className='absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-44 overflow-auto shadow-md'>
+                {suggestions.map(name => (
+                  <li
+                    key={name}
+                    onClick={() => {
+                      setValue('city', name, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                      setSuggestions([]);
+                    }}
+                    className='px-4 py-2 hover:bg-gray-100 cursor-pointer'>
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <FormSelect
@@ -217,7 +220,7 @@ const SearchBar: React.FC = () => {
             <input
               {...register('dateFrom')}
               type='date'
-              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none transition duration-200 ${
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
                 errors.dateFrom ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -228,7 +231,7 @@ const SearchBar: React.FC = () => {
             <input
               {...register('dateTo')}
               type='date'
-              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none transition duration-200 ${
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
                 errors.dateTo ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -238,25 +241,20 @@ const SearchBar: React.FC = () => {
         <div className='mt-6 flex justify-end space-x-4'>
           <button
             onClick={onReset}
-            className='cursor-pointer px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-transform transform hover:scale-105 active:scale-95'>
+            className='px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition'>
             Reset Filters
           </button>
         </div>
 
-        <div
-          className={`mt-6 overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-            hasFilter ? 'max-h-[2000px]' : 'max-h-0'
-          }`}>
-          {isLoading ? (
-            <h5 className='text-center text-gray-500 mt-6 animate-pulse'>
-              Loading events…
-            </h5>
+        <div className='mt-6'>
+          {!hasFilter ? null : isLoading ? (
+            <h5 className='text-center text-gray-500 mt-6'>Loading events…</h5>
           ) : isError ? (
-            <h5 className='text-center text-red-600 mt-6 animate-shake'>
+            <h5 className='text-center text-red-600 mt-6'>
               Error fetching events.
             </h5>
           ) : events.length === 0 ? (
-            <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center animate-fadeIn'>
+            <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center'>
               <p className='text-yellow-700 font-semibold mb-2'>
                 No events found
               </p>
@@ -266,20 +264,20 @@ const SearchBar: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-                {events.map((ev: Event) => (
-                  <div className='transform transition duration-300 hover:scale-105 hover:shadow-xl'>
+              <div className='max-w-6xl mx-auto'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+                  {events.map((ev: Event) => (
                     <EventCard
                       key={ev.id}
                       event={ev}
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
               <div className='flex justify-end mt-6'>
                 <button
                   onClick={onSeeMore}
-                  className='cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95'>
+                  className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95'>
                   See More Events
                 </button>
               </div>
