@@ -1,3 +1,5 @@
+// src/Components/SearchBar/SearchBar.tsx
+
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +41,7 @@ const SearchBar: React.FC = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -102,18 +105,28 @@ const SearchBar: React.FC = () => {
     }
   }, [cityInput, fetchCitySuggestions]);
 
+  const hasFilter =
+    keyword.trim() !== '' ||
+    cityInput.trim() !== '' ||
+    categoryId !== '' ||
+    dateFrom !== '' ||
+    dateTo !== '';
+
   const {
-    data: events,
+    data: events = [],
     isLoading,
     isError,
-  } = useGetEventsQuery({
-    keyword: keyword.trim() || undefined,
-    city: cityInput.trim() || undefined,
-    categoryId: categoryId === '' ? undefined : Number(categoryId),
-    dateFrom: dateFrom || undefined,
-    dateTo: dateTo || undefined,
-    take: 4,
-  });
+  } = useGetEventsQuery(
+    {
+      keyword: keyword.trim() || undefined,
+      city: cityInput.trim() || undefined,
+      categoryId: categoryId === '' ? undefined : Number(categoryId),
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
+      take: 4,
+    },
+    { skip: !hasFilter }
+  );
 
   const onSeeMore = () => {
     const params = new URLSearchParams();
@@ -124,6 +137,11 @@ const SearchBar: React.FC = () => {
     if (dateTo) params.append('dateTo', dateTo);
 
     navigate(`/search?${params.toString()}`);
+  };
+
+  const onReset = () => {
+    reset();
+    setSuggestions([]);
   };
 
   return (
@@ -139,102 +157,99 @@ const SearchBar: React.FC = () => {
       </div>
 
       <div className='bg-white shadow-lg rounded-xl p-6 transition-all'>
-        <div>
-          <form
-            onSubmit={e => e.preventDefault()}
-            className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
-            <FormInput
-              label='Keyword'
+        <form
+          onSubmit={e => e.preventDefault()}
+          className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
+          <FormInput
+            label='Keyword'
+            type='text'
+            register={register('keyword')}
+            error={errors.keyword?.message}
+          />
+
+          <div className='relative'>
+            <label className='block text-sm font-medium mb-1'>City</label>
+            <input
+              {...register('city', {
+                onBlur: () => setIsSuggestionsOpen(false),
+              })}
               type='text'
-              register={register('keyword')}
-              error={errors.keyword?.message}
+              onFocus={() => setIsSuggestionsOpen(true)}
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
+                errors.city ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
-
-            <div className='relative'>
-              <label className='block text-sm font-medium mb-1'>City</label>
-              <input
-                {...register('city', {
-                  onBlur: () => setIsSuggestionsOpen(false),
-                })}
-                type='text'
-                onFocus={() => setIsSuggestionsOpen(true)}
-                className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
-                  errors.city ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {suggestions.length > 0 && isSuggestionsOpen && (
-                <ul className='absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-44 overflow-auto shadow-md'>
-                  {suggestions.map(name => (
-                    <li
-                      key={name}
-                      onClick={() => {
-                        setValue('city', name, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        });
-                        setSuggestions([]);
-                      }}
-                      className='px-4 py-2 hover:bg-gray-100 cursor-pointer'>
-                      {name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <FormSelect
-              label='Category'
-              register={register('categoryId')}
-              options={
-                categories?.map(cat => ({
-                  value: cat.id,
-                  label: cat.name,
-                })) || []
-              }
-              error={errors.categoryId?.message}
-            />
-
-            <div>
-              <label className='block text-sm font-medium mb-1'>
-                Date From
-              </label>
-              <input
-                {...register('dateFrom')}
-                type='date'
-                className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
-                  errors.dateFrom ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-            </div>
-
-            <div>
-              <label className='block text-sm font-medium mb-1'>Date To</label>
-              <input
-                {...register('dateTo')}
-                type='date'
-                className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
-                  errors.dateTo ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-            </div>
-          </form>
-
-          <div className='mt-6 text-right'>
-            <button
-              onClick={onSeeMore}
-              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'>
-              See More Events
-            </button>
+            {suggestions.length > 0 && isSuggestionsOpen && (
+              <ul className='absolute z-20 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-44 overflow-auto shadow-md'>
+                {suggestions.map(name => (
+                  <li
+                    key={name}
+                    onClick={() => {
+                      setValue('city', name, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                      setSuggestions([]);
+                    }}
+                    className='px-4 py-2 hover:bg-gray-100 cursor-pointer'>
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
+          <FormSelect
+            label='Category'
+            register={register('categoryId')}
+            options={
+              categories?.map(cat => ({
+                value: cat.id,
+                label: cat.name,
+              })) || []
+            }
+            error={errors.categoryId?.message}
+          />
+
+          <div>
+            <label className='block text-sm font-medium mb-1'>Date From</label>
+            <input
+              {...register('dateFrom')}
+              type='date'
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
+                errors.dateFrom ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium mb-1'>Date To</label>
+            <input
+              {...register('dateTo')}
+              type='date'
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-indigo-300 focus:outline-none ${
+                errors.dateTo ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+          </div>
+        </form>
+
+        <div className='mt-6 flex justify-end space-x-4'>
+          <button
+            onClick={onReset}
+            className='px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition'>
+            Reset Filters
+          </button>
         </div>
+
         <div className='mt-6'>
-          {isLoading ? (
+          {!hasFilter ? null : isLoading ? (
             <h5 className='text-center text-gray-500 mt-6'>Loading events…</h5>
           ) : isError ? (
             <h5 className='text-center text-red-600 mt-6'>
               Error fetching events.
             </h5>
-          ) : !events || events.length === 0 ? (
+          ) : events.length === 0 ? (
             <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center'>
               <p className='text-yellow-700 font-semibold mb-2'>
                 No events found
@@ -244,19 +259,26 @@ const SearchBar: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-              {events.map((ev: Event) => (
-                <EventCard
-                  key={ev.id}
-                  event={ev}
-                />
-              ))}
-            </div>
+            <>
+              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+                {events.map((ev: Event) => (
+                  <EventCard
+                    key={ev.id}
+                    event={ev}
+                  />
+                ))}
+              </div>
+              <div className='flex justify-end mt-6'>
+                <button
+                  onClick={onSeeMore}
+                  className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'>
+                  See More Events
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
-
-      <div></div>
     </div>
   );
 };
