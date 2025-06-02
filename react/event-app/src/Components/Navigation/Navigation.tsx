@@ -1,17 +1,20 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
+import { clearUserState } from '../../api/auth/authSlice';
 
 const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const { userType, user } = useSelector((state: RootState) => state.auth);
   const [logout] = useLogoutMutation();
+  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     try {
       await logout().unwrap();
+      dispatch(clearUserState());
       navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);
@@ -34,7 +37,11 @@ const Navigation: React.FC = () => {
         ) : (
           <div className='flex items-center space-x-4'>
             <Link
-              to={userType === 'organiser' ? '/organiser/me' : '/user/me'}
+              to={
+                userType === 'organiser'
+                  ? `/organiser/${(user as any).id}`
+                  : '/user/me'
+              }
               className='hover:underline px-3 py-1 rounded bg-blue-500 hover:bg-blue-700'>
               Profile
             </Link>

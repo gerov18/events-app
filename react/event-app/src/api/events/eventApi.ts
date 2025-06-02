@@ -12,6 +12,7 @@ export interface Filters {
   dateFrom?: string;
   dateTo?: string;
   take?: number;
+  createdBy?: number;
 }
 
 export const eventsApi = createApi({
@@ -56,6 +57,10 @@ export const eventsApi = createApi({
 
         if (filters.take !== undefined) {
           params.append('limit', String(filters.take));
+        }
+
+        if (filters.createdBy !== undefined) {
+          params.append('createdBy', String(filters.createdBy));
         }
 
         return {
