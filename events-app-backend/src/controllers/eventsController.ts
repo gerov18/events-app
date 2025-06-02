@@ -16,7 +16,8 @@ import { Prisma, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
-    const { keyword, city, categoryId, dateFrom, dateTo, limit } = req.query;
+    const { keyword, city, categoryId, dateFrom, dateTo, limit, createdBy } =
+      req.query;
 
     const whereClause: Prisma.EventWhereInput = {};
 
@@ -60,6 +61,12 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
           ...((whereClause.date as Prisma.DateTimeFilter) || {}),
           lte: toDate,
         };
+      }
+    }
+    if (createdBy && !Array.isArray(createdBy)) {
+      const creatorId = Number(createdBy);
+      if (!Number.isNaN(creatorId)) {
+        whereClause.createdBy = creatorId;
       }
     }
 

@@ -149,7 +149,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path='/user/:userId/reservations/:reservationId'
             element={

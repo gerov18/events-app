@@ -7,6 +7,7 @@ import { useGetEventsQuery } from '../../../api/events/eventApi';
 import moment from 'moment';
 import { Organiser as OrganiserType } from '../../../types/Organiser';
 import { Event as EventType } from '../../../types/Event';
+import EventsSlider from '../../../Components/EventsSlider/EventsSlider';
 
 export const OrganiserDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +24,9 @@ export const OrganiserDetails: React.FC = () => {
     data: allEvents,
     isLoading: isEventsLoading,
     isError: isEventsError,
-  } = useGetEventsQuery();
+  } = useGetEventsQuery({
+    createdBy: Number(id),
+  });
 
   const auth = useSelector((state: RootState) => state.auth);
   const userType = auth.userType;
@@ -43,8 +46,7 @@ export const OrganiserDetails: React.FC = () => {
     return <div className='p-4 text-red-500'>Organiser not found.</div>;
   }
 
-  const organiserEvents: EventType[] =
-    allEvents?.filter(e => e.createdBy === organiser.id) || [];
+  const organiserEvents: EventType[] = allEvents ?? [];
 
   const canManage =
     (userType === 'organiser' && currentUser?.id === organiser.id) ||
@@ -104,22 +106,7 @@ export const OrganiserDetails: React.FC = () => {
           This organiser has not created any events yet.
         </p>
       ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {organiserEvents.map(evt => (
-            <Link
-              to={`/events/${evt.id}`}
-              key={evt.id}
-              className='block border rounded overflow-hidden hover:shadow-lg'>
-              <div className='p-4'>
-                <h3 className='text-xl font-bold mb-2'>{evt.title}</h3>
-                <p className='text-gray-600 mb-1'>
-                  {moment(evt.date).format('DD.MM.YYYY')}
-                </p>
-                <p className='text-gray-700'>Location: {evt.location}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <EventsSlider events={organiserEvents} />
       )}
     </div>
   );

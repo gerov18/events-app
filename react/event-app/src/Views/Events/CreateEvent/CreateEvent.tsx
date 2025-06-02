@@ -73,7 +73,7 @@ export const CreateEvent: React.FC = () => {
         <AddressAutocomplete
           value={locationValue}
           onChange={val => setValue('location', val, { shouldValidate: true })}
-          placeholder='Sofia, Tsarigradsko Shose 16, Bulgaria'
+          placeholder='Enter address'
           error={errors.location?.message}
         />
       </div>

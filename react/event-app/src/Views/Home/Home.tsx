@@ -26,8 +26,7 @@ export const Home = () => {
   };
 
   const [logout] = useLogoutMutation();
-  const TEST_LAT = 40.758;
-  const TEST_LNG = -73.9855;
+
   const {
     data: sofiaEvents,
     isLoading: isLoadingSofia,
