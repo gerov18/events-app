@@ -31,7 +31,7 @@ const CategoriesSection = ({ categories }: CategoriesSectionProps) => {
           className=' sm:flex sm:justify-center gap-'>
           <CategoryCard
             name={cat.name}
-            onClick={() => navigate(`/category/${cat.id}`)}
+            onClick={() => navigate(`/search?categoryId=${cat.id}`)}
           />
         </div>
       ))}

@@ -50,14 +50,14 @@ const Navigation: React.FC = () => {
                       ? `/organiser/${(user as any).id}`
                       : '/user/me'
                   }
-                  className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-white text-lg font-medium rounded-lg transition'>
+                  className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-gray-800 text-lg font-medium rounded-lg transition'>
                   Profile
                 </Link>
 
                 {userType === 'user' && (
                   <Link
                     to={`/users/${(user as any).id}/reservations`}
-                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-white text-lg font-medium rounded-lg transition'>
+                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-gray-800 text-lg font-medium rounded-lg transition'>
                     My Reservations
                   </Link>
                 )}
@@ -65,7 +65,7 @@ const Navigation: React.FC = () => {
                 {userType === 'organiser' && (
                   <Link
                     to={`/organiser/${(user as any).id}/events`}
-                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-white text-lg font-medium rounded-lg transition'>
+                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-gray-800 text-lg font-medium rounded-lg transition'>
                     My Events
                   </Link>
                 )}
@@ -73,14 +73,14 @@ const Navigation: React.FC = () => {
                 {userType === 'admin' && (
                   <Link
                     to='/admin'
-                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-white text-lg font-medium rounded-lg transition'>
+                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-gray-800 text-lg font-medium rounded-lg transition'>
                     Admin Panel
                   </Link>
                 )}
 
                 <button
                   onClick={handleLogout}
-                  className='px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-lg font-medium rounded-lg shadow-sm transition'>
+                  className='px-4 py-2 bg-red-500 hover:bg-red-600 text-gray-800 text-lg font-medium rounded-lg shadow-sm transition'>
                   Logout
                 </button>
               </div>
