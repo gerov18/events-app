@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -9,20 +9,21 @@ import {
 } from '../../../api/events/eventApi';
 import { CreateEventInput, eventSchema } from '../../../api/events/eventSchema';
 import { FormInput } from '../../../Components/FormInput/FormInput';
-import { ImagesUpload } from '../../../Components/ImagesUpload/ImagesUpload';
+import { AddressAutocomplete } from '../../../Components/AddressAutocomplete/AddressAutocomplete';
 
 export const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
   const { data: categories, isLoading: isCatLoading } = useGetCategoriesQuery();
-  const [createEvent, { isLoading: isCreating, isSuccess, error }] =
+  const [createEvent, { isLoading: isCreating, error }] =
     useCreateEventMutation();
   const [uploadImages] = useUploadEventImagesMutation();
-
   const [files, setFiles] = useState<File[]>([]);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<CreateEventInput>({
     resolver: zodResolver(eventSchema),
@@ -36,12 +37,15 @@ export const CreateEvent: React.FC = () => {
       price: 0,
     },
   });
+
+  const locationValue = watch('location');
+
   const onSubmit = async (data: CreateEventInput) => {
-    const event = await createEvent(data).unwrap();
-    if (files.length) {
-      await uploadImages({ eventId: event.id, files }).unwrap();
+    const newEvent = await createEvent(data).unwrap();
+    if (files.length > 0) {
+      await uploadImages({ eventId: newEvent.id, files }).unwrap();
     }
-    navigate(`/events/${event.id}`);
+    navigate(`/events/${newEvent.id}`);
   };
 
   if (isCatLoading) return <p>Loading categories…</p>;
@@ -64,11 +68,15 @@ export const CreateEvent: React.FC = () => {
         error={errors.description?.message}
       />
 
-      <FormInput
-        label='Location'
-        register={register('location')}
-        error={errors.location?.message}
-      />
+      <div>
+        <label className='block mb-1 font-medium'>Location</label>
+        <AddressAutocomplete
+          value={locationValue}
+          onChange={val => setValue('location', val, { shouldValidate: true })}
+          placeholder='Sofia, Tsarigradsko Shose 16, Bulgaria'
+          error={errors.location?.message}
+        />
+      </div>
 
       <div>
         <label className='block mb-1 font-medium'>Category</label>
@@ -91,7 +99,7 @@ export const CreateEvent: React.FC = () => {
           ))}
         </select>
         {errors.categoryId && (
-          <p className='text-red-500'>{errors.categoryId.message}</p>
+          <p className='text-red-500 text-sm'>{errors.categoryId.message}</p>
         )}
       </div>
 
@@ -116,19 +124,16 @@ export const CreateEvent: React.FC = () => {
         error={errors.price?.message}
       />
 
-      {/* <input
-        type='file'
-        accept='image/*'
-        onChange={e => setFile(e.target.files?.[0] ?? null)}
-      />
-      <button onClick={handleUpload}>Upload photos</button> /*}
-      
-      {/* <ImagesUpload eventId={eve} /> */}
-      <input
-        type='file'
-        multiple
-        onChange={e => setFiles(Array.from(e.target.files || []))}
-      />
+      <div>
+        <label className='block mb-1 font-medium'>Upload Photos</label>
+        <input
+          type='file'
+          multiple
+          accept='image/*'
+          onChange={e => setFiles(Array.from(e.target.files || []))}
+        />
+      </div>
+
       <button
         type='submit'
         disabled={isCreating}

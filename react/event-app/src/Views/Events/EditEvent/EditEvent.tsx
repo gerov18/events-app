@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import {
 } from '../../../api/events/eventApi';
 import { CreateEventInput, eventSchema } from '../../../api/events/eventSchema';
 import { FormInput } from '../../../Components/FormInput/FormInput';
+import { AddressAutocomplete } from '../../../Components/AddressAutocomplete/AddressAutocomplete';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../api/store';
 
@@ -31,17 +32,18 @@ export const EditEvent: React.FC = () => {
     useUploadEventImagesMutation();
 
   const { user, userType } = useSelector((state: RootState) => state.auth);
-
   const [files, setFiles] = useState<File[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<CreateEventInput>({
     resolver: zodResolver(eventSchema),
-    defaultValues: event ?? {
+    defaultValues: {
       title: '',
       description: '',
       location: '',
@@ -53,43 +55,35 @@ export const EditEvent: React.FC = () => {
   });
 
   useEffect(() => {
-    if (isCatLoading || isEventLoading) return;
-    if (!event) {
-      navigate('/404', { replace: true });
-      return;
-    }
-    if (user && userType === 'organiser') {
-      if (user.id !== event.createdBy) {
-        navigate('/404', { replace: true });
-        console.log('gosho');
-      }
-    } else {
-      navigate('/404', { replace: true });
-    }
-  }, [isCatLoading, isEventLoading, event, user, userType]);
-
-  useEffect(() => {
     if (event) {
       reset(event);
     }
   }, [event, reset]);
 
   useEffect(() => {
-    if (isSuccess) {
-      navigate('/events');
+    if (!isCatLoading && !isEventLoading) {
+      if (!event) {
+        navigate('/404', { replace: true });
+        return;
+      }
+      if (userType === 'organiser' && user?.id === event.createdBy) {
+        return;
+      }
+      navigate('/404', { replace: true });
     }
-  }, [isSuccess, navigate]);
+  }, [isCatLoading, isEventLoading, event, user, userType, navigate]);
+
+  const locationValue = watch('location');
 
   const onSubmit = async (data: CreateEventInput) => {
     try {
       await updateEvent({ id: eventId, data }).unwrap();
-
       if (files.length > 0) {
         await uploadImages({ eventId, files }).unwrap();
       }
       navigate(`/events/${eventId}`);
-    } catch (err) {
-      console.error('Edit failed:', err);
+    } catch (e) {
+      console.error('Edit failed:', e);
     }
   };
 
@@ -113,11 +107,15 @@ export const EditEvent: React.FC = () => {
         error={errors.description?.message}
       />
 
-      <FormInput
-        label='Location'
-        register={register('location')}
-        error={errors.location?.message}
-      />
+      <div>
+        <label className='block mb-1 font-medium'>Location</label>
+        <AddressAutocomplete
+          value={locationValue}
+          onChange={val => setValue('location', val, { shouldValidate: true })}
+          placeholder='Sofia, Tsarigradsko Shose 16, Bulgaria'
+          error={errors.location?.message}
+        />
+      </div>
 
       <div>
         <label className='block mb-1 font-medium'>Category</label>
@@ -140,7 +138,7 @@ export const EditEvent: React.FC = () => {
           ))}
         </select>
         {errors.categoryId && (
-          <p className='text-red-500'>{errors.categoryId.message}</p>
+          <p className='text-red-500 text-sm'>{errors.categoryId.message}</p>
         )}
       </div>
 
@@ -166,38 +164,42 @@ export const EditEvent: React.FC = () => {
       />
 
       <div>
-        <label>Add new photos</label>
+        <label className='block mb-1 font-medium'>Add New Photos</label>
         <input
           type='file'
           multiple
           accept='image/*'
           onChange={e =>
-            setFiles([...files, ...Array.from(e.target.files ?? [])])
+            setFiles([...files, ...Array.from(e.target.files || [])])
           }
         />
       </div>
 
-      <button disabled={isUploading}>
-        {isUploading ? 'Uploading...' : 'Upload photos'}
+      <button
+        type='button'
+        disabled={isUploading}
+        className='btn bg-gray-600 text-white px-4 py-2 rounded'>
+        {isUploading ? 'Uploading…' : 'Upload Photos'}
       </button>
 
-      <h3>Existing photos:</h3>
+      <h3>Existing Photos:</h3>
       <div className='grid grid-cols-3 gap-4'>
         {images?.map(img => (
           <img
             key={img.id}
             src={img.url}
+            alt={`Event ${event?.id} photo ${img.id}`}
             className='w-full h-32 object-cover rounded'
           />
         ))}
       </div>
+
       <button
         type='submit'
         disabled={isUpdating}
         className='btn bg-blue-600 text-white w-full py-2'>
         {isUpdating ? 'Saving…' : 'Save Changes'}
       </button>
-
       {error && <p className='text-red-500'>Failed to update event</p>}
     </form>
   );

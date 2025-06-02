@@ -6,6 +6,7 @@ import { Event } from '../../types/Event';
 import { Image } from '../../types/Image';
 
 export interface Filters {
+  keyword?: string;
   city?: string;
   categoryId?: number;
   dateFrom?: string;
@@ -32,13 +33,30 @@ export const eventsApi = createApi({
     getEvents: builder.query<Event[], Filters>({
       query: filters => {
         const params = new URLSearchParams();
-        if (filters.city) params.append('city', filters.city);
-        if (filters.categoryId !== undefined)
+
+        if (filters.keyword && filters.keyword.trim() !== '') {
+          params.append('keyword', filters.keyword.trim());
+        }
+
+        if (filters.city && filters.city.trim() !== '') {
+          params.append('city', filters.city.trim());
+        }
+
+        if (filters.categoryId !== undefined) {
           params.append('categoryId', String(filters.categoryId));
-        if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
-        if (filters.dateTo) params.append('dateTo', filters.dateTo);
-        if (filters.take !== undefined)
+        }
+
+        if (filters.dateFrom && filters.dateFrom.trim() !== '') {
+          params.append('dateFrom', filters.dateFrom);
+        }
+
+        if (filters.dateTo && filters.dateTo.trim() !== '') {
+          params.append('dateTo', filters.dateTo);
+        }
+
+        if (filters.take !== undefined) {
           params.append('limit', String(filters.take));
+        }
 
         return {
           url: `/events${params.toString() ? `?${params.toString()}` : ''}`,
@@ -47,6 +65,7 @@ export const eventsApi = createApi({
       },
       providesTags: ['Events'],
     }),
+
     getEventById: builder.query<Event, number>({
       query: id => `/events/${id}`,
       providesTags: (_result, _err, id) => [{ type: 'Events', id }],

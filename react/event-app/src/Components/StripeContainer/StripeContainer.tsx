@@ -2,7 +2,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from '../PaymentForm/PaymentForm';
 
-// For Vite:
 const publicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
 const stripeTestPromise = loadStripe(
@@ -10,7 +9,5 @@ const stripeTestPromise = loadStripe(
 );
 
 export const StripeContainer = () => {
-  return (
-    <Elements stripe={stripeTestPromise}>{/* <PaymentForm /> */}</Elements>
-  );
+  return <Elements stripe={stripeTestPromise}></Elements>;
 };
