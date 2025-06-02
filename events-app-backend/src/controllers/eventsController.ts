@@ -14,37 +14,55 @@ import {
 import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-
 export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
-    const { city, categoryId, dateFrom, dateTo, limit } = req.query;
+    const { keyword, city, categoryId, dateFrom, dateTo, limit } = req.query;
 
     const whereClause: Prisma.EventWhereInput = {};
 
-    if (city && typeof city === 'string') {
-      whereClause.location = city;
+    if (keyword && typeof keyword === 'string' && keyword.trim() !== '') {
+      const q = keyword.trim();
+      whereClause.OR = [
+        { title: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+      ];
     }
+
+    if (city && typeof city === 'string' && city.trim() !== '') {
+      const c = city.trim();
+      whereClause.location = {
+        contains: c,
+        mode: 'insensitive',
+      };
+    }
+
     if (categoryId && !Array.isArray(categoryId)) {
       const catNum = Number(categoryId);
       if (!Number.isNaN(catNum)) {
         whereClause.categoryId = catNum;
       }
     }
+
     if (dateFrom && typeof dateFrom === 'string') {
       const fromDate = new Date(dateFrom);
       if (!isNaN(fromDate.getTime())) {
-        whereClause.date = { gte: fromDate };
+        whereClause.date = {
+          ...((whereClause.date as Prisma.DateTimeFilter) || {}),
+          gte: fromDate,
+        };
       }
     }
+
     if (dateTo && typeof dateTo === 'string') {
       const toDate = new Date(dateTo);
       if (!isNaN(toDate.getTime())) {
-        whereClause.date =
-          typeof whereClause.date === 'object' && whereClause.date !== null
-            ? { ...whereClause.date, lte: toDate }
-            : { lte: toDate };
+        whereClause.date = {
+          ...((whereClause.date as Prisma.DateTimeFilter) || {}),
+          lte: toDate,
+        };
       }
     }
+
     let take: number | undefined;
     if (limit && !Array.isArray(limit)) {
       const lim = Number(limit);
@@ -52,9 +70,12 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
         take = lim;
       }
     }
+
     const events = await getAllEvents(whereClause, take);
+
     res.json(events);
   } catch (error) {
+    console.error('Error fetching events:', error);
     res.status(500).json({ message: 'Error fetching events', error });
   }
 };
@@ -65,13 +86,14 @@ export const getEventByIdHandler = async (
 ) => {
   try {
     const { id } = req.params;
-    const event = await getEventById(parseInt(id));
+    const event = await getEventById(parseInt(id, 10));
     if (!event) {
       res.status(404).json({ message: 'Event not found' });
       return;
     }
     res.json(event);
   } catch (error) {
+    console.error('Error fetching event:', error);
     res.status(500).json({ message: 'Error fetching event', error });
   }
 };
@@ -104,6 +126,7 @@ export const createEventHandler = async (
     res.status(201).json(event);
     return;
   } catch (error) {
+    console.error('Error creating event:', error);
     res.status(500).json({ message: 'Error creating event', error });
   }
 };
@@ -122,7 +145,7 @@ export const updateEventHandler = async (
     const { id } = req.params;
     const { title, description, date, location, capacity, price, categoryId } =
       req.body;
-    const event = await getEventById(parseInt(id));
+    const event = await getEventById(parseInt(id, 10));
     if (!event) {
       res.status(404).json({ message: 'Event not found' });
       return;
@@ -135,7 +158,7 @@ export const updateEventHandler = async (
       return;
     }
 
-    const updatedEvent = await updateEvent(parseInt(id), {
+    const updatedEvent = await updateEvent(parseInt(id, 10), {
       title,
       description,
       date,
@@ -146,6 +169,7 @@ export const updateEventHandler = async (
     });
     res.json(updatedEvent);
   } catch (error) {
+    console.error('Error updating event:', error);
     res.status(500).json({ message: 'Error updating event', error });
   }
 };
@@ -162,7 +186,7 @@ export const deleteEventHandler = async (
 
   try {
     const { id } = req.params;
-    const event = await getEventById(parseInt(id));
+    const event = await getEventById(parseInt(id, 10));
     if (!event) {
       res.status(404).json({ message: 'Event not found' });
       return;
@@ -173,23 +197,24 @@ export const deleteEventHandler = async (
       return;
     }
 
-    await deleteEvent(parseInt(id));
+    await deleteEvent(parseInt(id, 10));
     res.json({ message: 'Event deleted successfully' });
   } catch (error) {
+    console.error('Error deleting event:', error);
     res.status(500).json({ message: 'Error deleting event', error });
   }
 };
 
 export const uploadEventImageHandler = async (req: Request, res: Response) => {
   const eventId = Number(req.params.id);
-  const files = req.files as Express.Multer.File | undefined;
+  const files = req.files as Express.Multer.File[] | undefined;
 
   if (!files || !Array.isArray(req.files)) {
     res.status(400).json({ message: 'No image' });
     return;
   }
 
-  const creates = (req.files as Express.Multer.File[]).map(f =>
+  const creates = (files as Express.Multer.File[]).map(f =>
     prisma.image.create({ data: { url: (f as any).path, eventId } })
   );
   const images = await Promise.all(creates);

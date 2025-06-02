@@ -30,6 +30,8 @@ import { AdminDashboard } from './Views/Admin/AdminDashboard/AdminDashboard';
 import { ManageOrganisers } from './Views/Admin/ManageOrganisers/ManageOrganisers';
 import { ManageUsers } from './Views/Admin/ManageUsers/ManageUsers';
 import { HandleRoleRequests } from './Views/Admin/RoleRequests/HandleRoleRequests';
+import EventsByCategory from './Views/EventsByCategory/EventsByCategory';
+import NotFoundPage from './Views/NotFoundPage/NotFoundPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -185,6 +187,14 @@ function App() {
               element={<HandleRoleRequests />}
             />
           </Route>
+          <Route
+            path='/category/:id'
+            element={<EventsByCategory />}
+          />
+          <Route
+            path='/*'
+            element={<NotFoundPage />}
+          />
         </Routes>
       </Layout>
     </Router>

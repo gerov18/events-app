@@ -13,6 +13,7 @@ import styles from './Home.module.css';
 import CategoryCard from '../../Components/CategoryCard/CategoryCard';
 import CategoriesSection from '../../Components/CategoriesSection/CategoriesSection';
 import EventsSlider from '../../Components/EventsSlider/EventsSlider';
+import SearchBar from '../../Components/SearchBar/SearchBar';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -89,6 +90,7 @@ export const Home = () => {
         <div className='main-search my-8'>
           <h2 className='text-2xl'>What are you interested in?</h2>
         </div>
+        <SearchBar />
 
         <section className='my-8 px-6'>
           <h2 className='text-2xl font-semibold mb-4'>Popular in Sofia</h2>
