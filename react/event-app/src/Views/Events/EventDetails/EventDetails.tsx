@@ -13,6 +13,7 @@ import { useCreateReservationMutation } from '../../../api/reservations/reservat
 import { MapDisplay } from '../../../Components/MapDisplay/MapDisplay';
 import { RootState } from '../../../api/store';
 import { Image } from '../../../types/Image';
+import Modal from '../../../Components/Modal/Modal';
 
 interface GeocodeResponse {
   features: Array<{ center: [number, number] }>;
@@ -35,6 +36,7 @@ const EventDetails: React.FC = () => {
   const auth = useSelector((state: RootState) => state.auth);
 
   const [quantity, setQuantity] = useState<number>(1);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null
@@ -63,7 +65,7 @@ const EventDetails: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      navigate('/', { replace: true });
+      navigate(`/organiser/${auth.user?.id}`, { replace: true });
     }
   }, [isError, navigate]);
 
@@ -81,7 +83,7 @@ const EventDetails: React.FC = () => {
   const handleDelete = async () => {
     try {
       await deleteEvent(eventId).unwrap();
-      navigate('/');
+      navigate(`/organiser/${auth.user?.id}`);
     } catch (err) {
       console.error('Delete failed:', err);
     }
@@ -89,6 +91,11 @@ const EventDetails: React.FC = () => {
 
   const handleReserve = () => {
     navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
+  };
+
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    handleDelete();
   };
 
   return (
@@ -181,13 +188,29 @@ const EventDetails: React.FC = () => {
             Edit
           </Link>
           <button
-            onClick={handleDelete}
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
             disabled={isDeleting}
             className={`px-4 py-2 rounded text-white ${
-              isDeleting ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
+              isDeleting
+                ? 'bg-gray-400'
+                : 'bg-red-500 hover:bg-red-600 cursor-pointer'
             }`}>
-            {isDeleting ? 'Deleting…' : 'Delete'}
+            Delete
           </button>
+          <Modal
+            isOpen={isModalOpen}
+            title='Confirm Deletion'
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleConfirm}
+            confirmText='Delete'
+            cancelText='Cancel'>
+            <p>
+              Are you sure you want to delete this event? This action cannot be
+              undone.
+            </p>
+          </Modal>
         </div>
       )}
     </div>

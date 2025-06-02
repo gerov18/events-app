@@ -21,10 +21,11 @@ const Navigation: React.FC = () => {
     }
   };
 
+  console.log('ss', userType);
   return (
     <nav className='bg-blue-600 text-white px-4 py-2 flex justify-between items-center'>
       <div className='text-xl font-semibold'>
-        <Link to='/'>EventApp</Link>
+        <Link to='/'>Haidi</Link>
       </div>
 
       <div className='space-x-4'>
