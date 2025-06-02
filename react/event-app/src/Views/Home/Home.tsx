@@ -15,6 +15,7 @@ import CategoriesSection from '../../Components/CategoriesSection/CategoriesSect
 import EventsSlider from '../../Components/EventsSlider/EventsSlider';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import { MapDisplay } from '../../Components/MapDisplay/MapDisplay';
+import Header from '../../Components/Header/Header';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -79,15 +80,7 @@ export const Home = () => {
       )}
 
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <div className='header mx-6'>
-          <h1 className='text-3xl font-bold'>Do what you love</h1>
-          <h2 className='text-gray-600'>
-            Find events that speak to you, from music festivals to rock climbing
-            classes
-          </h2>
-          <h3 className='text-gray-700 mt-2'>Find an event</h3>
-        </div>
-
+        <Header />
         <div className='main-search my-8'>
           <h2 className='text-2xl'>What are you interested in?</h2>
         </div>
