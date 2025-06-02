@@ -6,6 +6,7 @@ type FormInputProps = {
   register: UseFormRegisterReturn;
   required?: boolean;
   error?: string;
+  onFocus?: () => void;
 };
 
 export const FormInput = ({
@@ -14,6 +15,7 @@ export const FormInput = ({
   register,
   required = false,
   error,
+  onFocus,
 }: FormInputProps) => {
   return (
     <div className='mb-4'>
@@ -26,6 +28,7 @@ export const FormInput = ({
         className={`border px-3 py-2 w-full rounded ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}
+        onFocus={onFocus}
       />
     </div>
   );

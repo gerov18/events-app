@@ -1,5 +1,3 @@
-// src/Components/SearchBar/SearchBar.tsx
-
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import EventCard from '../EventCard/EventCard';
@@ -9,9 +7,8 @@ import {
   useGetCategoriesQuery,
   useGetEventsQuery,
 } from '../../api/events/eventApi';
-import { FormInput } from '../FormInput/FormInput'; // your custom component
+import { FormInput } from '../FormInput/FormInput';
 
-// Debounce helper: waits `delay` ms after last call
 function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
   let handle: ReturnType<typeof setTimeout> | null = null;
   return (...args: Parameters<T>) => {
@@ -20,24 +17,22 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
   };
 }
 
-// Shape of a Mapbox Geocoding response feature (for cities)
 interface MapboxFeature {
-  place_name: string; // e.g. "Sofia, Bulgaria"
-  text: string; // e.g. "Sofia"
+  place_name: string;
+  text: string;
   center?: [number, number];
 }
 
 type FormValues = {
   keyword: string;
-  city: string; // raw user input / chosen suggestion
-  categoryId: number | ''; // empty string means “all”
-  dateFrom: string; // ISO "YYYY-MM-DD"
-  dateTo: string; // ISO "YYYY-MM-DD"
-  limit: number | ''; // empty string means undefined
+  city: string;
+  categoryId: number | '';
+  dateFrom: string;
+  dateTo: string;
+  limit: number | '';
 };
 
 const SearchBar: React.FC = () => {
-  // ─── 1) Initialize React Hook Form ─────────────────────────────────────────────────────
   const {
     register,
     control,
@@ -54,40 +49,35 @@ const SearchBar: React.FC = () => {
     },
   });
 
-  // Watch all fields (RHF will re-render when any watched field changes)
   const keyword = watch('keyword');
   const cityInput = watch('city');
   const categoryId = watch('categoryId');
   const dateFrom = watch('dateFrom');
   const dateTo = watch('dateTo');
 
-  // ─── 2) Fetch categories for dropdown (optional) ────────────────────────────────────────
   const { data: categories } = useGetCategoriesQuery(undefined);
 
-  // ─── 3) Mapbox Autocomplete (based on cityInput) ─────────────────────────────────────────
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [isSuggestionsOpen, setIsSuggestionsOpen] =
     React.useState<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-  // Debounced fetch function for Mapbox
   const fetchCitySuggestions = useMemo(() => {
     return debounce((query: string) => {
       if (!MAPBOX_TOKEN) {
         console.error('Missing Mapbox token in VITE_MAPBOX_TOKEN');
         return;
       }
-      // Abort any in-flight request
+
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      // Encode user input
       const encoded = encodeURIComponent(query);
-      // Add `language=en` so results are in English
+
       const url =
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?` +
         `access_token=${MAPBOX_TOKEN}` +
@@ -98,7 +88,6 @@ const SearchBar: React.FC = () => {
           if (!res.ok) throw new Error(`Mapbox ${res.statusText}`);
           const data = (await res.json()) as { features: MapboxFeature[] };
 
-          // Use `place_name` (e.g. "Sofia, Bulgaria") instead of `text`
           const cityNames = data.features.map(feat => feat.place_name);
           const unique = Array.from(new Set(cityNames)).filter(Boolean);
           setSuggestions(unique);
@@ -109,7 +98,6 @@ const SearchBar: React.FC = () => {
     }, 400);
   }, [MAPBOX_TOKEN]);
 
-  // Trigger fetch whenever cityInput changes
   useEffect(() => {
     const q = cityInput.trim();
     if (q.length >= 2) {
@@ -122,8 +110,6 @@ const SearchBar: React.FC = () => {
     }
   }, [cityInput, fetchCitySuggestions]);
 
-  // ─── 4) Call RTK Query with all filters ―───────────────────────────────────────────────
-  // Pass city only if it exactly matches one of the suggestions
   const {
     data: events,
     isLoading,
@@ -137,14 +123,11 @@ const SearchBar: React.FC = () => {
     take: 5,
   });
 
-  // ─── 5) Render │──────────────────────────────────────────────────────────────────────────
   return (
     <div className='space-y-6'>
-      {/* ── FILTER FORM ── */}
       <form
         onSubmit={e => e.preventDefault()}
         className='grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-white shadow rounded'>
-        {/* Keyword */}
         <div>
           <FormInput
             label='Keyword'
@@ -154,18 +137,17 @@ const SearchBar: React.FC = () => {
           />
         </div>
 
-        {/* City input with Mapbox suggestions */}
         <div className='relative'>
           <FormInput
             label='City'
             type='text'
+            onFocus={() => setIsSuggestionsOpen(true)}
             register={{
               ...register('city', {
                 onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
                   setIsSuggestionsOpen(false);
                 },
               }),
-              onFocus: () => setIsSuggestionsOpen(true),
             }}
             error={errors.city?.message}
           />
@@ -175,7 +157,6 @@ const SearchBar: React.FC = () => {
                 <li
                   key={name}
                   onClick={() => {
-                    // When the user picks a suggestion, set "city" to full place_name
                     setValue('city', name, {
                       shouldValidate: true,
                       shouldDirty: true,
@@ -190,7 +171,6 @@ const SearchBar: React.FC = () => {
           )}
         </div>
 
-        {/* Category dropdown */}
         <div>
           <label className='block text-sm font-medium mb-1'>Category</label>
           <Controller
@@ -213,7 +193,6 @@ const SearchBar: React.FC = () => {
           />
         </div>
 
-        {/* Date From */}
         <div>
           <FormInput
             label='Date From'
@@ -223,7 +202,6 @@ const SearchBar: React.FC = () => {
           />
         </div>
 
-        {/* Date To */}
         <div>
           <FormInput
             label='Date To'
@@ -234,7 +212,6 @@ const SearchBar: React.FC = () => {
         </div>
       </form>
 
-      {/* ── SEARCH RESULTS ── */}
       {isLoading ? (
         <h5 className='text-center'>Loading events…</h5>
       ) : isError ? (

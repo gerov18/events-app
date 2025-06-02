@@ -14,6 +14,7 @@ import CategoryCard from '../../Components/CategoryCard/CategoryCard';
 import CategoriesSection from '../../Components/CategoriesSection/CategoriesSection';
 import EventsSlider from '../../Components/EventsSlider/EventsSlider';
 import SearchBar from '../../Components/SearchBar/SearchBar';
+import { MapDisplay } from '../../Components/MapDisplay/MapDisplay';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,8 @@ export const Home = () => {
   };
 
   const [logout] = useLogoutMutation();
-
+  const TEST_LAT = 40.758;
+  const TEST_LNG = -73.9855;
   const {
     data: sofiaEvents,
     isLoading: isLoadingSofia,

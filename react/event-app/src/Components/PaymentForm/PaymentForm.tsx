@@ -1,4 +1,3 @@
-// src/Views/Payment/PaymentForm.tsx
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import React, { useState } from 'react';
 import { useCreatePaymentMutation } from '../../api/paymentApi/paymentApi';
