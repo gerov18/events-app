@@ -9,7 +9,7 @@ import {
   useGetCategoryByIdQuery,
 } from '../../../api/events/eventApi';
 import { useCreateReservationMutation } from '../../../api/reservations/reservationsApi';
-import EventCard from '../../../Components/EventCard/EventCard';
+
 import { MapDisplay } from '../../../Components/MapDisplay/MapDisplay';
 import { RootState } from '../../../api/store';
 import { Image } from '../../../types/Image';
@@ -172,8 +172,6 @@ const EventDetails: React.FC = () => {
       ) : (
         <p className='mt-2 text-gray-500'>No images uploaded yet.</p>
       )}
-
-      <EventCard event={event} />
 
       {isOwner && (
         <div className='flex space-x-4 mt-6'>
