@@ -17,6 +17,7 @@ import { Link, useNavigate } from 'react-router';
 import { FormInput } from '../../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
 import { useGetMeQuery } from '../../../api/me/meApi';
+import userRegisterPic from '../../../assets/userRegister.webp';
 
 export const Register = () => {
   const dispatch = useDispatch();
@@ -114,18 +115,19 @@ export const Register = () => {
             Register
           </button>
 
-          <div>
-            <p> Already have an account?</p>
-            <Link to={{ pathname: '/login' }}>
-              {' '}
-              <p className='hover:underline'>Click here to sign in.</p>
+          <div className='mt-4 text-center text-sm text-gray-600 dark:text-gray-400'>
+            Already have an account?{' '}
+            <Link
+              to='/login'
+              className='text-blue-600 hover:underline'>
+              Sign in here.
             </Link>
           </div>
-
-          <div>
-            <Link to={{ pathname: '/organiser/register' }}>
-              {' '}
-              <p className='hover:underline'>Sign up as organiser.</p>
+          <div className='mt-4 text-center text-sm text-gray-600 dark:text-gray-400'>
+            <Link
+              to='/organiser/register'
+              className='text-blue-600 hover:underline'>
+              Sign up as organiser
             </Link>
           </div>
           {error && <p className='text-red-500'>Login failed</p>}
@@ -133,7 +135,7 @@ export const Register = () => {
       </div>
       <div className='w-1/2 '>
         <img
-          src='../../../userRegister.jpg'
+          src={userRegisterPic}
           alt='login background image'
           className='h-dvh object-cover '
         />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { Event } from '../../types/Event';
 import { Image } from '../../types/Image';
+import noPicImg from '../../assets/noPic.webp';
 
 interface EventCardProps {
   event: Event;
@@ -10,9 +11,7 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const imgUrl =
-    event.images && event.images.length > 0
-      ? event.images[0].url
-      : '../../../public/noPic.jpg';
+    event.images && event.images.length > 0 ? event.images[0].url : noPicImg;
 
   const truncatedDescription = event.description.slice(0, 80) + '...';
 

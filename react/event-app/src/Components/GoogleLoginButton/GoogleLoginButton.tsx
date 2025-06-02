@@ -29,6 +29,8 @@ export const GoogleLoginButton = () => {
         focus:ring-2 
         focus:ring-offset-1 
         focus:ring-gray-400
+        cursor-pointer
+        transition-all
       '>
       {/* Google “G” logo (SVG) */}
       <svg

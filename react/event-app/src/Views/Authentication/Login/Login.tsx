@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { FormInput } from '../../../Components/FormInput/FormInput';
 import { GoogleLoginButton } from '../../../Components/GoogleLoginButton/GoogleLoginButton';
 import { useGetMeQuery } from '../../../api/me/meApi';
+import userLoginPic from '../../../assets/userLogin.webp';
 
 export const Login = () => {
   const dispatch = useDispatch();
@@ -84,24 +85,26 @@ export const Login = () => {
 
           {error && <p className='text-red-500'>Login failed</p>}
           <GoogleLoginButton />
-          <div>
-            <p>Don't have an account?</p>
-            <Link to={{ pathname: '/register' }}>
-              {' '}
-              <p className='hover:underline'>Click here to sign up.</p>
+          <div className='mt-4 text-center text-sm text-gray-600 dark:text-gray-400'>
+            Don't have an account?{' '}
+            <Link
+              to='/register'
+              className='text-blue-600 hover:underline'>
+              Sign up here.
             </Link>
           </div>
-          <div>
-            <Link to={{ pathname: '/organiser/login' }}>
-              {' '}
-              <p className='hover:underline'>Sign as organiser.</p>
+          <div className='mt-4 text-center text-sm text-gray-600 dark:text-gray-400'>
+            <Link
+              to='/organiser/login'
+              className='text-blue-600 hover:underline'>
+              Sign in as organiser
             </Link>
           </div>
         </form>
       </div>
       <div className='w-1/2 '>
         <img
-          src='../../../userLogin.jpg'
+          src={userLoginPic}
           alt='login background image'
           className='h-dvh object-cover '
         />
