@@ -37,6 +37,10 @@ import EventsByCategory from './Views/EventsByCategory/EventsByCategory';
 import NotFoundPage from './Views/NotFoundPage/NotFoundPage';
 import EventResults from './Components/EventResults/EventResults';
 import OAuthSuccess from './Views/OAuthSuccess/OAuthSuccess';
+import AdminUserDetails from './Views/Admin/AdminUserDetails/AdminUserDetails';
+import AdminUserEdit from './Views/Admin/AdminUserEdit/AdminUserEdit';
+import AdminOrganiserEdit from './Views/Admin/AdminOrganiserEdit/AdminOrganiserEdit';
+import AdminOrganiserDetails from './Views/Admin/AdminOrganiserDetails/AdminOrganiserDetails';
 
 function App() {
   const dispatch = useDispatch();
@@ -216,6 +220,39 @@ function App() {
           <Route
             path='/oauth-success'
             element={<OAuthSuccess />}
+          />
+          <Route
+            path='/admin/users/:id'
+            element={<AdminUserDetails />}
+          />
+          <Route
+            path='/admin/users/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminUserEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/organisers/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminOrganiserEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/organisers/:id'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminOrganiserDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='role-requests'
+            element={<HandleRoleRequests />}
           />
         </Routes>
       </Layout>

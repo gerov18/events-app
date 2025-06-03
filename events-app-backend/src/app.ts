@@ -18,6 +18,8 @@ import userReservationsRouter from './routes/reservations.user';
 import paymentRoutes from './routes/payments';
 import { PrismaClient } from '@prisma/client';
 import adminRoutes from './routes/admin';
+import adminUsersRouter from './routes/adminUsers';
+import adminOrganisersRouter from './routes/adminOrganisers';
 
 const app: Application = express();
 
@@ -51,6 +53,8 @@ app.use('/organiser', organiserRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/', meRoute);
 app.use('/', adminRoutes);
+app.use('/admin', adminUsersRouter);
+app.use('/admin', adminOrganisersRouter);
 
 const prisma = new PrismaClient();
 

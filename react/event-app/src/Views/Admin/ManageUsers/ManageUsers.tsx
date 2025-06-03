@@ -5,6 +5,7 @@ import {
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
 } from '../../../api/admin/adminApi';
+import { Link } from 'react-router';
 
 export const ManageUsers: React.FC = () => {
   const { data: users, isLoading, isError } = useGetAllUsersQuery();
@@ -35,7 +36,15 @@ export const ManageUsers: React.FC = () => {
               key={user.id}
               className='border-t'>
               <td className='px-4 py-2'>{user.id}</td>
-              <td className='px-4 py-2'>{user.email}</td>
+              <td className='px-4 py-2'>
+                {
+                  <Link
+                    to={`/admin/users/${user.id}`}
+                    className='hover:underline'>
+                    {user.email}
+                  </Link>
+                }
+              </td>
               <td className='px-4 py-2'>{user.username}</td>
               <td className='px-4 py-2'>{user.role}</td>
               <td className='px-4 py-2 space-x-2'>

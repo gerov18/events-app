@@ -4,6 +4,7 @@ import {
   useGetAllOrganisersQuery,
 } from '../../../api/admin/adminApi';
 import { Organiser } from '../../../types/Organiser';
+import { Link } from 'react-router';
 
 export const ManageOrganisers: React.FC = () => {
   const { data: organisers, isLoading, isError } = useGetAllOrganisersQuery();
@@ -31,7 +32,13 @@ export const ManageOrganisers: React.FC = () => {
               key={org.id}
               className='border-t'>
               <td className='px-4 py-2'>{org.id}</td>
-              <td className='px-4 py-2'>{org.name}</td>
+              <td className='px-4 py-2'>
+                <Link
+                  to={`/admin/organisers/${org.id}`}
+                  className='hover:underline'>
+                  {org.name}
+                </Link>
+              </td>
               <td className='px-4 py-2'>{org.email}</td>
               <td className='px-4 py-2'>
                 <button
