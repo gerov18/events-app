@@ -62,14 +62,6 @@ const Navigation: React.FC = () => {
                   Profile
                 </Link>
 
-                {userType === 'user' && (
-                  <Link
-                    to={`/users/${(user as any).id}/reservations`}
-                    className='px-4 py-2 bg-white bg-opacity-25 hover:bg-opacity-50 text-lg font-medium text-gray-800 rounded-lg transition'>
-                    My Reservations
-                  </Link>
-                )}
-
                 {userType === 'admin' && (
                   <Link
                     to='/admin'

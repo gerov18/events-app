@@ -1,11 +1,10 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-
-const secret = process.env.JWT_SECRET;
+const secret = process.env.JWT_SECRET!;
 
 passport.use(
   new GoogleStrategy(
@@ -14,7 +13,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       callbackURL: 'http://localhost:5008/authentication/google/callback',
     },
-    async (_acessToken, _refreshToken, profile, done) => {
+    async (_accessToken, _refreshToken, profile, done) => {
       try {
         let user = await prisma.user.findUnique({
           where: { googleId: profile.id },
@@ -23,20 +22,23 @@ passport.use(
         if (!user) {
           user = await prisma.user.create({
             data: {
-              email: profile.emails?.[0].value!,
-              username: profile.displayName,
+              email: profile.emails![0].value!,
+              username: profile.displayName.replace(/\s+/g, '_'),
               googleId: profile.id,
-              firstName: profile.name?.familyName!,
-              lastName: profile.name?.givenName!,
+              firstName: profile.name!.givenName!,
+              lastName: profile.name!.familyName!,
+              role: 'USER',
               createdAt: new Date(),
             },
           });
         }
-        const token = jwt.sign({ id: user.id }, secret!, { expiresIn: '24h' });
+
+        const payload = { id: user.id, role: user.role };
+        const token = jwt.sign(payload, secret, { expiresIn: '24h' });
 
         return done(null, { user, token });
-      } catch (error) {
-        done(error);
+      } catch (err) {
+        done(err as any);
       }
     }
   )

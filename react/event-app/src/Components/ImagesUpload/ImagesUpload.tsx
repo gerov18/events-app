@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   useGetEventImagesQuery,
   useUploadEventImagesMutation,
-  ,
 } from '../../api/events/eventApi';
 
 type Props = { eventId: number };
@@ -17,9 +16,9 @@ export const ImagesUpload: React.FC<Props> = ({ eventId }) => {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert('Избери файл');
+    if (!file) return alert('Please choose file');
     try {
-      await uploadImage({ eventId, file }).unwrap();
+      await uploadImage({ eventId, files: file }).unwrap();
       setFile(null);
     } catch (e) {
       console.error(e);

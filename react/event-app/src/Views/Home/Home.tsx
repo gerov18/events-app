@@ -51,7 +51,9 @@ export const Home = () => {
   const handleBrowseClick = () => {
     setShowSearch(prev => !prev);
   };
+  const user = useSelector((state: RootState) => state.auth);
 
+  console.log('state', user);
   return (
     <div className='bg-gray-100 min-h-screen'>
       <Header onBrowseClick={handleBrowseClick} />

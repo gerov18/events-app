@@ -33,11 +33,12 @@ import { HandleRoleRequests } from './Views/Admin/RoleRequests/HandleRoleRequest
 import EventsByCategory from './Views/EventsByCategory/EventsByCategory';
 import NotFoundPage from './Views/NotFoundPage/NotFoundPage';
 import EventResults from './Components/EventResults/EventResults';
+import OAuthSuccess from './Views/OAuthSuccess/OAuthSuccess';
 
 function App() {
   const dispatch = useDispatch();
   const { data: meData, isLoading, isError } = useGetMeQuery();
-
+  console.log('meData', meData);
   useEffect(() => {
     if (meData) {
       if (isLoading) return;
@@ -57,6 +58,8 @@ function App() {
   }, [meData, isLoading, isError, dispatch]);
 
   const user = useSelector((state: RootState) => state.auth);
+
+  console.log('state', user);
 
   return (
     <Router>
@@ -198,6 +201,10 @@ function App() {
           <Route
             path='/*'
             element={<NotFoundPage />}
+          />
+          <Route
+            path='/oauth-success'
+            element={<OAuthSuccess />}
           />
         </Routes>
       </Layout>
