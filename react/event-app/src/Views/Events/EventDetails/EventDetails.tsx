@@ -125,6 +125,16 @@ const EventDetails: React.FC = () => {
               {event.title}
             </h1>
             <p className='text-gray-700 leading-relaxed'>{event.description}</p>
+
+            <div className='flex items-center'>
+              <Link
+                to={`/organiser/${event.creator.id}`}
+                className='text-sm text-indigo-600 hover:underline mb-3'>
+                <p className='font-semibold'>
+                  Organised by {event.creator.name}
+                </p>
+              </Link>
+            </div>
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 border-t pt-6'>

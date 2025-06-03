@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { Event } from '../../types/Event';
-import { Image } from '../../types/Image';
 import noPicImg from '../../assets/noPic.webp';
 
 interface EventCardProps {
@@ -16,38 +15,40 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const truncatedDescription = event.description.slice(0, 80) + '...';
 
   return (
-    <div className='bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 h-full flex flex-col'>
-      <Link to={`/events/${event.id}`}>
+    <div className='bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col h-full'>
+      <Link
+        to={`/events/${event.id}`}
+        className='group block overflow-hidden'>
         <img
-          className='w-full h-48 object-cover rounded-t-lg'
+          className='w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300'
           src={imgUrl}
           alt={event.title}
         />
       </Link>
 
-      <div className='p-5 flex-1 flex flex-col'>
+      <div className='p-6 flex-1 flex flex-col'>
         <Link
           to={`/events/${event.id}`}
           className='group'>
-          <h5 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 transition'>
+          <h5 className='mb-2 text-2xl font-extrabold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors duration-300'>
             {event.title}
           </h5>
         </Link>
-        <p className='mb-1 text-sm font-medium text-gray-600 dark:text-gray-400'>
+        <p className='mb-2 text-sm font-medium text-gray-500 dark:text-gray-400'>
           {moment(event.date).format('DD.MM.YYYY')}
         </p>
 
-        <p className='mb-3 font-normal text-gray-700 dark:text-gray-400 flex-1 overflow-hidden'>
+        <p className='mb-4 flex-1 text-gray-700 dark:text-gray-300 overflow-hidden'>
           {truncatedDescription}
         </p>
 
         <div className='mt-auto'>
           <Link
             to={`/events/${event.id}`}
-            className='inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition'>
-            See more
+            className='inline-flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-300 transition duration-200'>
+            See More
             <svg
-              className='w-3.5 h-3.5 ms-2'
+              className='w-4 h-4 ms-2'
               aria-hidden='true'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
