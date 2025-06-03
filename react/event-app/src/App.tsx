@@ -40,7 +40,6 @@ import OAuthSuccess from './Views/OAuthSuccess/OAuthSuccess';
 
 function App() {
   const dispatch = useDispatch();
-  // <-- ALWAYS call getMe
   const {
     data: meData,
     isLoading: meLoading,
@@ -52,7 +51,6 @@ function App() {
     refetchOnReconnect: true,
   });
 
-  // <-- whenever meData or error changes, populate or clear Redux
   useEffect(() => {
     if (meLoading) return;
 
@@ -65,7 +63,6 @@ function App() {
         dispatch(setМе({ userType: 'admin', user: meData.data }));
       }
     } else if (!meData && meError) {
-      // if server returned 401 or error, clear out Redux
       dispatch(clearUserState());
       dispatch(clearOrganiserState());
     }

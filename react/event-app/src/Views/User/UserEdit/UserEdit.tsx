@@ -25,6 +25,7 @@ export const UserEdit: React.FC = () => {
     useUpdateUserMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log('iser', user);
   const {
     register,
     handleSubmit,
@@ -33,7 +34,9 @@ export const UserEdit: React.FC = () => {
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
     defaultValues:
-      user && user.type === 'user' ? { ...user.data, password: '' } : {},
+      user && (user.type === 'user' || user.type === 'admin')
+        ? { ...user.data, password: '' }
+        : {},
   });
 
   useEffect(() => {
