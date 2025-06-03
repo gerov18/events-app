@@ -7,6 +7,22 @@ interface PaymentFormProps {
   onSuccess: () => Promise<void>;
 }
 
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    base: {
+      fontSize: '16px',
+      color: '#32325d',
+      '::placeholder': {
+        color: '#a0aec0',
+      },
+    },
+    invalid: {
+      color: '#fa755a',
+    },
+  },
+  hidePostalCode: true,
+};
+
 const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -46,7 +62,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onSuccess }) => {
     <form
       onSubmit={handleSubmit}
       className='space-y-4'>
-      <CardElement />
+      <CardElement options={CARD_ELEMENT_OPTIONS} />
       {error && <p className='text-red-500'>{error}</p>}
       <button
         type='submit'

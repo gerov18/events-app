@@ -109,7 +109,7 @@ export const eventsApi = createApi({
     }),
     uploadEventImages: builder.mutation<
       Image[],
-      { eventId: number; files: File }
+      { eventId: number; files: File[] }
     >({
       query: ({ eventId, files }) => {
         const fd = new FormData();

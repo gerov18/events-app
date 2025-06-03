@@ -26,8 +26,10 @@ const EventDetails: React.FC = () => {
 
   const { data: event, isLoading, isError } = useGetEventByIdQuery(eventId);
   const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
-  const [reserveTickets, { isLoading: isReserving }] =
+
+  const [createReservation, { isLoading: isReserving }] =
     useCreateReservationMutation();
+
   const { data: images, isLoading: imagesLoading } =
     useGetEventImagesQuery(eventId);
   const { data: category, isLoading: isCatLoading } = useGetCategoryByIdQuery(
@@ -85,6 +87,7 @@ const EventDetails: React.FC = () => {
 
   const isOwner =
     auth.userType === 'organiser' && auth.user?.id === event.createdBy;
+
   const handleDelete = async () => {
     try {
       await deleteEvent(eventId).unwrap();
@@ -94,8 +97,26 @@ const EventDetails: React.FC = () => {
     }
   };
 
-  const handleReserve = () => {
-    navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
+  const handleReserve = async () => {
+    if (event.price === 0) {
+      try {
+        const newReservation = await createReservation({
+          eventId,
+          quantity,
+        }).unwrap();
+        const newReservationId = newReservation.id;
+        if (auth.user?.id && newReservationId) {
+          navigate(`/user/${auth.user.id}/reservations/${newReservationId}`);
+        } else {
+          navigate(`/user/me`);
+        }
+      } catch (err) {
+        console.error('Reservation failed:', err);
+        alert('Could not create reservation.');
+      }
+    } else {
+      navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
+    }
   };
 
   const handleConfirm = () => {
@@ -160,7 +181,9 @@ const EventDetails: React.FC = () => {
             <div className='space-y-4'>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>Price:</span>
-                <span className='text-gray-600'>{event.price.toFixed(2)}€</span>
+                <span className='text-gray-600'>
+                  {event.price === 0 ? 'Free' : `${event.price.toFixed(2)}€`}
+                </span>
               </div>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>
@@ -197,7 +220,7 @@ const EventDetails: React.FC = () => {
                 }`}>
                 <div className='mt-6 bg-gray-100 rounded-lg p-6 space-y-6'>
                   <h2 className='text-xl font-semibold text-gray-800'>
-                    Reserve Tickets
+                    {event.price === 0 ? 'Get Free Ticket' : 'Reserve Tickets'}
                   </h2>
                   <div className='flex items-center space-x-4'>
                     <button
@@ -219,9 +242,15 @@ const EventDetails: React.FC = () => {
                   <button
                     onClick={handleReserve}
                     disabled={isReserving || event.availableTickets < 1}
-                    className='w-full text-center px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-teal-600 transition'>
+                    className={`cursor-pointer w-full text-center px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-lg shadow-md  transition ${
+                      isReserving || event.availableTickets < 1
+                        ? ' opacity-50 cursor-default'
+                        : 'hover:from-green-600 hover:to-teal-600'
+                    }`}>
                     {isReserving
-                      ? 'Reserving…'
+                      ? 'Processing…'
+                      : event.price === 0
+                      ? 'Get Free Ticket'
                       : quantity === 1
                       ? 'Reserve Ticket'
                       : `Reserve ${quantity} Tickets`}

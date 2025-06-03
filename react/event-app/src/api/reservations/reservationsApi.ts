@@ -11,7 +11,7 @@ export const reservationsApi = createApi({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
   }),
-  tagTypes: ['Reservations'],
+  tagTypes: ['Reservations', 'Event'],
   endpoints: builder => ({
     getMyReservations: builder.query<Reservation[], void>({
       query: () => '/users/me/reservations',
@@ -45,7 +45,9 @@ export const reservationsApi = createApi({
         method: 'POST',
         body: { quantity },
       }),
-      invalidatesTags: ['Reservations'],
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: 'Event', id: eventId },
+      ],
     }),
 
     updateReservation: builder.mutation<

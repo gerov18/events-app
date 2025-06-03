@@ -62,7 +62,7 @@ function App() {
       } else if (meData.type === 'user') {
         dispatch(setМе({ userType: 'user', user: meData.data }));
       } else if (meData.type === 'admin') {
-        dispatch(setМе({ userType: 'user', user: meData.data }));
+        dispatch(setМе({ userType: 'admin', user: meData.data }));
       }
     } else if (!meData && meError) {
       // if server returned 401 or error, clear out Redux

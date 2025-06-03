@@ -15,7 +15,7 @@ const Navigation: React.FC = () => {
   const [logout] = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { refetch: refetchMe } = useGetMeQuery();
-
+  console.log('aaaaa', userType);
   const handleLogout = async () => {
     try {
       await logout().unwrap();
