@@ -14,14 +14,16 @@ const CategoriesSection = ({ categories }: CategoriesSectionProps) => {
       className='
         overflow-x-scroll 
         md:grid
-        md:grid-cols-2 lg:grid-cols-3 
+        md:grid-cols-2 lg:grid-cols-4 
         md:justify-center  
         flex
         md:gap-y-4
         md:gap-x-0
         lg:gap-4
         p-4
-        gap-4
+        gap-4 
+        max-w-7xl
+        mx-auto
       '>
       {categories.map(cat => (
         <div
@@ -29,7 +31,7 @@ const CategoriesSection = ({ categories }: CategoriesSectionProps) => {
           className=' sm:flex sm:justify-center gap-'>
           <CategoryCard
             name={cat.name}
-            onClick={() => navigate(`/category/${cat.id}`)}
+            onClick={() => navigate(`/search?categoryId=${cat.id}`)}
           />
         </div>
       ))}

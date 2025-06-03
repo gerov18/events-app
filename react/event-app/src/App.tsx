@@ -32,6 +32,7 @@ import { ManageUsers } from './Views/Admin/ManageUsers/ManageUsers';
 import { HandleRoleRequests } from './Views/Admin/RoleRequests/HandleRoleRequests';
 import EventsByCategory from './Views/EventsByCategory/EventsByCategory';
 import NotFoundPage from './Views/NotFoundPage/NotFoundPage';
+import EventResults from './Components/EventResults/EventResults';
 
 function App() {
   const dispatch = useDispatch();
@@ -189,6 +190,10 @@ function App() {
           <Route
             path='/category/:id'
             element={<EventsByCategory />}
+          />
+          <Route
+            path='/search'
+            element={<EventResults />}
           />
           <Route
             path='/*'

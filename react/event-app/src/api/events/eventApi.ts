@@ -125,6 +125,18 @@ export const eventsApi = createApi({
         { type: 'Events' as const, id: eventId },
       ],
     }),
+    deleteEventImage: builder.mutation<
+      { message: string },
+      { eventId: number; imageId: number }
+    >({
+      query: ({ eventId, imageId }) => ({
+        url: `/events/${eventId}/images/${imageId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: (_res, _err, { eventId }) => [
+        { type: 'Images' as const, id: eventId },
+      ],
+    }),
   }),
 });
 
@@ -138,4 +150,5 @@ export const {
   useGetEventImagesQuery,
   useUploadEventImagesMutation,
   useGetEventsQuery,
+  useDeleteEventImageMutation,
 } = eventsApi;

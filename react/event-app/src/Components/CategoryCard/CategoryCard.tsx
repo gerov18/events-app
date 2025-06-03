@@ -13,8 +13,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       onClick={onClick}
       className='
         max-w-xs h-40
-        bg-gradient-to-br from-gray-100 to-gray-200
-        border border-gray-200
+        bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600
         rounded-lg
         shadow-sm
         flex flex-col items-center justify-center
@@ -24,7 +23,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         cursor-pointer
         w-100
       '>
-      <h5 className='text-lg font-semibold text-gray-800'>{name}</h5>
+      <p
+        className=' text-3xl font-semibold text-white
+      '>
+        {name}
+      </p>
     </div>
   );
 };

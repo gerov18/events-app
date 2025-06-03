@@ -7,6 +7,7 @@ type FormInputProps = {
   required?: boolean;
   error?: string;
   onFocus?: () => void;
+  placeholder?: string;
 };
 
 export const FormInput = ({
@@ -16,19 +17,35 @@ export const FormInput = ({
   required = false,
   error,
   onFocus,
+  placeholder = '',
 }: FormInputProps) => {
   return (
-    <div className='mb-4'>
-      <label className='block font-medium mb-1'>{label}</label>
-      {error && <p className='text-red-500 text-sm mb-1'>{error}</p>}
+    <div className='mb-6'>
+      <label className='block text-sm font-semibold text-gray-700 mb-1'>
+        {label} {required && <span className='text-red-500'>*</span>}
+      </label>
+
+      {error && <p className='text-red-600 text-xs italic mb-1'>{error}</p>}
+
       <input
         type={type}
         {...register}
         required={required}
-        className={`border px-3 py-2 w-full rounded ${
-          error ? 'border-red-500' : 'border-gray-300'
-        }`}
+        placeholder={placeholder}
         onFocus={onFocus}
+        className={`
+          block w-full 
+          px-4 py-2 
+          border 
+          rounded-lg 
+          bg-white 
+          placeholder-gray-400 
+          focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 
+          transition 
+          duration-150 
+          ease-in-out
+          ${error ? 'border-red-500 ring-red-200' : 'border-gray-300'}
+        `}
       />
     </div>
   );
