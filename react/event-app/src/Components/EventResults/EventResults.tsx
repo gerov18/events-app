@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useGetEventsQuery } from '../../api/events/eventApi';
 import EventCard from '../EventCard/EventCard';
-import FilterBar from '../FilterBar/FilterBar';
+import { FilterBar } from '../FilterBar/FilterBar';
 import { Event } from '../../types/Event';
 
 const EventResults: React.FC = () => {
@@ -57,7 +57,13 @@ const EventResults: React.FC = () => {
         </div>
       </div>
 
-      {showFilters && <FilterBar />}
+      {showFilters && (
+        <FilterBar
+          onCloseClick={() => {
+            setShowFilters(false);
+          }}
+        />
+      )}
 
       {isLoading ? (
         <div className='text-center text-gray-500 mt-12 text-lg'>

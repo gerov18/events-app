@@ -13,7 +13,7 @@ export const OrganiserDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const organiserId = Number(id);
-
+  console.log('io', id);
   const {
     data: organiser,
     isLoading: isOrgLoading,
@@ -47,13 +47,13 @@ export const OrganiserDetails: React.FC = () => {
   }
 
   const organiserEvents: EventType[] = allEvents ?? [];
-
+  console.log('adasa', allEvents);
   const canManage =
     (userType === 'organiser' && currentUser?.id === organiser.id) ||
     userType === 'admin';
 
   return (
-    <div className='p-6 max-w-4xl mx-auto'>
+    <div className='p-6  max-w-7xl mx-auto'>
       <h1 className='text-3xl font-bold mb-4'>{organiser.name}</h1>
       <div className='mb-6'>
         {organiser.description && (

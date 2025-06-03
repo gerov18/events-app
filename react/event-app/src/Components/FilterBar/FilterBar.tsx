@@ -1,7 +1,10 @@
+// src/Components/FilterBar/FilterBar.tsx
+
 import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useGetCategoriesQuery } from '../../api/events/eventApi';
+import { FormInput } from '../FormInput/FormInput';
 
 type FilterValues = {
   keyword: string;
@@ -11,10 +14,14 @@ type FilterValues = {
   dateTo: string;
 };
 
-const FilterBar: React.FC = () => {
+type FilterProps = {
+  onCloseClick: () => void;
+};
+
+export const FilterBar = ({ onCloseClick }: FilterProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { data: categories } = useGetCategoriesQuery(undefined);
+  const { data: categories } = useGetCategoriesQuery();
 
   const keywordParam = searchParams.get('keyword') || '';
   const cityParam = searchParams.get('city') || '';
@@ -85,41 +92,46 @@ const FilterBar: React.FC = () => {
 
   return (
     <div className='bg-white shadow-md rounded-lg p-6 mb-8'>
+      <div className='flex justify-end'>
+        <button
+          onClick={onCloseClick}
+          className='cursor-pointer text-gray-500 hover:text-gray-700 transition-transform transform  text-2xl'>
+          &#x2715;
+        </button>
+      </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
-        <div>
-          <label className='block text-sm font-medium mb-1'>Keyword</label>
-          <input
-            {...register('keyword')}
-            type='text'
-            className={`w-full border rounded-lg px-3 py-2 focus:ring-indigo-300 focus:outline-none ${
-              errors.keyword ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-        </div>
+        <FormInput
+          label='Keyword'
+          type='text'
+          register={register('keyword')}
+          error={errors.keyword?.message}
+          placeholder='e.g. Concert'
+        />
+
+        <FormInput
+          label='City'
+          type='text'
+          register={register('city')}
+          error={errors.city?.message}
+          placeholder='e.g. Plovdiv'
+        />
 
         <div>
-          <label className='block text-sm font-medium mb-1'>City</label>
-          <input
-            {...register('city')}
-            type='text'
-            className={`w-full border rounded-lg px-3 py-2 focus:ring-indigo-300 focus:outline-none ${
-              errors.city ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium mb-1'>Category</label>
+          <label className='block text-sm font-semibold text-gray-700 mb-1'>
+            Category
+          </label>
           <Controller
             name='categoryId'
             control={control}
             render={({ field }) => (
               <select
                 {...field}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-indigo-300 focus:outline-none ${
-                  errors.categoryId ? 'border-red-500' : 'border-gray-300'
+                className={`block w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 transition duration-150 ease-in-out ${
+                  errors.categoryId
+                    ? 'border-red-500 ring-red-200'
+                    : 'border-gray-300'
                 }`}>
                 <option value=''>All categories</option>
                 {categories?.map(cat => (
@@ -134,27 +146,19 @@ const FilterBar: React.FC = () => {
           />
         </div>
 
-        <div>
-          <label className='block text-sm font-medium mb-1'>Date From</label>
-          <input
-            {...register('dateFrom')}
-            type='date'
-            className={`w-full border rounded-lg px-3 py-2 focus:ring-indigo-300 focus:outline-none ${
-              errors.dateFrom ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-        </div>
+        <FormInput
+          label='Date From'
+          type='date'
+          register={register('dateFrom')}
+          error={errors.dateFrom?.message}
+        />
 
-        <div>
-          <label className='block text-sm font-medium mb-1'>Date To</label>
-          <input
-            {...register('dateTo')}
-            type='date'
-            className={`w-full border rounded-lg px-3 py-2 focus:ring-indigo-300 focus:outline-none ${
-              errors.dateTo ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-        </div>
+        <FormInput
+          label='Date To'
+          type='date'
+          register={register('dateTo')}
+          error={errors.dateTo?.message}
+        />
 
         <div className='sm:col-span-2 md:col-span-3 lg:col-span-5 flex justify-end mt-2'>
           <button
@@ -167,5 +171,3 @@ const FilterBar: React.FC = () => {
     </div>
   );
 };
-
-export default FilterBar;

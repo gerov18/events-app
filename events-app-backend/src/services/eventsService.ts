@@ -1,5 +1,6 @@
 import { Event, Prisma, PrismaClient } from '@prisma/client';
 import { UpdateEventInput } from '../schemas/eventSchema';
+import fs from 'fs';
 
 const prisma = new PrismaClient();
 
@@ -57,5 +58,33 @@ export const updateEvent = async (
 export const deleteEvent = async (id: number) => {
   return await prisma.event.delete({
     where: { id },
+  });
+};
+
+export const getImageById = async (imageId: number) => {
+  return await prisma.image.findUnique({
+    where: { id: imageId },
+  });
+};
+
+export const deleteImageById = async (imageId: number) => {
+  const image = await prisma.image.findUnique({
+    where: { id: imageId },
+  });
+  if (!image) {
+    throw new Error('Image not found');
+  }
+
+  try {
+    const filePath = image.url;
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (e) {
+    console.warn('Failed to unlink image file:', e);
+  }
+
+  return await prisma.image.delete({
+    where: { id: imageId },
   });
 };

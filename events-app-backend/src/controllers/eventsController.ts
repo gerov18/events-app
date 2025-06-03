@@ -5,6 +5,8 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
+  deleteImageById,
+  getImageById,
 } from '../services/eventsService';
 import {
   CreateEventInput,
@@ -16,7 +18,8 @@ import { Prisma, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
-    const { keyword, city, categoryId, dateFrom, dateTo, limit } = req.query;
+    const { keyword, city, categoryId, dateFrom, dateTo, limit, createdBy } =
+      req.query;
 
     const whereClause: Prisma.EventWhereInput = {};
 
@@ -29,9 +32,9 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
     }
 
     if (city && typeof city === 'string' && city.trim() !== '') {
-      const rawCity = city.trim().split(',')[0];
+      const c = city.trim();
       whereClause.location = {
-        contains: rawCity,
+        contains: c,
         mode: 'insensitive',
       };
     }
@@ -63,6 +66,13 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
       }
     }
 
+    if (createdBy && !Array.isArray(createdBy)) {
+      const creatorId = Number(createdBy);
+      if (!Number.isNaN(creatorId)) {
+        whereClause.createdBy = creatorId;
+      }
+    }
+
     let take: number | undefined;
     if (limit && !Array.isArray(limit)) {
       const lim = Number(limit);
@@ -72,6 +82,7 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
     }
 
     const events = await getAllEvents(whereClause, take);
+
     res.json(events);
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -234,4 +245,42 @@ export const getEventImagesHandler = async (req: Request, res: Response) => {
   });
 
   res.json(images);
+};
+
+export const deleteEventImageHandler = async (req: Request, res: Response) => {
+  const eventId = Number(req.params.id);
+  const imageId = Number(req.params.imageId);
+  const loggedUser = res.locals.user;
+
+  if (!loggedUser) {
+    res.status(401).json({ message: "You're not logged in" });
+    return;
+  }
+
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) {
+    res.status(404).json({ message: 'Event not found' });
+    return;
+  }
+
+  if (event.createdBy !== loggedUser.id && loggedUser.role !== 'ADMIN') {
+    res.status(403).json({ message: "Forbidden: you can't delete this image" });
+    return;
+  }
+
+  const image = await prisma.image.findUnique({
+    where: { id: imageId },
+  });
+  if (!image || image.eventId !== eventId) {
+    res.status(404).json({ message: 'Image not found for this event' });
+    return;
+  }
+
+  try {
+    await prisma.image.delete({ where: { id: imageId } });
+    res.json({ message: 'Image deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting image:', err);
+    res.status(500).json({ message: 'Error deleting image' });
+  }
 };

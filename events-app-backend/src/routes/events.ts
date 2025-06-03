@@ -8,6 +8,7 @@ import {
   deleteEventHandler,
   uploadEventImageHandler,
   getEventImagesHandler,
+  deleteEventImageHandler,
 } from '../controllers/eventsController';
 import { authorize, authorizeOrganiserOnly } from '../middlewares/authorize';
 import { validate } from '../middlewares/validate';
@@ -50,5 +51,13 @@ router.post(
 );
 
 router.get('/:id/images', getEventImagesHandler);
+
+router.post(
+  '/:id/images/:imageId',
+  authenticate,
+  authorizeOrganiserOnly,
+  validate(eventParamsSchema),
+  deleteEventImageHandler
+);
 
 export default router;
