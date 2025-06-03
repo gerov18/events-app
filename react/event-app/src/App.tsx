@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { clearUserState, setМе } from './api/auth/authSlice';
 import { useGetMeQuery } from './api/me/meApi';
-import { setOrganiserData } from './api/organiser/organiserSlice';
+import {
+  clearOrganiserState,
+  setOrganiserData,
+} from './api/organiser/organiserSlice';
 import Layout from './Components/Layout/Layout';
 import EventDetails from './Views/Events/EventDetails/EventDetails';
 import Home from './Views/Home/Home';
@@ -37,25 +40,36 @@ import OAuthSuccess from './Views/OAuthSuccess/OAuthSuccess';
 
 function App() {
   const dispatch = useDispatch();
-  const { data: meData, isLoading, isError } = useGetMeQuery();
-  console.log('meData', meData);
-  useEffect(() => {
-    if (meData) {
-      if (isLoading) return;
+  // <-- ALWAYS call getMe
+  const {
+    data: meData,
+    isLoading: meLoading,
+    isError: meError,
+    refetch: refetchMe,
+  } = useGetMeQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
 
-      if (meData?.type === 'organiser') {
+  // <-- whenever meData or error changes, populate or clear Redux
+  useEffect(() => {
+    if (meLoading) return;
+
+    if (meData) {
+      if (meData.type === 'organiser') {
         dispatch(setМе({ userType: 'organiser', user: meData.data }));
-      }
-      if (meData?.type === 'user') {
+      } else if (meData.type === 'user') {
+        dispatch(setМе({ userType: 'user', user: meData.data }));
+      } else if (meData.type === 'admin') {
         dispatch(setМе({ userType: 'user', user: meData.data }));
       }
-      if (meData?.type === 'admin') {
-        dispatch(setМе({ userType: 'user', user: meData.data }));
-      } else if (isError) {
-        dispatch(clearUserState());
-      }
+    } else if (!meData && meError) {
+      // if server returned 401 or error, clear out Redux
+      dispatch(clearUserState());
+      dispatch(clearOrganiserState());
     }
-  }, [meData, isLoading, isError, dispatch]);
+  }, [meData, meError, meLoading, dispatch]);
 
   const user = useSelector((state: RootState) => state.auth);
 

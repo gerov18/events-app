@@ -16,7 +16,11 @@ import Modal from '../../../Components/Modal/Modal';
 export const OrganiserEdit: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data: organiser, isLoading: isGetMeLoading } = useGetMeQuery();
+  const {
+    data: organiser,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
   const [updateMe, { isLoading: isUpdating, isSuccess }] =
     useUpdateOrganiserMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -135,12 +139,24 @@ export const OrganiserEdit: React.FC = () => {
             <button
               type='submit'
               disabled={isUpdating}
-              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition ${
+              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition cursor-pointer ${
                 isUpdating
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-indigo-600 hover:bg-indigo-700'
               }`}>
               {isUpdating ? 'Saving…' : 'Save Changes'}
+            </button>
+            <button
+              disabled={isUpdating}
+              onClick={() => {
+                navigate(`/organiser/${organiser?.data.id}`);
+              }}
+              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition cursor-pointer ${
+                isUpdating
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-500 hover:bg-red-600'
+              }`}>
+              Cancel
             </button>
           </form>
         </div>
@@ -150,7 +166,8 @@ export const OrganiserEdit: React.FC = () => {
         title='Profile Updated'
         onClose={() => {
           setIsModalOpen(false);
-          navigate('/organiser/me');
+          refetchMe();
+          navigate(`/organiser/${organiser?.data.id}`);
         }}
         cancelText='Close'>
         <p className='text-gray-700'>

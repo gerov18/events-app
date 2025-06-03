@@ -16,7 +16,11 @@ import Modal from '../../../Components/Modal/Modal';
 export const UserEdit: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
+  const {
+    data: user,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
   const [updateUser, { isLoading: isUpdating, isSuccess }] =
     useUpdateUserMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -123,6 +127,18 @@ export const UserEdit: React.FC = () => {
                   : 'bg-indigo-600 hover:bg-indigo-700'
               }`}>
               {isUpdating ? 'Saving…' : 'Save Changes'}
+            </button>{' '}
+            <button
+              disabled={isUpdating}
+              onClick={() => {
+                navigate('/user/me');
+              }}
+              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition cursor-pointer ${
+                isUpdating
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-500 hover:bg-red-600'
+              }`}>
+              Cancel
             </button>
           </form>
         </div>
@@ -132,6 +148,7 @@ export const UserEdit: React.FC = () => {
         title='Profile Updated'
         onClose={() => {
           setIsModalOpen(false);
+          refetchMe();
           navigate('/user/me');
         }}
         cancelText='Close'>

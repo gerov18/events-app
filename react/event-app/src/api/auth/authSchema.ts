@@ -35,7 +35,7 @@ export const updateUserSchema = z.object({
   lastName: z.string().min(1, 'Last name не може да е празно').optional(),
   password: z
     .string()
-    .min(6, 'Password трябва да е минимум 6 символа')
+    .min(6, 'Password must be at least 6 symbols long')
     .optional(),
 });
 

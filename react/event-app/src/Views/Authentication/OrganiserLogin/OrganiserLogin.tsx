@@ -18,7 +18,11 @@ export const OrganiserLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loginOrganiser, { isLoading, error }] = useLoginOrganiserMutation();
-  const { data: organiserData, isLoading: isGetMeLoading } = useGetMeQuery();
+  const {
+    data: organiserData,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
 
   const {
     register,
@@ -40,6 +44,7 @@ export const OrganiserLogin = () => {
           initialized: true,
         })
       );
+      await refetchMe();
       navigate('/');
     } catch (err) {
       console.error('Organiser login failed:', err);

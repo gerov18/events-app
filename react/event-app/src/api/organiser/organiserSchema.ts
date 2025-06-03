@@ -41,7 +41,7 @@ export const updateOrganiserSchema = z.object({
   website: z.string().url('Невалиден URL').optional(),
   password: z
     .string()
-    .min(6, 'Password трябва да е минимум 6 символа')
+    .min(6, 'Password must be at least 6 symbols long')
     .optional(),
 });
 

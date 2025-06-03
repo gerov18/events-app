@@ -15,7 +15,11 @@ export const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login, { isLoading, error }] = useLoginMutation();
-  const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
+  const {
+    data: user,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
 
   const {
     register,
@@ -36,6 +40,7 @@ export const Login = () => {
           initialized: true,
         })
       );
+      await refetchMe();
       navigate('/');
     } catch (err) {
       console.error('Login failed:', err);

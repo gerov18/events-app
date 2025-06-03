@@ -5,6 +5,7 @@ import { RootState } from '../../api/store';
 import { useLogoutMutation } from '../../api/auth/authApi';
 import { clearUserState } from '../../api/auth/authSlice';
 import { clearOrganiserState } from '../../api/organiser/organiserSlice';
+import { meApi, useGetMeQuery } from '../../api/me/meApi';
 
 const Navigation: React.FC = () => {
   const navigate = useNavigate();
@@ -13,18 +14,19 @@ const Navigation: React.FC = () => {
   const { userType, user } = useSelector((state: RootState) => state.auth);
   const [logout] = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { refetch: refetchMe } = useGetMeQuery();
 
   const handleLogout = async () => {
     try {
       await logout().unwrap();
       dispatch(clearUserState());
       dispatch(clearOrganiserState());
-      navigate('/');
+      dispatch(meApi.util.resetApiState());
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Logout failed:', err);
     }
   };
-
   const hideAuthLink =
     location.pathname.includes('/login') ||
     location.pathname.includes('/register');
