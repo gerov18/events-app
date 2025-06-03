@@ -16,8 +16,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export const getAllEventsHandler = async (req: Request, res: Response) => {
   try {
-    const { keyword, city, categoryId, dateFrom, dateTo, limit, createdBy } =
-      req.query;
+    const { keyword, city, categoryId, dateFrom, dateTo, limit } = req.query;
 
     const whereClause: Prisma.EventWhereInput = {};
 
@@ -30,9 +29,9 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
     }
 
     if (city && typeof city === 'string' && city.trim() !== '') {
-      const c = city.trim();
+      const rawCity = city.trim().split(',')[0];
       whereClause.location = {
-        contains: c,
+        contains: rawCity,
         mode: 'insensitive',
       };
     }
@@ -63,12 +62,6 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
         };
       }
     }
-    if (createdBy && !Array.isArray(createdBy)) {
-      const creatorId = Number(createdBy);
-      if (!Number.isNaN(creatorId)) {
-        whereClause.createdBy = creatorId;
-      }
-    }
 
     let take: number | undefined;
     if (limit && !Array.isArray(limit)) {
@@ -79,7 +72,6 @@ export const getAllEventsHandler = async (req: Request, res: Response) => {
     }
 
     const events = await getAllEvents(whereClause, take);
-
     res.json(events);
   } catch (error) {
     console.error('Error fetching events:', error);
