@@ -294,10 +294,14 @@ const EventDetails: React.FC = () => {
             )}
           </div>
 
-          {isOwner && (
+          {(isOwner || auth.userType === 'admin') && (
             <div className='mt-8 flex justify-end space-x-4'>
               <Link
-                to={`/events/${event.id}/edit`}
+                to={
+                  auth.userType === 'admin'
+                    ? `/admin/events/${event.id}/edit`
+                    : `/events/${event.id}/edit`
+                }
                 className='px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 shadow-md transition transform hover:scale-105'>
                 Edit
               </Link>
@@ -306,7 +310,7 @@ const EventDetails: React.FC = () => {
                 disabled={isDeleting}
                 className={`px-6 py-3 rounded-lg font-medium text-white transition transform hover:scale-105 ${
                   isDeleting
-                    ? 'bg-gray-300 text-gray-600'
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600'
                 } shadow-md`}>
                 Delete

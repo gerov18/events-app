@@ -20,6 +20,7 @@ import { PrismaClient } from '@prisma/client';
 import adminRoutes from './routes/admin';
 import adminUsersRouter from './routes/adminUsers';
 import adminOrganisersRouter from './routes/adminOrganisers';
+import adminEventsRouter from './routes/adminEvents';
 
 const app: Application = express();
 
@@ -55,6 +56,7 @@ app.use('/', meRoute);
 app.use('/', adminRoutes);
 app.use('/admin', adminUsersRouter);
 app.use('/admin', adminOrganisersRouter);
+app.use('/admin', adminEventsRouter);
 
 const prisma = new PrismaClient();
 

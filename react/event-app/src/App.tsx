@@ -41,6 +41,8 @@ import AdminUserDetails from './Views/Admin/AdminUserDetails/AdminUserDetails';
 import AdminUserEdit from './Views/Admin/AdminUserEdit/AdminUserEdit';
 import AdminOrganiserEdit from './Views/Admin/AdminOrganiserEdit/AdminOrganiserEdit';
 import AdminOrganiserDetails from './Views/Admin/AdminOrganiserDetails/AdminOrganiserDetails';
+import AdminEventEdit from './Views/Admin/AdminEventEdit/AdminEventEdit';
+import ManageEvents from './Views/Admin/ManageEvents/ManageEvents';
 
 function App() {
   const dispatch = useDispatch();
@@ -253,6 +255,14 @@ function App() {
           <Route
             path='role-requests'
             element={<HandleRoleRequests />}
+          />
+          <Route
+            path='/admin/events'
+            element={<ManageEvents />}
+          />
+          <Route
+            path='/admin/events/:id/edit'
+            element={<AdminEventEdit />}
           />
         </Routes>
       </Layout>

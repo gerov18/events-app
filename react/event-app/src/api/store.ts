@@ -11,6 +11,7 @@ import { reservationsApi } from './reservations/reservationsApi';
 import { paymentApi } from './paymentApi/paymentApi';
 import { usersApi } from './admin/userApi';
 import { adminOrganiserApi } from './admin/adminOrganisersApi';
+import { adminEventsApi } from './admin/adminEventsApi';
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     [paymentApi.reducerPath]: paymentApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
     [adminOrganiserApi.reducerPath]: adminOrganiserApi.reducer,
+    [adminEventsApi.reducerPath]: adminEventsApi.reducer,
 
     organiser: organiserReducer,
     auth: authReducer,
@@ -38,6 +40,7 @@ export const store = configureStore({
       .concat(reservationsApi.middleware)
       .concat(usersApi.middleware)
       .concat(adminOrganiserApi.middleware)
+      .concat(adminEventsApi.middleware)
       .concat(paymentApi.middleware),
 });
 
