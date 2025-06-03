@@ -162,7 +162,7 @@ const EventDetails: React.FC = () => {
             <div className='space-y-4'>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>Price:</span>
-                <span className='text-gray-600'>${event.price.toFixed(2)}</span>
+                <span className='text-gray-600'>{event.price.toFixed(2)}€</span>
               </div>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>

@@ -55,11 +55,16 @@ export const Checkout = () => {
 
   const handlePaymentSuccess = async () => {
     try {
-      await createReservation({ eventId, quantity }).unwrap();
-      if (userId) {
-        navigate(`/users/${userId}/reservations`);
+      const newReservation = await createReservation({
+        eventId,
+        quantity,
+      }).unwrap();
+      const newReservationId = newReservation.id;
+
+      if (userId != null && newReservationId != null) {
+        navigate(`/user/${userId}/reservations/${newReservationId}`);
       } else {
-        navigate(`/`);
+        navigate('/user/me');
       }
     } catch (err) {
       console.error('Reservation failed:', err);
@@ -93,7 +98,7 @@ export const Checkout = () => {
               <div className='border-t border-gray-200 pt-4 mb-6'>
                 <p className='text-lg text-gray-800'>
                   <span className='font-semibold'>{quantity}</span> ×{' '}
-                  <span className='font-semibold'>${unitPrice.toFixed(2)}</span>{' '}
+                  <span className='font-semibold'>{unitPrice.toFixed(2)}€</span>{' '}
                   ={' '}
                   <span className='font-bold text-gray-900'>
                     ${totalPrice.toFixed(2)}

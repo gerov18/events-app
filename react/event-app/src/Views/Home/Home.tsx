@@ -18,11 +18,6 @@ export const Home = () => {
   const navigate = useNavigate();
   const [showSearch, setShowSearch] = useState(false);
 
-  const { user, userType } = useSelector((state: RootState) => state.auth) || {
-    user: null,
-    userType: null,
-  };
-
   const [logout] = useLogoutMutation();
 
   const {
@@ -58,87 +53,79 @@ export const Home = () => {
   };
 
   return (
-    <>
-      <div className='bg-gray-100 min-h-screen'>
-        <Header onBrowseClick={handleBrowseClick} />
+    <div className='bg-gray-100 min-h-screen'>
+      <Header onBrowseClick={handleBrowseClick} />
 
-        <div
-          className={`overflow-hidden transform transition-[max-height] duration-800 ease-in-out ${
-            showSearch ? 'max-h-[1000px]' : 'max-h-0'
-          }`}>
-          <SearchBar onClose={() => setShowSearch(false)} />
-        </div>
+      <div
+        className={`overflow-hidden transform transition-[max-height] duration-700 ease-out ${
+          showSearch ? 'max-h-[800px]' : 'max-h-0'
+        }`}>
+        <SearchBar onClose={() => setShowSearch(false)} />
+      </div>
 
-        <div className='px-6'>
-          {user && userType !== null && (
-            <h1 className='mt-4 text-xl font-semibold text-center'>
-              {`HELLO, ${
-                userType === 'user'
-                  ? user.firstName
-                  : userType === 'organiser'
-                  ? (user as any).name
-                  : ''
-              }`}
-            </h1>
-          )}
-
-          <section className='my-8'>
-            <h2 className='text-2xl font-semibold mb-4 text-center'>
-              Popular in Sofia
+      <section className='w-full'>
+        <div className='bg-gradient-to-r from-indigo-500 to-blue-500 py-10'>
+          <div className='container mx-auto px-6 lg:px-12 text-center'>
+            <h2 className='text-3xl lg:text-4xl font-extrabold text-white mb-4'>
+              Discover Events in Sofia
             </h2>
+            <p className='text-indigo-200 mb-6 max-w-xl mx-auto'>
+              See what's happening around the city and join the fun today.
+            </p>
             {isLoadingSofia ? (
-              <p className='text-center'>Loading…</p>
+              <p className='text-white animate-pulse'>Loading…</p>
             ) : sofiaEvents && sofiaEvents.length > 0 ? (
               <EventsSlider events={sofiaEvents} />
             ) : (
-              <p className='text-gray-500 text-center'>
-                No upcoming events in Sofia.
-              </p>
+              <p className='text-indigo-100'>No upcoming events in Sofia.</p>
             )}
-            <div className='mt-4 text-center'>
-              <Link
-                to='/search?city=Sofia'
-                className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
-                See more happening in Sofia
-              </Link>
-            </div>
-          </section>
+            <Link
+              to='/search?city=Sofia'
+              className='mt-6 inline-block bg-white text-indigo-600 font-semibold px-6 py-3 rounded-full shadow hover:shadow-lg transform hover:-translate-y-1 transition'>
+              See More in Sofia
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          <section className='my-8'>
-            <h2 className='text-2xl font-semibold mb-4 text-center'>
-              Popular in Plovdiv
+      <section className=' w-full'>
+        <div className='bg-gradient-to-r from-green-500 to-teal-500 py-10'>
+          <div className='container mx-auto px-6 lg:px-12 text-center'>
+            <h2 className='text-3xl lg:text-4xl font-extrabold text-white mb-4'>
+              What's going on in Plovdiv?
             </h2>
+            <p className='text-green-100 mb-6 max-w-xl mx-auto'>
+              Find the latest activities in town.
+            </p>
             {isLoadingPlo ? (
-              <p className='text-center'>Loading…</p>
+              <p className='text-white animate-pulse'>Loading…</p>
             ) : plovdivEvents && plovdivEvents.length > 0 ? (
               <EventsSlider events={plovdivEvents} />
             ) : (
-              <p className='text-gray-500 text-center'>
-                No upcoming events in Plovdiv.
-              </p>
+              <p className='text-green-100'>No upcoming events in Plovdiv.</p>
             )}
-            <div className='mt-4 text-center'>
-              <Link
-                to='/search?city=Plovdiv'
-                className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
-                See more happening in Plovdiv
-              </Link>
-            </div>
-          </section>
-
-          <section className='my-8'>
-            <h2 className='text-2xl font-semibold mb-4 text-center'>
-              Browse by Category
-            </h2>
-            {isCatLoading ? (
-              <p className='text-center'>Loading…</p>
-            ) : (
-              <CategoriesSection categories={categories} />
-            )}
-          </section>
+            <Link
+              to='/search?city=Plovdiv'
+              className='mt-6 inline-block bg-white text-green-600 font-semibold px-6 py-3 rounded-full shadow hover:shadow-lg transform hover:-translate-y-1 transition'>
+              See More in Plovdiv
+            </Link>
+          </div>
         </div>
+      </section>
+
+      <div className='container mx-auto px-6 lg:px-12'>
+        <section className='my-12'>
+          <h2 className='text-3xl font-extrabold text-gray-800 text-center mb-6'>
+            Browse by Category
+          </h2>
+          {isCatLoading ? (
+            <p className='text-center text-gray-500'>Loading…</p>
+          ) : (
+            <CategoriesSection categories={categories} />
+          )}
+        </section>
       </div>
-    </>
+    </div>
   );
 };
 

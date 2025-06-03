@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import moment from 'moment';
 import { RootState } from '../../../api/store';
 import { useGetMeQuery } from '../../../api/me/meApi';
 import {
-  useCancelReservationMutation,
   useGetUserReservationsQuery,
+  useCancelReservationMutation,
 } from '../../../api/reservations/reservationsApi';
+import ReservationCard from '../../../Components/ReservationCard/ReservationCard';
 
 export const UserDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export const UserDetails: React.FC = () => {
   const userType = auth.userType;
   const user = auth.user;
   const userId = user?.id ?? null;
-
+  console.log('userId', userId);
   const {
     data: meData,
     isLoading: isMeLoading,
@@ -40,121 +40,109 @@ export const UserDetails: React.FC = () => {
   }, [isMeLoading, isMeError, meData, navigate]);
 
   if (isMeLoading || isResLoading) {
-    return <div className='p-4'>Loading your profile...</div>;
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <p className='text-gray-500 text-lg'>Loading your profile...</p>
+      </div>
+    );
   }
 
   if (!meData || meData.type === 'organiser') {
     navigate('/');
-    return <div className='p-4 text-red-500'>No user details found</div>;
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <p className='text-red-500 text-lg'>No user details found</p>
+      </div>
+    );
   }
 
-  const handleCancel = async (reservationId: number) => {
+  const handleCancel = async (id: number, reservationId: number) => {
     if (!window.confirm('Are you sure you want to cancel this reservation?')) {
       return;
     }
     try {
-      await cancelReservation(reservationId).unwrap();
+      await cancelReservation({
+        userId: id,
+        resId: reservationId,
+      }).unwrap();
     } catch (err: any) {
       console.error(err);
       alert(err.data?.message || 'Cancellation failed');
     }
   };
 
+  if (!userId || userId === null) {
+    navigate('/404');
+
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <p className='text-red-500 text-lg'>No user details found</p>
+      </div>
+    );
+  }
+
   return (
-    <div className='p-6 max-w-3xl mx-auto'>
-      <h1 className='text-3xl font-bold mb-4'>Your Profile</h1>
-      <div className='mb-6'>
-        <p>
-          <strong>Name:</strong> {meData.data.firstName} {meData.data.lastName}
-        </p>
-        <p>
-          <strong>Username:</strong> {meData.data.username}
-        </p>
-        <p>
-          <strong>Email:</strong> {meData.data.email}
-        </p>
-        <div className='mt-4 space-x-4'>
-          <Link
-            to='/user/me/edit'
-            className='px-4 py-2 bg-blue-500 text-white rounded'>
-            Edit Profile
-          </Link>
-          <Link
-            to='/user/me/delete'
-            className='px-4 py-2 bg-red-500 text-white rounded'>
-            Delete Account
-          </Link>
+    <div className='max-w-4xl mx-auto mt-12 mb-16 px-6'>
+      <div className='bg-white rounded-2xl shadow-lg overflow-hidden'>
+        <div className='bg-gradient-to-r from-indigo-600 to-blue-500 p-8 text-white text-center'>
+          <h1 className='text-4xl font-extrabold drop-shadow-lg'>
+            {meData.data.firstName} {meData.data.lastName}
+          </h1>
+          <p className='mt-2 text-lg opacity-90'>{meData.data.username}</p>
+        </div>
+        <div className='p-6 grid grid-cols-1 sm:grid-cols-2 gap-4'>
+          <div>
+            <p className='text-gray-700 mb-2'>
+              <strong>Email:</strong>{' '}
+              <span className='text-indigo-600'>{meData.data.email}</span>
+            </p>
+          </div>
+          <div className='flex justify-center items-center space-x-4'>
+            <Link
+              to='/user/me/edit'
+              className='px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition'>
+              Edit Profile
+            </Link>
+            <Link
+              to='/user/me/delete'
+              className='px-6 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition'>
+              Delete Account
+            </Link>
+          </div>
         </div>
       </div>
 
-      <h2 className='text-2xl font-semibold mb-3'>Your Reservations</h2>
-      {isResError ? (
-        <p className='text-red-500'>Error loading reservations.</p>
-      ) : reservations && reservations.length === 0 ? (
-        <p className='text-gray-600'>You have no reservations yet.</p>
-      ) : (
-        <table className='w-full border-collapse'>
-          <thead>
-            <tr className='border-b'>
-              <th className='py-2 text-left'>#</th>
-              <th className='py-2 text-left'>Event</th>
-              <th className='py-2 text-left'>Date</th>
-              <th className='py-2 text-left'>Status</th>
-              <th className='py-2 text-left'>Reserved On</th>
-              <th className='py-2 text-left'>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className='mt-12'>
+        <h2 className='text-3xl font-bold text-gray-800 mb-6 text-center'>
+          Your Reservations
+        </h2>
+        {isResError ? (
+          <p className='text-center text-red-500'>
+            Error loading reservations.
+          </p>
+        ) : reservations && reservations.length === 0 ? (
+          <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center shadow-sm'>
+            <p className='text-yellow-700 font-semibold mb-2'>
+              No reservations yet
+            </p>
+            <p className='text-sm text-yellow-600'>
+              You haven’t reserved any events yet.
+            </p>
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
             {reservations?.map(res => (
-              <tr
+              <div
                 key={res.id}
-                className='border-b'>
-                <td className='py-2'>{res.id}</td>
-                <td className='py-2'>
-                  <Link
-                    to={`/events/${res.eventId}`}
-                    className='text-blue-600 hover:underline'>
-                    {res.event.title}
-                  </Link>
-                </td>
-                <td className='py-2'>
-                  {moment(res.event.date).format('DD.MM.YYYY')}
-                </td>
-                <td className='py-2'>
-                  <span
-                    className={`px-2 inline-block rounded ${
-                      res.status === 'CONFIRMED'
-                        ? 'bg-green-100 text-green-800'
-                        : res.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                    {res.status}
-                  </span>
-                </td>
-                <td className='py-2'>
-                  {moment(res.createdAt).format('DD.MM.YYYY')}
-                </td>
-                <td className='py-2 space-x-2'>
-                  <Link
-                    to={`/user/${meData.data.id}/reservations/${res.id}`}
-                    className='px-2 py-1 bg-blue-500 text-white rounded text-sm'>
-                    View
-                  </Link>
-                  {res.status === 'CONFIRMED' && (
-                    <button
-                      onClick={() => handleCancel(res.id)}
-                      disabled={isCancelling}
-                      className='px-2 py-1 bg-red-500 text-white rounded text-sm'>
-                      {isCancelling ? 'Cancelling…' : 'Cancel'}
-                    </button>
-                  )}
-                </td>
-              </tr>
+                className='space-y-4'>
+                <ReservationCard reservation={res} />
+              </div>
             ))}
-          </tbody>
-        </table>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
+export default UserDetails;
