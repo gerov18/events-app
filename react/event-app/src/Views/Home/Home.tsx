@@ -65,8 +65,8 @@ export const Home = () => {
         <SearchBar onClose={() => setShowSearch(false)} />
       </div>
 
-      <section className='w-full'>
-        <div className='bg-gradient-to-r from-indigo-500 to-blue-500 py-10'>
+      <section className='w-full lg:w-4/5 lg:py-6 lg:mx-auto'>
+        <div className='bg-gradient-to-r from-indigo-500 to-blue-500 py-10 lg:rounded-3xl lg:shadow-2xl'>
           <div className='container mx-auto px-6 lg:px-12 text-center'>
             <h2 className='text-3xl lg:text-4xl font-extrabold text-white mb-4'>
               Discover Events in Sofia
@@ -90,8 +90,8 @@ export const Home = () => {
         </div>
       </section>
 
-      <section className=' w-full'>
-        <div className='bg-gradient-to-r from-green-500 to-teal-500 py-10'>
+      <section className=' w-full  lg:w-4/5 lg:py-6 lg:mx-auto'>
+        <div className='bg-gradient-to-r from-green-500 to-teal-500 py-10 lg:rounded-3xl lg:shadow-2xl'>
           <div className='container mx-auto px-6 lg:px-12 text-center'>
             <h2 className='text-3xl lg:text-4xl font-extrabold text-white mb-4'>
               What's going on in Plovdiv?
