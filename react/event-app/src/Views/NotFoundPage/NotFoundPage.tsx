@@ -1,24 +1,25 @@
-const NotFoundPage = () => {
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const NotFoundPage: React.FC = () => {
   return (
-    <section className='bg-white dark:bg-gray-900'>
-      <div className='py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6'>
-        <div className='mx-auto max-w-screen-sm text-center'>
-          <h1 className='mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500'>
-            404
-          </h1>
-          <p className='mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white'>
-            Something's missing.
-          </p>
-          <p className='mb-4 text-lg font-light text-gray-500 dark:text-gray-400'>
-            Sorry, we can't find that page. You'll find lots to explore on the
-            home page.{' '}
-          </p>
-          <a
-            href='#'
-            className='inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4'>
-            Back to Homepage
-          </a>
-        </div>
+    <section className='flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500'>
+      <div className='bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 rounded-2xl shadow-2xl p-8 max-w-md text-center'>
+        <h1 className='text-8xl lg:text-9xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-400 mb-4'>
+          404
+        </h1>
+        <p className='text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2'>
+          Oops! Page not found.
+        </p>
+        <p className='text-gray-600 dark:text-gray-300 mb-6'>
+          We can’t seem to find the page you’re looking for. Go back to the
+          homepage and try again.
+        </p>
+        <Link
+          to='/'
+          className='inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg transform transition hover:scale-105'>
+          Back to Homepage
+        </Link>
       </div>
     </section>
   );

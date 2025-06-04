@@ -22,7 +22,11 @@ import userRegisterPic from '../../../assets/userRegister.webp';
 export const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
+  const {
+    data: user,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
   const [loginUser, { isLoading, error }] = useLoginMutation();
   const [registerUser] = useRegisterMutation();
   const {
@@ -52,6 +56,7 @@ export const Register = () => {
           initialized: true,
         })
       );
+      await refetchMe();
       navigate('/');
     } catch (err) {
       console.error('Registration failed:', err);

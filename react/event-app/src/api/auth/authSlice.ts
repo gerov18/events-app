@@ -74,6 +74,10 @@ const authSlice = createSlice({
             user: LoginResponse['user'] | null;
           }
         | {
+            userType: 'admin';
+            user: LoginResponse['user'] | null;
+          }
+        | {
             userType: 'organiser';
             user: OrganiserLoginResponse['organiser'] | null;
           }

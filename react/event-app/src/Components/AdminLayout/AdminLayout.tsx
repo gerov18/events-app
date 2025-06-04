@@ -19,9 +19,9 @@ export const AdminLayout: React.FC = () => {
               Organisers
             </Link>
             <Link
-              to='/admin/role-requests'
+              to='/admin/events'
               className='text-gray-700 hover:underline'>
-              Role Requests
+              Events{' '}
             </Link>
           </div>
         </div>

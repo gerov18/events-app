@@ -13,7 +13,7 @@ export const OrganiserDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const organiserId = Number(id);
-  console.log('io', id);
+
   const {
     data: organiser,
     isLoading: isOrgLoading,
@@ -24,9 +24,7 @@ export const OrganiserDetails: React.FC = () => {
     data: allEvents,
     isLoading: isEventsLoading,
     isError: isEventsError,
-  } = useGetEventsQuery({
-    createdBy: Number(id),
-  });
+  } = useGetEventsQuery({ createdBy: organiserId });
 
   const auth = useSelector((state: RootState) => state.auth);
   const userType = auth.userType;
@@ -39,7 +37,11 @@ export const OrganiserDetails: React.FC = () => {
   }, [isOrgLoading, isOrgError, organiser, navigate]);
 
   if (isOrgLoading || isEventsLoading) {
-    return <div className='p-4'>Loading organiser details…</div>;
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <p className='text-gray-500'>Loading organiser details…</p>
+      </div>
+    );
   }
 
   if (!organiser) {
@@ -47,67 +49,95 @@ export const OrganiserDetails: React.FC = () => {
   }
 
   const organiserEvents: EventType[] = allEvents ?? [];
-  console.log('adasa', allEvents);
   const canManage =
     (userType === 'organiser' && currentUser?.id === organiser.id) ||
     userType === 'admin';
 
   return (
-    <div className='p-6  max-w-7xl mx-auto'>
-      <h1 className='text-3xl font-bold mb-4'>{organiser.name}</h1>
-      <div className='mb-6'>
-        {organiser.description && (
-          <p className='mb-2 text-gray-700'>{organiser.description}</p>
-        )}
-        <p>
-          <strong>Email:</strong> {organiser.email}
-        </p>
-        {organiser.phone && (
-          <p>
-            <strong>Phone:</strong> {organiser.phone}
-          </p>
-        )}
-        {organiser.website && (
-          <p>
-            <strong>Website:</strong>{' '}
-            <a
-              href={organiser.website}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-blue-600 hover:underline'>
-              {organiser.website}
-            </a>
-          </p>
-        )}
+    <div className='max-w-4xl mx-auto mt-12 mb-16 px-6'>
+      <div className='bg-white rounded-2xl shadow-lg overflow-hidden'>
+        <div className='bg-gradient-to-r from-indigo-600 to-blue-500 p-8 text-white text-center'>
+          <h1 className='text-4xl font-extrabold drop-shadow-lg'>
+            {organiser.name}
+          </h1>
+          {organiser.description && (
+            <p className='mt-2 text-lg opacity-90'>{organiser.description}</p>
+          )}
+        </div>
+        <div className='p-6 grid grid-cols-1 sm:grid-cols-2 gap-4'>
+          <div>
+            <p className='text-gray-700'>
+              <strong>Email:</strong>{' '}
+              <span className='text-indigo-600'>{organiser.email}</span>
+            </p>
+            {organiser.phone && (
+              <p className='text-gray-700 mt-2'>
+                <strong>Phone:</strong>{' '}
+                <span className='text-indigo-600'>{organiser.phone}</span>
+              </p>
+            )}
+          </div>
+          {organiser.website && (
+            <div>
+              <p className='text-gray-700'>
+                <strong>Website:</strong>{' '}
+                <a
+                  href={organiser.website}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-blue-600 hover:underline'>
+                  {organiser.website}
+                </a>
+              </p>
+            </div>
+          )}
+        </div>
 
         {canManage && (
-          <div className='mt-4 space-x-4'>
+          <div className='flex justify-end p-6 space-x-4 bg-gray-50'>
             <Link
               to='/organiser/me/edit'
-              className='px-4 py-2 bg-blue-500 text-white rounded'>
+              className='px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition'>
               Edit Profile
             </Link>
             <Link
               to='/organiser/me/delete'
-              className='px-4 py-2 bg-red-500 text-white rounded'>
+              className='px-6 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition'>
               Delete Profile
             </Link>
           </div>
         )}
       </div>
 
-      <h2 className='text-2xl font-semibold mb-3'>
-        Events by {organiser.name}
-      </h2>
-      {isEventsError ? (
-        <p className='text-red-500'>Error loading events.</p>
-      ) : organiserEvents.length === 0 ? (
-        <p className='text-gray-600'>
-          This organiser has not created any events yet.
-        </p>
-      ) : (
-        <EventsSlider events={organiserEvents} />
-      )}
+      <div className='mt-12'>
+        <h2 className='text-3xl font-bold text-gray-800 mb-6 text-center'>
+          Events by {organiser.name}
+        </h2>
+        {isEventsError ? (
+          <p className='text-center text-red-500'>Error loading events.</p>
+        ) : organiserEvents.length === 0 ? (
+          <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center shadow-sm'>
+            <p className='text-yellow-700 font-semibold mb-2'>No events yet</p>
+            <p className='text-sm text-yellow-600'>
+              This organiser hasn't created any events.
+            </p>
+          </div>
+        ) : (
+          <EventsSlider
+            events={organiserEvents}
+            columns={2}
+          />
+        )}
+      </div>
+      <div className='mt-12'>
+        <Link
+          to='/events/new'
+          className='inline-block px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-transform transform hover:scale-105'>
+          Create New Event
+        </Link>
+      </div>
     </div>
   );
 };
+
+export default OrganiserDetails;

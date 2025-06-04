@@ -7,12 +7,14 @@ import { clearUserState } from '../../../api/auth/authSlice';
 import { FormInput } from '../../../Components/FormInput/FormInput';
 import { useEffect } from 'react';
 import { useGetMeQuery } from '../../../api/me/meApi';
+import { useDispatch } from 'react-redux';
 
 export const UserDelete = () => {
   const [deleteUser, { isLoading, error }] = useDeleteUserMutation();
   const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -35,7 +37,7 @@ export const UserDelete = () => {
     try {
       if (user) {
         await deleteUser(data).unwrap();
-        clearUserState();
+        dispatch(clearUserState());
         navigate('/');
       }
     } catch (err) {

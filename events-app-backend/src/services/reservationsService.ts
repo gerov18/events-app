@@ -3,6 +3,7 @@ import {
   ReservationStatus,
   Reservation,
   Ticket,
+  TicketStatus,
 } from '@prisma/client';
 import QRCode from 'qrcode';
 
@@ -75,7 +76,6 @@ export async function getReservationDetails(reservationId: number) {
     include: { event: true, tickets: true },
   });
 }
-
 export async function cancelReservation(reservationId: number) {
   const reservation = await prisma.reservation.findUnique({
     where: { id: reservationId },
@@ -87,17 +87,38 @@ export async function cancelReservation(reservationId: number) {
   });
 
   if (reservation.status === ReservationStatus.CONFIRMED && ticketsCount > 0) {
-    await prisma.event.update({
-      where: { id: reservation.eventId },
-      data: { availableTickets: { increment: ticketsCount } },
-    });
+    const [updatedEvent, updatedReservation, updatedTickets] =
+      await prisma.$transaction([
+        prisma.event.update({
+          where: { id: reservation.eventId },
+          data: {
+            availableTickets: {
+              increment: ticketsCount,
+            },
+          },
+        }),
+        prisma.reservation.update({
+          where: { id: reservationId },
+          data: { status: ReservationStatus.CANCELLED },
+        }),
+        prisma.ticket.updateMany({
+          where: { reservationId },
+          data: { status: TicketStatus.CANCELLED },
+        }),
+      ]);
+
+    return updatedReservation;
   }
 
-  await prisma.ticket.deleteMany({ where: { reservationId } });
-
-  return prisma.reservation.delete({ where: { id: reservationId } });
+  await prisma.ticket.updateMany({
+    where: { reservationId },
+    data: { status: TicketStatus.CANCELLED },
+  });
+  return prisma.reservation.update({
+    where: { id: reservationId },
+    data: { status: ReservationStatus.CANCELLED },
+  });
 }
-
 export async function editReservation(
   reservationId: number | string,
   status: ReservationStatus

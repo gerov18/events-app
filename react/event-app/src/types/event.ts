@@ -1,4 +1,5 @@
 import { Image } from './Image';
+import { Organiser } from './Organiser';
 import { Reservation } from './Reservation';
 
 export type Event = {
@@ -15,6 +16,7 @@ export type Event = {
   reservations: Reservation[];
   categoryId: number;
   images: Image[];
+  creator: Organiser;
 };
 
 export type CreateEventInput = {

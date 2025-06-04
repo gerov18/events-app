@@ -219,7 +219,7 @@ export const EditEvent: React.FC = () => {
         </div>
 
         <FormInput
-          label='Price (USD)'
+          label='Price (EUR)'
           type='number'
           register={register('price', { valueAsNumber: true })}
           error={errors.price?.message}

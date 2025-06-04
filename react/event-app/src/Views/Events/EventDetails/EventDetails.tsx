@@ -26,8 +26,10 @@ const EventDetails: React.FC = () => {
 
   const { data: event, isLoading, isError } = useGetEventByIdQuery(eventId);
   const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
-  const [reserveTickets, { isLoading: isReserving }] =
+
+  const [createReservation, { isLoading: isReserving }] =
     useCreateReservationMutation();
+
   const { data: images, isLoading: imagesLoading } =
     useGetEventImagesQuery(eventId);
   const { data: category, isLoading: isCatLoading } = useGetCategoryByIdQuery(
@@ -37,7 +39,6 @@ const EventDetails: React.FC = () => {
 
   const [quantity, setQuantity] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null
   );
@@ -86,7 +87,7 @@ const EventDetails: React.FC = () => {
 
   const isOwner =
     auth.userType === 'organiser' && auth.user?.id === event.createdBy;
-  console.log('ISS', isOwner, event.createdBy, auth.user?.id);
+
   const handleDelete = async () => {
     try {
       await deleteEvent(eventId).unwrap();
@@ -96,8 +97,26 @@ const EventDetails: React.FC = () => {
     }
   };
 
-  const handleReserve = () => {
-    navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
+  const handleReserve = async () => {
+    if (event.price === 0) {
+      try {
+        const newReservation = await createReservation({
+          eventId,
+          quantity,
+        }).unwrap();
+        const newReservationId = newReservation.id;
+        if (auth.user?.id && newReservationId) {
+          navigate(`/user/${auth.user.id}/reservations/${newReservationId}`);
+        } else {
+          navigate(`/user/me`);
+        }
+      } catch (err) {
+        console.error('Reservation failed:', err);
+        alert('Could not create reservation.');
+      }
+    } else {
+      navigate(`/checkout?eventId=${eventId}&quantity=${quantity}`);
+    }
   };
 
   const handleConfirm = () => {
@@ -125,6 +144,16 @@ const EventDetails: React.FC = () => {
               {event.title}
             </h1>
             <p className='text-gray-700 leading-relaxed'>{event.description}</p>
+
+            <div className='flex items-center'>
+              <Link
+                to={`/organiser/${event.creator.id}`}
+                className='text-sm text-indigo-600 hover:underline mb-3'>
+                <p className='font-semibold'>
+                  Organised by {event.creator.name}
+                </p>
+              </Link>
+            </div>
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 border-t pt-6'>
@@ -152,7 +181,9 @@ const EventDetails: React.FC = () => {
             <div className='space-y-4'>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>Price:</span>
-                <span className='text-gray-600'>${event.price.toFixed(2)}</span>
+                <span className='text-gray-600'>
+                  {event.price === 0 ? 'Free' : `${event.price.toFixed(2)}€`}
+                </span>
               </div>
               <div className='flex items-center'>
                 <span className='w-28 font-medium text-gray-800'>
@@ -180,39 +211,66 @@ const EventDetails: React.FC = () => {
           )}
 
           {auth.userType !== 'organiser' && (
-            <div className='mt-6 bg-gray-100 rounded-lg p-6 space-y-6'>
-              <h2 className='text-xl font-semibold text-gray-800'>
-                Reserve Tickets
-              </h2>
-              <div className='flex items-center space-x-4'>
-                <button
-                  disabled={quantity <= 1}
-                  onClick={() => setQuantity(q => q - 1)}
-                  className='w-12 h-12 flex items-center justify-center bg-white border border-gray-300 rounded-full text-2xl font-semibold text-gray-700 transition transform hover:scale-110'>
-                  –
-                </button>
-                <button
-                  disabled={quantity >= event.availableTickets}
-                  onClick={() => setQuantity(q => q + 1)}
-                  className='w-12 h-12 flex items-center justify-center bg-white border border-gray-300 rounded-full text-2xl font-semibold text-gray-700 transition transform hover:scale-110'>
-                  +
-                </button>
-                <span className='text-lg font-medium text-gray-800'>
-                  Quantity: {quantity}
-                </span>
+            <div className='relative'>
+              <div
+                className={`${
+                  auth.userType === 'user' && auth.user
+                    ? ''
+                    : 'filter blur-xs pointer-events-none'
+                }`}>
+                <div className='mt-6 bg-gray-100 rounded-lg p-6 space-y-6'>
+                  <h2 className='text-xl font-semibold text-gray-800'>
+                    {event.price === 0 ? 'Get Free Ticket' : 'Reserve Tickets'}
+                  </h2>
+                  <div className='flex items-center space-x-4'>
+                    <button
+                      disabled={quantity <= 1}
+                      onClick={() => setQuantity(q => q - 1)}
+                      className='w-12 h-12 flex items-center justify-center bg-white border border-gray-300 rounded-full text-2xl font-semibold text-gray-700 transition transform hover:scale-110'>
+                      –
+                    </button>
+                    <button
+                      disabled={quantity >= event.availableTickets}
+                      onClick={() => setQuantity(q => q + 1)}
+                      className='w-12 h-12 flex items-center justify-center bg-white border border-gray-300 rounded-full text-2xl font-semibold text-gray-700 transition transform hover:scale-110'>
+                      +
+                    </button>
+                    <span className='text-lg font-medium text-gray-800'>
+                      Quantity: {quantity}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleReserve}
+                    disabled={isReserving || event.availableTickets < 1}
+                    className={`cursor-pointer w-full text-center px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-lg shadow-md  transition ${
+                      isReserving || event.availableTickets < 1
+                        ? ' opacity-50 cursor-default'
+                        : 'hover:from-green-600 hover:to-teal-600'
+                    }`}>
+                    {isReserving
+                      ? 'Processing…'
+                      : event.price === 0
+                      ? 'Get Free Ticket'
+                      : quantity === 1
+                      ? 'Reserve Ticket'
+                      : `Reserve ${quantity} Tickets`}
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleReserve}
-                disabled={isReserving || event.availableTickets < 1}
-                className='w-full text-center px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-teal-600 transition'>
-                {isReserving
-                  ? 'Reserving…'
-                  : quantity === 1
-                  ? 'Reserve Ticket'
-                  : `Reserve ${quantity} Tickets`}
-              </button>
             </div>
           )}
+
+          {!auth.user &&
+            auth.userType !== 'user' &&
+            auth.userType !== 'organiser' && (
+              <div className='mt-6 text-center'>
+                <Link
+                  to='/login'
+                  className='text-indigo-600 hover:underline font-medium'>
+                  Log in to reserve tickets
+                </Link>
+              </div>
+            )}
 
           <div className='mt-8'>
             <h2 className='text-2xl font-semibold text-gray-900 mb-4'>
@@ -236,10 +294,14 @@ const EventDetails: React.FC = () => {
             )}
           </div>
 
-          {isOwner && (
+          {(isOwner || auth.userType === 'admin') && (
             <div className='mt-8 flex justify-end space-x-4'>
               <Link
-                to={`/events/${event.id}/edit`}
+                to={
+                  auth.userType === 'admin'
+                    ? `/admin/events/${event.id}/edit`
+                    : `/events/${event.id}/edit`
+                }
                 className='px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 shadow-md transition transform hover:scale-105'>
                 Edit
               </Link>
@@ -248,7 +310,7 @@ const EventDetails: React.FC = () => {
                 disabled={isDeleting}
                 className={`px-6 py-3 rounded-lg font-medium text-white transition transform hover:scale-105 ${
                   isDeleting
-                    ? 'bg-gray-300 text-gray-600'
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600'
                 } shadow-md`}>
                 Delete

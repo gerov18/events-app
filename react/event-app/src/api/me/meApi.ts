@@ -12,11 +12,12 @@ export const meApi = createApi({
     baseUrl: 'http://localhost:5008',
     credentials: 'include',
   }),
+  tagTypes: ['Me'],
   endpoints: builder => ({
     getMe: builder.query<MeResponse, void>({
       query: () => '/me',
+      providesTags: ['Me'],
     }),
   }),
 });
-
 export const { useGetMeQuery } = meApi;

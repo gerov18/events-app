@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { clearUserState, setМе } from './api/auth/authSlice';
 import { useGetMeQuery } from './api/me/meApi';
-import { setOrganiserData } from './api/organiser/organiserSlice';
+import {
+  clearOrganiserState,
+  setOrganiserData,
+} from './api/organiser/organiserSlice';
 import Layout from './Components/Layout/Layout';
 import EventDetails from './Views/Events/EventDetails/EventDetails';
 import Home from './Views/Home/Home';
@@ -33,30 +36,47 @@ import { HandleRoleRequests } from './Views/Admin/RoleRequests/HandleRoleRequest
 import EventsByCategory from './Views/EventsByCategory/EventsByCategory';
 import NotFoundPage from './Views/NotFoundPage/NotFoundPage';
 import EventResults from './Components/EventResults/EventResults';
+import OAuthSuccess from './Views/OAuthSuccess/OAuthSuccess';
+import AdminUserDetails from './Views/Admin/AdminUserDetails/AdminUserDetails';
+import AdminUserEdit from './Views/Admin/AdminUserEdit/AdminUserEdit';
+import AdminOrganiserEdit from './Views/Admin/AdminOrganiserEdit/AdminOrganiserEdit';
+import AdminOrganiserDetails from './Views/Admin/AdminOrganiserDetails/AdminOrganiserDetails';
+import AdminEventEdit from './Views/Admin/AdminEventEdit/AdminEventEdit';
+import ManageEvents from './Views/Admin/ManageEvents/ManageEvents';
 
 function App() {
   const dispatch = useDispatch();
-  const { data: meData, isLoading, isError } = useGetMeQuery();
+  const {
+    data: meData,
+    isLoading: meLoading,
+    isError: meError,
+    refetch: refetchMe,
+  } = useGetMeQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
 
   useEffect(() => {
-    if (meData) {
-      if (isLoading) return;
+    if (meLoading) return;
 
-      if (meData?.type === 'organiser') {
+    if (meData) {
+      if (meData.type === 'organiser') {
         dispatch(setМе({ userType: 'organiser', user: meData.data }));
-      }
-      if (meData?.type === 'user') {
+      } else if (meData.type === 'user') {
         dispatch(setМе({ userType: 'user', user: meData.data }));
+      } else if (meData.type === 'admin') {
+        dispatch(setМе({ userType: 'admin', user: meData.data }));
       }
-      if (meData?.type === 'admin') {
-        dispatch(setМе({ userType: 'user', user: meData.data }));
-      } else if (isError) {
-        dispatch(clearUserState());
-      }
+    } else if (!meData && meError) {
+      dispatch(clearUserState());
+      dispatch(clearOrganiserState());
     }
-  }, [meData, isLoading, isError, dispatch]);
+  }, [meData, meError, meLoading, dispatch]);
 
   const user = useSelector((state: RootState) => state.auth);
+
+  console.log('state', user);
 
   return (
     <Router>
@@ -198,6 +218,51 @@ function App() {
           <Route
             path='/*'
             element={<NotFoundPage />}
+          />
+          <Route
+            path='/oauth-success'
+            element={<OAuthSuccess />}
+          />
+          <Route
+            path='/admin/users/:id'
+            element={<AdminUserDetails />}
+          />
+          <Route
+            path='/admin/users/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminUserEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/organisers/:id/edit'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminOrganiserEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/organisers/:id'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminOrganiserDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='role-requests'
+            element={<HandleRoleRequests />}
+          />
+          <Route
+            path='/admin/events'
+            element={<ManageEvents />}
+          />
+          <Route
+            path='/admin/events/:id/edit'
+            element={<AdminEventEdit />}
           />
         </Routes>
       </Layout>

@@ -50,7 +50,6 @@ export const createReservationHandler: RequestHandler = async (req, res) => {
   res.status(201).json(result);
 };
 
-// PATCH /user/:userId/reservations/:reservationId
 export const updateReservationHandler: RequestHandler<
   ReservationParamsInput
 > = async (req, res) => {

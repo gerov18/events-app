@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormInput } from '../../../Components/FormInput/FormInput';
@@ -11,14 +11,21 @@ import {
 } from '../../../api/auth/authSchema';
 import { setCredentials } from '../../../api/auth/authSlice';
 import { useNavigate } from 'react-router';
+import Modal from '../../../Components/Modal/Modal';
 
-export const UserEdit = () => {
+export const UserEdit: React.FC = () => {
   const dispatch = useDispatch();
-  const { data: user, isLoading: isGetMeLoading } = useGetMeQuery();
+  const navigate = useNavigate();
+  const {
+    data: user,
+    isLoading: isGetMeLoading,
+    refetch: refetchMe,
+  } = useGetMeQuery();
   const [updateUser, { isLoading: isUpdating, isSuccess }] =
     useUpdateUserMutation();
-  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log('iser', user);
   const {
     register,
     handleSubmit,
@@ -27,11 +34,15 @@ export const UserEdit = () => {
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
     defaultValues:
-      user && user.type === 'user' ? { ...user.data, password: '' } : {},
+      user && (user.type === 'user' || user.type === 'admin')
+        ? { ...user.data, password: '' }
+        : {},
   });
 
   useEffect(() => {
-    if (user && user.type === 'user') reset({ ...user.data, password: '' });
+    if (user && user.type === 'user') {
+      reset({ ...user.data, password: '' });
+    }
   }, [user, reset]);
 
   useEffect(() => {
@@ -44,9 +55,9 @@ export const UserEdit = () => {
           initialized: true,
         })
       );
-      alert('Profile updated');
+      setIsModalOpen(true);
     }
-  }, [isSuccess, user]);
+  }, [isSuccess, user, dispatch]);
 
   const onSubmit = (data: UpdateUserInput) => {
     updateUser(data);
@@ -54,50 +65,102 @@ export const UserEdit = () => {
 
   useEffect(() => {
     if (!isGetMeLoading && !user) {
-      navigate('/organiser/login');
+      navigate('/login');
     }
     if (!isGetMeLoading && user && user.type === 'organiser') {
       navigate('/');
     }
   }, [user, isGetMeLoading, navigate]);
 
-  if (isGetMeLoading) return <p>Loading...</p>;
+  if (isGetMeLoading) {
+    return (
+      <div className='flex justify-center items-center h-screen bg-gray-100'>
+        <p className='text-gray-500 text-lg'>Loading user data…</p>
+      </div>
+    );
+  }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className='max-w-md mx-auto space-y-4'>
-      <FormInput
-        label='Email'
-        register={register('email')}
-        error={errors.email?.message}
-      />
-      <FormInput
-        label='Username'
-        register={register('username')}
-        error={errors.username?.message}
-      />
-      <FormInput
-        label='First Name'
-        register={register('firstName')}
-        error={errors.firstName?.message}
-      />
-      <FormInput
-        label='Last Name'
-        register={register('lastName')}
-        error={errors.lastName?.message}
-      />
-      <FormInput
-        label='Password'
-        type='password'
-        register={register('password')}
-        error={errors.password?.message}
-      />
-      <button
-        disabled={isUpdating}
-        className='btn bg-blue-500'>
-        {isUpdating ? 'Saving...' : 'Save Changes'}
-      </button>
-    </form>
+    <>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4'>
+        <div className='max-w-lg w-full bg-white rounded-2xl shadow-lg p-8'>
+          <h2 className='text-2xl font-extrabold text-gray-900 mb-6 text-center'>
+            Edit Your Profile
+          </h2>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='space-y-5'>
+            <FormInput
+              label='Email'
+              register={register('email')}
+              error={errors.email?.message}
+              placeholder='you@example.com'
+            />
+            <FormInput
+              label='Username'
+              register={register('username')}
+              error={errors.username?.message}
+              placeholder='your_username'
+            />
+            <FormInput
+              label='First Name'
+              register={register('firstName')}
+              error={errors.firstName?.message}
+              placeholder='First Name'
+            />
+            <FormInput
+              label='Last Name'
+              register={register('lastName')}
+              error={errors.lastName?.message}
+              placeholder='Last Name'
+            />
+            <FormInput
+              label='Password'
+              type='password'
+              register={register('password')}
+              error={errors.password?.message}
+              placeholder='••••••••'
+            />
+            <button
+              type='submit'
+              disabled={isUpdating}
+              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition ${
+                isUpdating
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700'
+              }`}>
+              {isUpdating ? 'Saving…' : 'Save Changes'}
+            </button>{' '}
+            <button
+              disabled={isUpdating}
+              onClick={() => {
+                navigate('/user/me');
+              }}
+              className={`w-full py-3 text-white font-semibold rounded-lg shadow-md transition cursor-pointer ${
+                isUpdating
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-500 hover:bg-red-600'
+              }`}>
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+      <Modal
+        isOpen={isModalOpen}
+        title='Profile Updated'
+        onClose={() => {
+          setIsModalOpen(false);
+          refetchMe();
+          navigate('/user/me');
+        }}
+        cancelText='Close'>
+        <p className='text-gray-700'>
+          Your profile has been successfully updated.
+        </p>
+      </Modal>
+    </>
   );
 };
+
+export default UserEdit;

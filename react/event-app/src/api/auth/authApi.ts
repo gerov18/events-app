@@ -25,7 +25,7 @@ export const authApi = createApi({
     },
     credentials: 'include',
   }),
-  tagTypes: ['Users'],
+  tagTypes: ['Users', 'Me'],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: credentials => ({
@@ -33,6 +33,14 @@ export const authApi = createApi({
         method: 'POST',
         body: credentials,
       }),
+      invalidatesTags: ['Me'], // force /me to refetch after login
+    }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Me'], // force /me to refetch (which will now likely 401)
     }),
     register: builder.mutation<RegisterResponse, CreateUserInput>({
       query: credentials => ({
@@ -41,13 +49,7 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
-    logout: builder.mutation<void, void>({
-      query: () => ({
-        url: '/logout',
-        method: 'POST',
-        credentials: 'include',
-      }),
-    }),
+
     deleteUser: builder.mutation<void, DeleteInput>({
       query: credentials => ({
         url: `/users/me/delete`,
